@@ -1,0 +1,588 @@
+// Prisma Schema for XYZ Business OS
+// Multi-Tenant SaaS Business Operating System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------
+// TENANT & ORGANIZATIONS
+// --------------------------------------------------------
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum PlanTier {
+  STARTER
+  BUSINESS
+  ENTERPRISE
+}
+
+model Organization {
+  id               String             @id @default(uuid())
+  name             String
+  slug             String             @unique
+  businessType     String // Retail, Grocery, Fashion, Electronics, Restaurant, Pharmacy
+  logoUrl          String?
+  currency         String             @default("BDT")
+  currencySymbol   String             @default("৳")
+  phone            String?
+  email            String?
+  address          String?
+  taxNumber        String? // BIN / VAT Registration Number
+  subscriptionPlan PlanTier           @default(STARTER)
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  trialEndsAt      DateTime?
+  subscriptionEndsAt DateTime?
+  maxBranches      Int                @default(1)
+  maxStaff         Int                @default(5)
+  maxProducts      Int                @default(5000)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  users            User[]
+  branches         Branch[]
+  products         Product[]
+  categories       Category[]
+  customers        Customer[]
+  suppliers        Supplier[]
+  sales            Sale[]
+  purchases        PurchaseOrder[]
+  stockTransfers   StockTransfer[]
+  employees        Employee[]
+  accounts         ChartOfAccount[]
+  journalEntries   JournalEntry[]
+  coupons          Coupon[]
+  campaigns        Campaign[]
+}
+
+// --------------------------------------------------------
+// USERS & RBAC
+// --------------------------------------------------------
+
+enum UserRole {
+  SUPER_ADMIN
+  COMPANY_OWNER
+  BRANCH_MANAGER
+  ACCOUNTANT
+  CASHIER
+  STAFF
+}
+
+model User {
+  id             String        @id @default(uuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String?
+  branch         Branch?       @relation(fields: [branchId], references: [id])
+  name           String
+  email          String        @unique
+  phone          String?
+  passwordHash   String
+  role           UserRole      @default(STAFF)
+  avatarUrl      String?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  salesHandled   Sale[]
+  journalsCreated JournalEntry[]
+}
+
+// --------------------------------------------------------
+// BRANCHES & WAREHOUSES
+// --------------------------------------------------------
+
+model Branch {
+  id             String        @id @default(uuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  code           String // e.g. BR-DHAKA-01
+  phone          String?
+  email          String?
+  address        String
+  city           String
+  isMainBranch   Boolean       @default(false)
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  users          User[]
+  employees      Employee[]
+  sales          Sale[]
+  transfersFrom  StockTransfer[] @relation("SourceBranch")
+  transfersTo    StockTransfer[] @relation("DestinationBranch")
+  branchStocks   BranchStock[]
+}
+
+// --------------------------------------------------------
+// PRODUCTS & INVENTORY
+// --------------------------------------------------------
+
+model Category {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String
+  imageUrl       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  products       Product[]
+}
+
+model Product {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  categoryId     String?
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  name           String
+  nameBn         String? // Bengali display name
+  sku            String
+  barcode        String?
+  description    String?
+  purchasePrice  Decimal      @default(0.0)
+  sellingPrice   Decimal      @default(0.0)
+  taxRate        Decimal      @default(0.0) // VAT % (e.g. 5.0, 7.5, 15.0)
+  minStockAlert  Int          @default(5)
+  unit           String       @default("pcs") // pcs, kg, ltr, box, strip
+  imageUrl       String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  branchStocks   BranchStock[]
+  saleItems      SaleItem[]
+  purchaseItems  PurchaseOrderItem[]
+  variants       ProductVariant[]
+}
+
+model ProductVariant {
+  id             String       @id @default(uuid())
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name           String // e.g. "Size L - Blue"
+  sku            String
+  barcode        String?
+  priceAdjustment Decimal     @default(0.0)
+  stock          Int          @default(0)
+}
+
+model BranchStock {
+  id             String       @id @default(uuid())
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity       Int          @default(0)
+  reservedQty    Int          @default(0)
+  damagedQty     Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([branchId, productId])
+}
+
+// --------------------------------------------------------
+// STOCK TRANSFERS & ADJUSTMENTS
+// --------------------------------------------------------
+
+enum TransferStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  IN_TRANSIT
+  RECEIVED
+  CANCELLED
+}
+
+model StockTransfer {
+  id                    String         @id @default(uuid())
+  organizationId        String
+  organization          Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transferNumber        String // e.g. TR-2026-001
+  sourceBranchId        String
+  sourceBranch          Branch         @relation("SourceBranch", fields: [sourceBranchId], references: [id])
+  destinationBranchId   String
+  destinationBranch     Branch         @relation("DestinationBranch", fields: [destinationBranchId], references: [id])
+  status                TransferStatus @default(PENDING)
+  notes                 String?
+  dispatchedAt          DateTime?
+  receivedAt            DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  items                 StockTransferItem[]
+}
+
+model StockTransferItem {
+  id              String        @id @default(uuid())
+  stockTransferId String
+  stockTransfer   StockTransfer @relation(fields: [stockTransferId], references: [id], onDelete: Cascade)
+  productId       String
+  quantity        Int
+}
+
+// --------------------------------------------------------
+// CUSTOMERS & CRM
+// --------------------------------------------------------
+
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String
+  email          String?
+  address        String?
+  loyaltyPoints  Int          @default(0)
+  dueBalance     Decimal      @default(0.0)
+  creditLimit    Decimal      @default(50000.0)
+  totalSpent     Decimal      @default(0.0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  sales          Sale[]
+}
+
+// --------------------------------------------------------
+// SALES & POS
+// --------------------------------------------------------
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BKASH
+  NAGAD
+  ROCKET
+  BANK_TRANSFER
+  DUE
+  SPLIT
+}
+
+enum SaleStatus {
+  COMPLETED
+  HELD
+  RETURNED
+  PARTIALLY_REFUNDED
+  CANCELLED
+}
+
+model Sale {
+  id             String        @id @default(uuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch        @relation(fields: [branchId], references: [id])
+  cashierId      String
+  cashier        User          @relation(fields: [cashierId], references: [id])
+  customerId     String?
+  customer       Customer?     @relation(fields: [customerId], references: [id])
+  invoiceNumber  String        @unique // e.g. INV-2026-0001
+  subtotal       Decimal
+  discountAmount Decimal       @default(0.0)
+  taxAmount      Decimal       @default(0.0)
+  grandTotal     Decimal
+  paidAmount     Decimal
+  dueAmount      Decimal       @default(0.0)
+  paymentMethod  PaymentMethod @default(CASH)
+  status         SaleStatus    @default(COMPLETED)
+  isOfflineSync  Boolean       @default(false)
+  localOfflineId String? // Client UUID
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  items          SaleItem[]
+}
+
+model SaleItem {
+  id             String       @id @default(uuid())
+  saleId         String
+  sale           Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id])
+  unitPrice      Decimal
+  costPrice      Decimal      @default(0.0)
+  quantity       Int
+  discountAmount Decimal      @default(0.0)
+  taxAmount      Decimal      @default(0.0)
+  totalPrice     Decimal
+}
+
+// --------------------------------------------------------
+// PURCHASES & SUPPLIERS
+// --------------------------------------------------------
+
+model Supplier {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  companyName    String?
+  phone          String
+  email          String?
+  address        String?
+  balanceDue     Decimal      @default(0.0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  purchaseOrders PurchaseOrder[]
+}
+
+enum PurchaseStatus {
+  DRAFT
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id             String         @id @default(uuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  supplierId     String
+  supplier       Supplier       @relation(fields: [supplierId], references: [id])
+  poNumber       String // e.g. PO-2026-001
+  status         PurchaseStatus @default(ORDERED)
+  totalAmount    Decimal
+  paidAmount     Decimal        @default(0.0)
+  dueAmount      Decimal        @default(0.0)
+  notes          String?
+  expectedDate   DateTime?
+  receivedDate   DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  items          PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  unitCost        Decimal
+  quantity        Int
+  receivedQty     Int           @default(0)
+  batchNumber     String?
+  expiryDate      DateTime?
+}
+
+// --------------------------------------------------------
+// ACCOUNTING & FINANCE (Double-Entry)
+// --------------------------------------------------------
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+model ChartOfAccount {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String // e.g. "1001"
+  name           String // e.g. "Cash in Hand", "bKash Merchant Account"
+  type           AccountType
+  balance        Decimal      @default(0.0)
+  isSystem       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  journalLines   JournalLine[]
+}
+
+model JournalEntry {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  entryNumber    String // e.g. JE-2026-0012
+  date           DateTime     @default(now())
+  referenceType  String? // SALE, PURCHASE, PAYROLL, EXPENSE, MANUAL
+  referenceId    String? // Source entity ID
+  description    String
+  createdById    String
+  createdBy      User         @relation(fields: [createdById], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  lines          JournalLine[]
+}
+
+model JournalLine {
+  id             String         @id @default(uuid())
+  journalEntryId String
+  journalEntry   JournalEntry   @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  accountId      String
+  account        ChartOfAccount @relation(fields: [accountId], references: [id])
+  debit          Decimal        @default(0.0)
+  credit         Decimal        @default(0.0)
+  notes          String?
+}
+
+// --------------------------------------------------------
+// HR & PAYROLL
+// --------------------------------------------------------
+
+enum EmployeeStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+model Employee {
+  id             String         @id @default(uuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch         @relation(fields: [branchId], references: [id])
+  employeeId     String // e.g. EMP-001
+  name           String
+  email          String?
+  phone          String
+  designation    String // e.g. Sales Manager, Senior Cashier
+  department     String // Sales, Operations, Accounts
+  joiningDate    DateTime
+  baseSalary     Decimal
+  commissionRate Decimal        @default(0.0) // % on sales
+  status         EmployeeStatus @default(ACTIVE)
+  bankAccountNo  String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  attendances    Attendance[]
+  leaves         Leave[]
+  payrollItems   PayrollItem[]
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+}
+
+model Attendance {
+  id             String           @id @default(uuid())
+  employeeId     String
+  employee       Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date           DateTime
+  checkIn        DateTime?
+  checkOut       DateTime?
+  status         AttendanceStatus @default(PRESENT)
+  notes          String?
+}
+
+model Leave {
+  id             String       @id @default(uuid())
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type           String // Sick, Casual, Annual
+  startDate      DateTime
+  endDate        DateTime
+  reason         String?
+  isApproved     Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSING
+  APPROVED
+  PAID
+}
+
+model PayrollRun {
+  id             String        @id @default(uuid())
+  monthYear      String // e.g. "February 2026"
+  totalAmount    Decimal
+  status         PayrollStatus @default(DRAFT)
+  processedAt    DateTime?
+  createdAt      DateTime      @default(now())
+
+  items          PayrollItem[]
+}
+
+model PayrollItem {
+  id             String       @id @default(uuid())
+  payrollRunId   String
+  payrollRun     PayrollRun   @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id])
+  baseSalary     Decimal
+  deductions     Decimal      @default(0.0)
+  commission     Decimal      @default(0.0)
+  netSalary      Decimal
+  isPaid         Boolean      @default(false)
+}
+
+// --------------------------------------------------------
+// COUPONS & MARKETING CAMPAIGNS
+// --------------------------------------------------------
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String // e.g. EID2026, SUMMER50
+  discountType   DiscountType @default(PERCENTAGE)
+  discountValue  Decimal
+  minPurchase    Decimal      @default(0.0)
+  usageLimit     Int          @default(100)
+  timesUsed      Int          @default(0)
+  expiresAt      DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+}
+
+enum CampaignChannel {
+  SMS
+  WHATSAPP
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  FAILED
+}
+
+model Campaign {
+  id             String          @id @default(uuid())
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String
+  channel        CampaignChannel @default(SMS)
+  targetAudience String // All Customers, High Value, Inactive
+  message        String
+  recipientCount Int             @default(0)
+  sentCount      Int             @default(0)
+  status         CampaignStatus  @default(DRAFT)
+  scheduledAt    DateTime?
+  createdAt      DateTime        @default(now())
+}
