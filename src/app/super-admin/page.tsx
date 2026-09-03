@@ -2,7 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
+import { Organization } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
   Building2,
@@ -15,6 +18,8 @@ import {
   Layers,
   ArrowUpRight,
   ChevronRight,
+  ExternalLink,
+  Plus,
 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/Badge";
@@ -46,7 +51,24 @@ const PLAN_DISTRIBUTION = [
 ];
 
 export default function SuperAdminDashboardPage() {
+  const router = useRouter();
+  const { setCurrentOrg, setCurrentBranch, setCurrentRole } = useTenant();
   const orgs = storageService.getOrganizations();
+
+  const handleTakeControl = (org: Organization) => {
+    setCurrentOrg(org);
+    const branches = storageService.getBranches().filter((b) => b.organizationId === org.id);
+    if (branches.length > 0) {
+      setCurrentBranch(branches[0]);
+    }
+    setCurrentRole("company_owner");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("xyz_user_role", "company_owner");
+      localStorage.setItem("super_admin_controlling", org.id);
+      localStorage.setItem("super_admin_controlling_name", org.name);
+    }
+    router.push("/app/dashboard");
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
@@ -62,9 +84,19 @@ export default function SuperAdminDashboardPage() {
           </p>
         </div>
 
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 text-purple-900 dark:text-purple-300 text-xs font-black shadow-subtle-xs flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Platform Health: 99.99% Online</span>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/super-admin/organizations"
+            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black shadow-md shadow-purple-500/25 flex items-center gap-1.5 transition-all active:scale-95"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Manage &amp; Add Companies</span>
+          </Link>
+
+          <div className="px-3.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200/60 dark:border-purple-800/60 text-purple-900 dark:text-purple-300 text-xs font-black shadow-subtle-xs flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Online</span>
+          </div>
         </div>
       </div>
 
@@ -253,7 +285,8 @@ export default function SuperAdminDashboardPage() {
                 <th className="p-3.5">Subscription Plan</th>
                 <th className="p-3.5">Business Type</th>
                 <th className="p-3.5">Status</th>
-                <th className="p-3.5 text-right">Created</th>
+                <th className="p-3.5">Created</th>
+                <th className="p-3.5 text-right">Super Admin Control</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60 bg-card">
@@ -278,10 +311,20 @@ export default function SuperAdminDashboardPage() {
                     {org.businessType}
                   </td>
                   <td className="p-3.5">
-                    <StatusBadge status="active" />
+                    <StatusBadge status={org.subscriptionStatus || "active"} />
                   </td>
-                  <td className="p-3.5 text-right font-mono text-muted-foreground text-[11px]">
+                  <td className="p-3.5 font-mono text-muted-foreground text-[11px]">
                     {formatDate(org.createdAt || org.trialEndsAt || new Date().toISOString())}
+                  </td>
+                  <td className="p-3.5 text-right">
+                    <button
+                      onClick={() => handleTakeControl(org)}
+                      className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] inline-flex items-center gap-1 shadow-sm transition-all active:scale-95"
+                      title="Take over and manage this company"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      <span>Control</span>
+                    </button>
                   </td>
                 </tr>
               ))}

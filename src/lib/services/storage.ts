@@ -118,9 +118,37 @@ class StorageService {
     return this.getOrganizations().find((o) => o.id === id);
   }
 
+  public addOrganization(org: Organization): void {
+    const orgs = [org, ...this.getOrganizations()];
+    this.setItem(STORAGE_KEYS.ORGANIZATIONS, orgs);
+  }
+
   public updateOrganization(org: Organization): void {
     const orgs = this.getOrganizations().map((o) => (o.id === org.id ? org : o));
     this.setItem(STORAGE_KEYS.ORGANIZATIONS, orgs);
+  }
+
+  public deleteOrganization(id: string): void {
+    const orgs = this.getOrganizations().filter((o) => o.id !== id);
+    this.setItem(STORAGE_KEYS.ORGANIZATIONS, orgs);
+    // Purge associated tenant data
+    const branches = this.getBranches().filter((b) => b.organizationId !== id);
+    this.setItem(STORAGE_KEYS.BRANCHES, branches);
+    const products = this.getProducts().filter((p) => p.organizationId !== id);
+    this.setItem(STORAGE_KEYS.PRODUCTS, products);
+    const sales = this.getSales().filter((s) => s.organizationId !== id);
+    this.setItem(STORAGE_KEYS.SALES, sales);
+    const customers = this.getCustomers().filter((c) => c.organizationId !== id);
+    this.setItem(STORAGE_KEYS.CUSTOMERS, customers);
+    const employees = this.getEmployees().filter((e) => e.organizationId !== id);
+    this.setItem(STORAGE_KEYS.EMPLOYEES, employees);
+  }
+
+  public purgeOrganizationData(id: string): void {
+    const sales = this.getSales().filter((s) => s.organizationId !== id);
+    this.setItem(STORAGE_KEYS.SALES, sales);
+    const customers = this.getCustomers().map((c) => (c.organizationId === id ? { ...c, dueBalance: 0 } : c));
+    this.setItem(STORAGE_KEYS.CUSTOMERS, customers);
   }
 
   // Branches

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTenant } from "@/lib/context/TenantContext";
@@ -26,23 +26,20 @@ import {
   Settings,
   Shield,
   Search,
-  Wifi,
   WifiOff,
   Bell,
   Sun,
   Moon,
-  ChevronDown,
   Menu,
   X,
-  Sliders,
   LogOut,
-  Sparkles,
   Layers,
-  ChevronRight,
   PanelLeftClose,
   PanelLeft,
-  Check,
-  Zap,
+  Store,
+  Clock,
+  Printer,
+  CheckCircle2,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { GlobalSearchModal } from "../ui/GlobalSearchModal";
@@ -54,7 +51,6 @@ interface NavItem {
   title: string;
   href: string;
   icon: React.ElementType;
-  roles?: UserRole[];
   badge?: string;
 }
 
@@ -63,181 +59,178 @@ interface NavSection {
   items: NavItem[];
 }
 
-const NAV_SECTIONS: NavSection[] = [
+// 1. Company Owner Navigation (Full Executive Business OS Suite)
+const OWNER_NAV: NavSection[] = [
   {
-    title: "Overview",
+    title: "Executive",
     items: [
-      { title: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+      { title: "Overview Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
     ],
   },
   {
     title: "Sales & POS",
     items: [
-      {
-        title: "POS Terminal",
-        href: "/app/pos",
-        icon: ShoppingCart,
-        badge: "Offline",
-      },
+      { title: "POS Terminal", href: "/app/pos", icon: ShoppingCart, badge: "Offline" },
       { title: "Sales Invoices", href: "/app/sales", icon: Receipt },
-      { title: "Customers", href: "/app/customers", icon: Contact },
+      { title: "Customers & Dues", href: "/app/customers", icon: Contact },
     ],
   },
   {
-    title: "Inventory & Stock",
+    title: "Inventory & Supply",
     items: [
       { title: "Products & SKUs", href: "/app/products", icon: Package },
-      {
-        title: "Stock & Warehouses",
-        href: "/app/inventory",
-        icon: Boxes,
-        roles: ["company_owner", "branch_manager", "accountant"],
-      },
-      {
-        title: "Stock Transfers",
-        href: "/app/inventory/transfers",
-        icon: Truck,
-        roles: ["company_owner", "branch_manager"],
-      },
+      { title: "Stock & Warehouses", href: "/app/inventory", icon: Boxes },
+      { title: "Stock Transfers", href: "/app/inventory/transfers", icon: Truck },
+      { title: "Purchase Orders", href: "/app/purchases", icon: Boxes },
+      { title: "Suppliers", href: "/app/suppliers", icon: Building2 },
     ],
   },
   {
-    title: "Purchases & Vendors",
+    title: "Finance & Accounting",
     items: [
-      {
-        title: "Purchase Orders",
-        href: "/app/purchases",
-        icon: Boxes,
-        roles: ["company_owner", "branch_manager", "accountant"],
-      },
-      {
-        title: "Suppliers",
-        href: "/app/suppliers",
-        icon: Building2,
-        roles: ["company_owner", "accountant"],
-      },
+      { title: "Finance Overview", href: "/app/accounting", icon: BookOpen },
+      { title: "Chart of Accounts", href: "/app/accounting/chart-of-accounts", icon: Layers },
+      { title: "Journal Entries", href: "/app/accounting/journal", icon: Receipt, badge: "Auto" },
+      { title: "Cash & Banks", href: "/app/accounting/banks", icon: CreditCard },
+      { title: "Financial Statements", href: "/app/accounting/reports", icon: BarChart3 },
     ],
   },
   {
-    title: "Accounting & Finance",
+    title: "Human Resources",
     items: [
-      {
-        title: "Finance Overview",
-        href: "/app/accounting",
-        icon: BookOpen,
-        roles: ["company_owner", "accountant"],
-      },
-      {
-        title: "Chart of Accounts",
-        href: "/app/accounting/chart-of-accounts",
-        icon: Layers,
-        roles: ["company_owner", "accountant"],
-      },
-      {
-        title: "Journal Entries",
-        href: "/app/accounting/journal",
-        icon: Receipt,
-        roles: ["company_owner", "accountant"],
-        badge: "Auto",
-      },
-      {
-        title: "Cash & Banks",
-        href: "/app/accounting/banks",
-        icon: CreditCard,
-        roles: ["company_owner", "accountant"],
-      },
-      {
-        title: "Financial Statements",
-        href: "/app/accounting/reports",
-        icon: BarChart3,
-        roles: ["company_owner", "accountant"],
-      },
+      { title: "Staff Directory", href: "/app/hr", icon: Users },
+      { title: "Daily Attendance", href: "/app/attendance", icon: CalendarCheck },
+      { title: "Payroll Generator", href: "/app/payroll", icon: CreditCard },
+      { title: "Staff Commissions", href: "/app/commissions", icon: Percent },
     ],
   },
   {
-    title: "HR & Payroll",
+    title: "Growth & CRM",
     items: [
-      {
-        title: "Staff Directory",
-        href: "/app/hr",
-        icon: Users,
-        roles: ["company_owner", "branch_manager"],
-      },
-      {
-        title: "Daily Attendance",
-        href: "/app/attendance",
-        icon: CalendarCheck,
-        roles: ["company_owner", "branch_manager"],
-      },
-      {
-        title: "Payroll Generator",
-        href: "/app/payroll",
-        icon: CreditCard,
-        roles: ["company_owner", "accountant"],
-      },
-      {
-        title: "Commissions",
-        href: "/app/commissions",
-        icon: Percent,
-        roles: ["company_owner", "branch_manager", "accountant"],
-      },
+      { title: "Loyalty Club", href: "/app/loyalty", icon: Gift },
+      { title: "Promo Coupons", href: "/app/coupons", icon: Tag },
+      { title: "SMS Campaigns", href: "/app/campaigns", icon: Megaphone },
     ],
   },
   {
-    title: "CRM & Growth",
+    title: "System & Settings",
     items: [
-      {
-        title: "Loyalty Club",
-        href: "/app/loyalty",
-        icon: Gift,
-        roles: ["company_owner", "branch_manager"],
-      },
-      {
-        title: "Promo Coupons",
-        href: "/app/coupons",
-        icon: Tag,
-        roles: ["company_owner", "branch_manager"],
-      },
-      {
-        title: "SMS Campaigns",
-        href: "/app/campaigns",
-        icon: Megaphone,
-        roles: ["company_owner"],
-      },
+      { title: "Reports Center", href: "/app/reports", icon: BarChart3 },
+      { title: "Branch Outlets", href: "/app/branches", icon: Building2 },
+      { title: "Settings & NBR VAT", href: "/app/settings", icon: Settings },
+      { title: "Subscription & Plan", href: "/app/subscription", icon: Shield },
+    ],
+  },
+];
+
+// 2. Branch Manager Navigation (Store Operations & Staff)
+const BRANCH_MANAGER_NAV: NavSection[] = [
+  {
+    title: "Branch Hub",
+    items: [
+      { title: "Branch Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+      { title: "Counter POS", href: "/app/pos", icon: ShoppingCart, badge: "Fast" },
     ],
   },
   {
-    title: "Intelligence",
+    title: "Counter Sales",
     items: [
-      {
-        title: "Reports Center",
-        href: "/app/reports",
-        icon: BarChart3,
-        roles: ["company_owner", "branch_manager", "accountant"],
-      },
+      { title: "Branch Invoices", href: "/app/sales", icon: Receipt },
+      { title: "Branch Customers", href: "/app/customers", icon: Contact },
     ],
   },
   {
-    title: "Enterprise Settings",
+    title: "Branch Inventory",
     items: [
-      {
-        title: "Branch Outlets",
-        href: "/app/branches",
-        icon: Building2,
-        roles: ["company_owner"],
-      },
-      {
-        title: "Settings & NBR VAT",
-        href: "/app/settings",
-        icon: Settings,
-        roles: ["company_owner"],
-      },
-      {
-        title: "Subscription & Plan",
-        href: "/app/subscription",
-        icon: Shield,
-        roles: ["company_owner"],
-      },
+      { title: "Products & SKUs", href: "/app/products", icon: Package },
+      { title: "Branch Stock", href: "/app/inventory", icon: Boxes },
+      { title: "Stock Transfers (HQ)", href: "/app/inventory/transfers", icon: Truck, badge: "Inter-Store" },
+      { title: "Purchase Orders", href: "/app/purchases", icon: Boxes },
+    ],
+  },
+  {
+    title: "Branch Team",
+    items: [
+      { title: "Daily Attendance", href: "/app/attendance", icon: CalendarCheck },
+      { title: "Staff Directory", href: "/app/hr", icon: Users },
+      { title: "Staff Commissions", href: "/app/commissions", icon: Percent },
+    ],
+  },
+  {
+    title: "Performance",
+    items: [
+      { title: "Promo Coupons", href: "/app/coupons", icon: Tag },
+      { title: "Branch Reports", href: "/app/reports", icon: BarChart3 },
+    ],
+  },
+];
+
+// 3. Financial Accountant Navigation (General Ledger & Fiscal Audit)
+const ACCOUNTANT_NAV: NavSection[] = [
+  {
+    title: "Fiscal Control",
+    items: [
+      { title: "Fiscal Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+      { title: "Finance Overview", href: "/app/accounting", icon: BookOpen },
+    ],
+  },
+  {
+    title: "General Ledger",
+    items: [
+      { title: "Chart of Accounts", href: "/app/accounting/chart-of-accounts", icon: Layers },
+      { title: "Journal Entries", href: "/app/accounting/journal", icon: Receipt, badge: "Double-Entry" },
+      { title: "Cash & Banks", href: "/app/accounting/banks", icon: CreditCard },
+      { title: "Financial Statements", href: "/app/accounting/reports", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "Receivables & Payables",
+    items: [
+      { title: "Sales Invoices", href: "/app/sales", icon: Receipt },
+      { title: "Customers & Dues", href: "/app/customers", icon: Contact },
+      { title: "Purchase Invoices", href: "/app/purchases", icon: Boxes },
+      { title: "Suppliers Ledger", href: "/app/suppliers", icon: Building2 },
+    ],
+  },
+  {
+    title: "Payroll & Taxes",
+    items: [
+      { title: "Payroll Generator", href: "/app/payroll", icon: CreditCard },
+      { title: "Staff Commissions", href: "/app/commissions", icon: Percent },
+      { title: "Tax & NBR Reports", href: "/app/reports", icon: BarChart3 },
+    ],
+  },
+];
+
+// 4. Cashier Navigation (Counter Station)
+const CASHIER_NAV: NavSection[] = [
+  {
+    title: "Counter Station",
+    items: [
+      { title: "Launch POS Terminal", href: "/app/pos", icon: ShoppingCart, badge: "F2 Active" },
+      { title: "Till Shift Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "Billing & Cash",
+    items: [
+      { title: "Sales Invoices", href: "/app/sales", icon: Receipt },
+      { title: "Customer Due Lookup", href: "/app/customers", icon: Contact },
+      { title: "Price & Stock Catalog", href: "/app/products", icon: Package },
+      { title: "My Attendance", href: "/app/attendance", icon: CalendarCheck },
+    ],
+  },
+];
+
+// 5. Store Floor Staff Navigation (Floor Assistant)
+const STAFF_NAV: NavSection[] = [
+  {
+    title: "Store Floor",
+    items: [
+      { title: "Floor Tasks & Shift", href: "/app/dashboard", icon: LayoutDashboard },
+      { title: "Price & Stock Lookup", href: "/app/products", icon: Package },
+      { title: "My Shift Attendance", href: "/app/attendance", icon: CalendarCheck },
+      { title: "Customers Directory", href: "/app/customers", icon: Contact },
     ],
   },
 ];
@@ -250,7 +243,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     setCurrentBranch,
     branches,
     currentRole,
-    setCurrentRole,
     isOnline,
     syncQueue,
     setIsSearchModalOpen,
@@ -261,24 +253,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isSuperAdminTakeover, setIsSuperAdminTakeover] = useState(false);
 
-  // Filter items based on current role permissions
-  const filterSectionItems = (items: NavItem[]) => {
-    return items.filter((item) => {
-      if (!item.roles) return true;
-      if (currentRole === "super_admin" || currentRole === "company_owner")
-        return true;
-      return item.roles.includes(currentRole);
-    });
-  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const controlling = localStorage.getItem("super_admin_controlling");
+      setIsSuperAdminTakeover(!!controlling);
+    }
+  }, []);
+
+  // Pick navigation sections strictly based on logged in user role
+  const navSections = useMemo(() => {
+    switch (currentRole) {
+      case "company_owner":
+        return OWNER_NAV;
+      case "branch_manager":
+        return BRANCH_MANAGER_NAV;
+      case "accountant":
+        return ACCOUNTANT_NAV;
+      case "cashier":
+        return CASHIER_NAV;
+      case "staff":
+        return STAFF_NAV;
+      case "super_admin":
+        return OWNER_NAV;
+      default:
+        return OWNER_NAV;
+    }
+  }, [currentRole]);
 
   const isPosPage = pathname === "/app/pos";
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-600">
-      {/* Modals & Drawers */}
+      {/* Global Modals */}
       <GlobalSearchModal />
       <SyncStatusModal />
       <NotificationsDrawer
@@ -287,27 +296,68 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       />
       <ThermalReceiptModal />
 
-      {/* Top Header Navigation Bar */}
+      {/* Super Admin Takeover Control Banner */}
+      {isSuperAdminTakeover && (
+        <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-purple-950 text-white px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-purple-700/60 shadow-md z-50">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="truncate">
+              🛡️ Super Admin Control: Currently managing{" "}
+              <strong className="text-white underline">{currentOrg.name}</strong> as Executive Owner.
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/super-admin/organizations"
+              className="px-3 py-1 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-black shadow transition-all active:scale-95"
+            >
+              Console
+            </Link>
+            <button
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("super_admin_controlling");
+                  localStorage.removeItem("super_admin_controlling_name");
+                  localStorage.setItem("xyz_user_role", "super_admin");
+                }
+                window.location.href = "/super-admin/organizations";
+              }}
+              className="px-2.5 py-1 rounded-xl border border-white/20 hover:bg-white/10 text-[11px] font-semibold text-purple-200 hover:text-white transition-colors"
+            >
+              Exit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Top Header Navigation Bar (Tailored specifically per Role, without any switcher!) */}
       <header className="sticky top-0 z-40 h-15 border-b border-border/80 bg-card/85 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between shadow-subtle-xs transition-colors">
-        {/* Left Side: Brand Logo, Branch Selector & Collapse Toggle */}
+        {/* Left Side of Header */}
         <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/70"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          <Link
-            href="/app/dashboard"
-            className="flex items-center gap-2.5 group select-none"
-          >
-            <div className="h-8.5 w-8.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-black text-base shadow-sm shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-200">
+          {/* Brand Logo & Context Title */}
+          <Link href="/app/dashboard" className="flex items-center gap-2.5 group select-none">
+            <div
+              className={`h-8.5 w-8.5 rounded-xl flex items-center justify-center text-white font-black text-base shadow-sm transition-transform duration-200 group-hover:scale-105 ${
+                currentRole === "company_owner"
+                  ? "bg-gradient-to-tr from-indigo-600 to-indigo-500 shadow-indigo-500/30"
+                  : currentRole === "branch_manager"
+                  ? "bg-gradient-to-tr from-amber-600 to-amber-500 shadow-amber-500/30"
+                  : currentRole === "accountant"
+                  ? "bg-gradient-to-tr from-blue-600 to-blue-500 shadow-blue-500/30"
+                  : currentRole === "cashier"
+                  ? "bg-gradient-to-tr from-emerald-600 to-emerald-500 shadow-emerald-500/30"
+                  : "bg-gradient-to-tr from-purple-600 to-purple-500 shadow-purple-500/30"
+              }`}
+            >
               X
             </div>
             <div className="hidden sm:block">
@@ -315,7 +365,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {currentOrg.name}
               </span>
               <span className="text-[10px] text-muted-foreground block leading-none font-medium">
-                XYZ Business OS
+                {currentRole === "company_owner" && "Enterprise OS"}
+                {currentRole === "branch_manager" && `${currentBranch.name} Hub`}
+                {currentRole === "accountant" && "General Ledger Desk"}
+                {currentRole === "cashier" && "POS Counter Till"}
+                {currentRole === "staff" && "Floor Station"}
+                {currentRole === "super_admin" && "Super Admin"}
               </span>
             </div>
           </Link>
@@ -326,40 +381,59 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className="hidden md:flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors ml-1"
             title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            {sidebarCollapsed ? (
-              <PanelLeft className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
+            {sidebarCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </button>
 
-          {/* Branch Selector Dropdown */}
+          {/* Role-Specific Branch Control */}
           <div className="hidden lg:flex items-center ml-2 pl-3 border-l border-border/80">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-muted/40 hover:bg-muted/80 border border-border/60 transition-colors">
-              <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-              <select
-                value={currentBranch.id}
-                onChange={(e) => {
-                  const b = branches.find((item) => item.id === e.target.value);
-                  if (b) setCurrentBranch(b);
-                }}
-                className="bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer pr-1"
-              >
-                {branches.map((b) => (
-                  <option
-                    key={b.id}
-                    value={b.id}
-                    className="bg-card text-foreground"
-                  >
-                    {b.name} {b.isMainBranch ? "(HQ)" : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {currentRole === "company_owner" ? (
+              // Company Owner can switch any branch
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-muted/40 hover:bg-muted/80 border border-border/60 transition-colors">
+                <Building2 className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <select
+                  value={currentBranch.id}
+                  onChange={(e) => {
+                    const found = branches.find((b) => b.id === e.target.value);
+                    if (found) setCurrentBranch(found);
+                  }}
+                  className="bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer pr-2"
+                >
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id} className="bg-card text-foreground">
+                      {b.name} {b.isMainBranch ? "(HQ)" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : currentRole === "branch_manager" ? (
+              // Branch Manager locked to their branch
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 text-xs font-bold text-amber-800 dark:text-amber-300">
+                <Store className="h-3.5 w-3.5 text-amber-600" />
+                <span>{currentBranch.name}</span>
+              </div>
+            ) : currentRole === "accountant" ? (
+              // Accountant fiscal indicator
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 text-xs font-bold text-blue-800 dark:text-blue-300">
+                <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+                <span>NBR Mushak 6.3 Tax Ready</span>
+              </div>
+            ) : currentRole === "cashier" ? (
+              // Cashier active till indicator
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>{currentBranch.name} • Till #1</span>
+              </div>
+            ) : (
+              // Staff shift indicator
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-800/60 text-xs font-bold text-purple-800 dark:text-purple-300">
+                <Clock className="h-3.5 w-3.5 text-purple-600" />
+                <span>Shift Active</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Center: Global Spotlight Search Bar Button */}
+        {/* Center: Global Spotlight Search Button */}
         <div className="flex-1 max-w-sm xl:max-w-md mx-3 hidden md:block">
           <button
             onClick={() => setIsSearchModalOpen(true)}
@@ -375,58 +449,32 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Right Side Tools & Controls */}
+        {/* Right Side Tools & Controls (NO ROLE SWITCHER DROPDOWN!) */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Quick RBAC Role Switcher (For testing permissions) */}
-          <div className="relative">
-            <button
-              onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-xl bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors shadow-subtle-xs"
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              <span className="capitalize">{currentRole.replace("_", " ")}</span>
-              <ChevronDown className="h-3 w-3 opacity-60" />
-            </button>
-
-            {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-52 rounded-2xl border border-border/80 bg-card p-1.5 shadow-2xl z-50 animate-fade-slide">
-                <div className="px-2.5 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Switch Persona Role
-                </div>
-                {(
-                  [
-                    "company_owner",
-                    "branch_manager",
-                    "accountant",
-                    "cashier",
-                    "super_admin",
-                  ] as UserRole[]
-                ).map((role) => (
-                  <button
-                    key={role}
-                    onClick={() => {
-                      setCurrentRole(role);
-                      setShowRoleMenu(false);
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-semibold capitalize flex items-center justify-between transition-colors ${
-                      currentRole === role
-                        ? "bg-indigo-600 text-white shadow-subtle-xs"
-                        : "hover:bg-muted/70 text-foreground"
-                    }`}
-                  >
-                    <span>{role.replace("_", " ")}</span>
-                    {currentRole === role ? (
-                      <Check className="h-3.5 w-3.5" />
-                    ) : (
-                      <Sparkles className="h-3 w-3 opacity-30" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Static Role Indicator Badge (Read-only, without dropdown) */}
+          <div
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-xl border shadow-subtle-xs ${
+              currentRole === "company_owner"
+                ? "bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/60"
+                : currentRole === "branch_manager"
+                ? "bg-amber-50/80 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800/60"
+                : currentRole === "accountant"
+                ? "bg-blue-50/80 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/60"
+                : currentRole === "cashier"
+                ? "bg-emerald-50/80 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
+                : "bg-purple-50/80 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200/60 dark:border-purple-800/60"
+            }`}
+          >
+            {currentRole === "company_owner" && <Building2 className="h-3.5 w-3.5" />}
+            {currentRole === "branch_manager" && <Store className="h-3.5 w-3.5" />}
+            {currentRole === "accountant" && <BarChart3 className="h-3.5 w-3.5" />}
+            {currentRole === "cashier" && <ShoppingCart className="h-3.5 w-3.5" />}
+            {currentRole === "staff" && <Users className="h-3.5 w-3.5" />}
+            {currentRole === "super_admin" && <Shield className="h-3.5 w-3.5" />}
+            <span className="capitalize">{currentRole.replace("_", " ")}</span>
           </div>
 
-          {/* Online / Offline Status Button */}
+          {/* Online / Offline Sync Indicator */}
           <button
             onClick={() => setIsSyncModalOpen(true)}
             className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-xl border transition-all shadow-subtle-xs ${
@@ -447,13 +495,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span>Offline ({syncQueue.length})</span>
               </>
             )}
-            {syncQueue.length > 0 && isOnline && (
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
-            )}
           </button>
 
-          {/* Quick POS Button if not on POS */}
-          {!isPosPage && (
+          {/* Quick POS Terminal Button (Prominent for Cashier and Owner) */}
+          {!isPosPage && (currentRole === "cashier" || currentRole === "company_owner" || currentRole === "branch_manager") && (
             <Link
               href="/app/pos"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/25 transition-transform active:scale-95"
@@ -486,7 +531,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </button>
 
-          {/* Super Admin Switcher Link */}
+          {/* Super Admin Console link if super admin */}
           {currentRole === "super_admin" && (
             <Link
               href="/super-admin"
@@ -498,9 +543,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* Main Layout Body */}
+      {/* Main Layout: Sidebar & Content Area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar (Desktop & Mobile) */}
+        {/* Left Sidebar (Tailored specifically per Role) */}
         <aside
           className={`border-r border-border/80 bg-card shrink-0 flex flex-col justify-between overflow-y-auto transition-all duration-200 md:flex ${
             sidebarCollapsed ? "w-18" : "w-64"
@@ -510,7 +555,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               : "hidden md:flex"
           }`}
         >
-          {/* Top of Sidebar */}
+          {/* Top of Sidebar & Role-Specific Navigation */}
           <div className="p-3.5 space-y-5">
             {mobileMenuOpen && (
               <div className="flex items-center justify-between pb-3 border-b border-border/80">
@@ -531,87 +576,128 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             )}
 
-            {/* Navigation Groups */}
-            {NAV_SECTIONS.map((section, idx) => {
-              const visibleItems = filterSectionItems(section.items);
-              if (visibleItems.length === 0) return null;
-
-              return (
-                <div key={idx} className="space-y-0.5">
-                  {!sidebarCollapsed && (
-                    <h4 className="px-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                      {section.title}
-                    </h4>
-                  )}
-                  {visibleItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        title={sidebarCollapsed ? item.title : undefined}
-                        className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group ${
-                          isActive
-                            ? "bg-[#EEF2FF] dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-bold border border-indigo-200/50 dark:border-indigo-800/40 shadow-2xs"
-                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-[#F8FAFC] dark:hover:bg-slate-800/60"
-                        } ${sidebarCollapsed ? "justify-center px-2" : ""}`}
-                      >
-                        {isActive && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-[#4F46E5] dark:bg-[#818CF8] rounded-r-full" />
-                        )}
-                        <div className="flex items-center gap-2.5 truncate">
-                          <Icon
-                            className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-105 ${
-                              isActive
-                                ? "text-[#4F46E5] dark:text-[#818CF8]"
-                                : "text-slate-400 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200"
-                            }`}
-                          />
-                          {!sidebarCollapsed && (
-                            <span className="truncate">{item.title}</span>
-                          )}
-                        </div>
-                        {!sidebarCollapsed && item.badge && (
-                          <span
-                            className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold shrink-0 ${
-                              isActive
-                                ? "bg-indigo-200/70 dark:bg-indigo-900/60 text-[#4F46E5] dark:text-[#818CF8]"
-                                : "bg-muted text-muted-foreground border border-border/60"
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  })}
+            {/* Dedicated Role Identity Banner inside Sidebar */}
+            {!sidebarCollapsed && (
+              <div className="p-2.5 rounded-2xl bg-muted/40 border border-border/70 flex items-center gap-2.5 shadow-subtle-xs mb-2">
+                <div
+                  className={`h-7 w-7 rounded-xl flex items-center justify-center font-bold text-white shrink-0 ${
+                    currentRole === "company_owner"
+                      ? "bg-indigo-600 shadow-xs shadow-indigo-500/25"
+                      : currentRole === "branch_manager"
+                      ? "bg-amber-600 shadow-xs shadow-amber-500/25"
+                      : currentRole === "accountant"
+                      ? "bg-blue-600 shadow-xs shadow-blue-500/25"
+                      : currentRole === "cashier"
+                      ? "bg-emerald-600 shadow-xs shadow-emerald-500/25"
+                      : "bg-purple-600 shadow-xs shadow-purple-500/25"
+                  }`}
+                >
+                  {currentRole === "company_owner" && <Building2 className="h-3.5 w-3.5" />}
+                  {currentRole === "branch_manager" && <Store className="h-3.5 w-3.5" />}
+                  {currentRole === "accountant" && <BarChart3 className="h-3.5 w-3.5" />}
+                  {currentRole === "cashier" && <ShoppingCart className="h-3.5 w-3.5" />}
+                  {currentRole === "staff" && <Users className="h-3.5 w-3.5" />}
+                  {currentRole === "super_admin" && <Shield className="h-3.5 w-3.5" />}
                 </div>
-              );
-            })}
+                <div className="truncate leading-tight">
+                  <div className="text-[11px] font-black text-foreground capitalize truncate">
+                    {currentRole === "company_owner" && "Owner Console"}
+                    {currentRole === "branch_manager" && "Manager Console"}
+                    {currentRole === "accountant" && "Fiscal Accountant"}
+                    {currentRole === "cashier" && "Counter Till POS"}
+                    {currentRole === "staff" && "Store Floor Staff"}
+                    {currentRole === "super_admin" && "Super Admin"}
+                  </div>
+                  <div className="text-[9px] text-muted-foreground truncate">
+                    {currentRole === "branch_manager"
+                      ? currentBranch.name
+                      : currentRole === "cashier"
+                      ? `Till #1 • ${currentBranch.name}`
+                      : "Role-Specific Navigation"}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Groups for Logged-In Role */}
+            {navSections.map((section, idx) => (
+              <div key={idx} className="space-y-0.5">
+                {!sidebarCollapsed && (
+                  <h4 className="px-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+                    {section.title}
+                  </h4>
+                )}
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      title={sidebarCollapsed ? item.title : undefined}
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group ${
+                        isActive
+                          ? "bg-[#EEF2FF] dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] font-bold border border-indigo-200/50 dark:border-indigo-800/40 shadow-2xs"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-[#F8FAFC] dark:hover:bg-slate-800/60"
+                      } ${sidebarCollapsed ? "justify-center px-2" : ""}`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-[#4F46E5] dark:bg-[#818CF8] rounded-r-full" />
+                      )}
+                      <div className="flex items-center gap-2.5 truncate">
+                        <Icon
+                          className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-105 ${
+                            isActive
+                              ? "text-[#4F46E5] dark:text-[#818CF8]"
+                              : "text-slate-400 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200"
+                          }`}
+                        />
+                        {!sidebarCollapsed && <span className="truncate">{item.title}</span>}
+                      </div>
+                      {!sidebarCollapsed && item.badge && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold shrink-0 ${
+                            isActive
+                              ? "bg-indigo-200/70 dark:bg-indigo-900/60 text-[#4F46E5] dark:text-[#818CF8]"
+                              : "bg-muted text-muted-foreground border border-border/60"
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
-          {/* Bottom Sidebar: Subscription badge & Logout */}
+          {/* Bottom Sidebar: Role Identity & Sign Out */}
           <div className="p-3 border-t border-border/80 bg-muted/20 space-y-2.5">
             {!sidebarCollapsed && (
               <div className="p-3 rounded-2xl bg-card border border-border/80 shadow-subtle-xs space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground capitalize flex items-center gap-1">
-                    <Zap className="h-3 w-3 text-indigo-500" />
-                    {currentOrg.subscriptionPlan} Plan
+                    {currentRole === "company_owner" && "👑 Business Owner"}
+                    {currentRole === "branch_manager" && "👔 Branch Manager"}
+                    {currentRole === "accountant" && "📊 Fiscal Accountant"}
+                    {currentRole === "cashier" && "🛒 POS Cashier"}
+                    {currentRole === "staff" && "👥 Floor Associate"}
+                    {currentRole === "super_admin" && "🛡️ Super Admin"}
                   </span>
                   <span className="text-[10px] text-emerald-600 font-bold uppercase">
                     Active
                   </span>
                 </div>
-                <p className="text-[11px] text-muted-foreground">
-                  3 of {currentOrg.maxBranches} Outlets Connected
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {currentRole === "branch_manager"
+                    ? `${currentBranch.name} Outlet`
+                    : currentRole === "cashier"
+                    ? `Counter #1 • ${currentBranch.name}`
+                    : `${currentOrg.name}`}
                 </p>
-                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-indigo-600 h-full w-3/5 rounded-full" />
-                </div>
               </div>
             )}
 
@@ -620,10 +706,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className={`flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors ${
                 sidebarCollapsed ? "justify-center" : ""
               }`}
-              title="Log out"
+              title="Sign Out"
             >
               <LogOut className="h-4 w-4 shrink-0" />
-              {!sidebarCollapsed && <span>Sign out</span>}
+              {!sidebarCollapsed && <span>Sign Out</span>}
             </Link>
           </div>
         </aside>
