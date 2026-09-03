@@ -3,19 +3,8 @@
 import React, { useState } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import {
-  BarChart3,
-  Download,
-  Printer,
-  Calendar,
-  Building2,
-  TrendingUp,
-  Boxes,
-  Users,
-  CreditCard,
-  CheckCircle2,
-} from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { BarChart3, Download, Printer } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   ResponsiveContainer,
@@ -36,60 +25,69 @@ const MONTHLY_SALES_REPORT = [
 ];
 
 export default function ReportsCenterPage() {
-  const { currentOrg, branches } = useTenant();
+  const { branches } = useTenant();
   const [selectedReportType, setSelectedReportType] = useState("sales");
   const [selectedBranch, setSelectedBranch] = useState("all");
 
-  const sales = storageService.getSales();
-  const products = storageService.getProducts();
-  const employees = storageService.getEmployees();
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-1">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-            <span>Executive Business Reports Center</span>
+            <span>Business Intelligence &amp; Reports Center</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Exportable analytics for Sales, Gross Margin, Inventory Turnover, and Staff Productivity
+            Executive financial audits, stock turnover rates, and branch performance metrics
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-1.5" /> Print Report
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.print()}
+            className="shadow-subtle-xs"
+          >
+            <Printer className="h-3.5 w-3.5 mr-1.5" /> Print Report
           </Button>
-          <Button variant="primary" size="sm">
-            <Download className="h-4 w-4 mr-1.5" /> Export PDF / CSV
+          <Button
+            variant="primary"
+            size="sm"
+            className="shadow-sm shadow-indigo-500/25"
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" /> Export PDF / CSV
           </Button>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-2xl border border-border bg-card shadow-2xs grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      <div className="p-3.5 sm:p-4 rounded-2xl border border-border/80 bg-card shadow-subtle-xs grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
         <div>
-          <label className="font-semibold text-foreground block mb-1">Report Category</label>
+          <label className="font-bold text-foreground block mb-1">
+            Report Category
+          </label>
           <select
             value={selectedReportType}
             onChange={(e) => setSelectedReportType(e.target.value)}
-            className="w-full h-9 px-3 rounded-lg border border-border bg-background"
+            className="w-full h-9 px-3 rounded-xl border border-border/80 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           >
-            <option value="sales">Sales & Revenue Velocity</option>
-            <option value="inventory">Inventory & Stock Movement</option>
-            <option value="hr">Staff Performance & Payroll</option>
+            <option value="sales">Sales &amp; Revenue Trajectory</option>
+            <option value="inventory">Inventory Movement &amp; Shrinkage</option>
+            <option value="hr">Staff Commissions &amp; Payroll</option>
             <option value="branches">Branch Comparative Growth</option>
           </select>
         </div>
 
         <div>
-          <label className="font-semibold text-foreground block mb-1">Outlet Filter</label>
+          <label className="font-bold text-foreground block mb-1">
+            Outlet Scope
+          </label>
           <select
             value={selectedBranch}
             onChange={(e) => setSelectedBranch(e.target.value)}
-            className="w-full h-9 px-3 rounded-lg border border-border bg-background"
+            className="w-full h-9 px-3 rounded-xl border border-border/80 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           >
             <option value="all">All Outlets Consolidated</option>
             {branches.map((b) => (
@@ -101,8 +99,10 @@ export default function ReportsCenterPage() {
         </div>
 
         <div>
-          <label className="font-semibold text-foreground block mb-1">Time Horizon</label>
-          <select className="w-full h-9 px-3 rounded-lg border border-border bg-background">
+          <label className="font-bold text-foreground block mb-1">
+            Time Horizon
+          </label>
+          <select className="w-full h-9 px-3 rounded-xl border border-border/80 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
             <option>Last 6 Months (Sep 2025 - Feb 2026)</option>
             <option>Current Quarter (Q1 2026)</option>
             <option>Fiscal Year 2025-2026</option>
@@ -111,63 +111,100 @@ export default function ReportsCenterPage() {
       </div>
 
       {/* Chart Section */}
-      <div className="p-6 rounded-3xl border border-border bg-card shadow-2xs space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="p-5 sm:p-6 rounded-3xl border border-border/80 bg-card shadow-subtle-sm space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div>
-            <h3 className="text-base font-bold text-foreground">Monthly Sales & Gross Profit Trend</h3>
-            <p className="text-xs text-muted-foreground">Historical 6-month revenue progression across all retail counters</p>
+            <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
+              Monthly Sales vs Gross Margin Comparison
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Historical 6-month revenue progression across all retail counters
+            </p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-semibold">
-            <span className="flex items-center gap-1 text-indigo-600">
-              <span className="h-3 w-3 rounded-sm bg-indigo-600 inline-block" /> Sales (৳)
+          <div className="flex items-center gap-4 text-xs font-bold font-mono">
+            <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+              <span className="h-3 w-3 rounded-md bg-indigo-600 inline-block" />{" "}
+              Gross Sales (৳)
             </span>
-            <span className="flex items-center gap-1 text-emerald-600">
-              <span className="h-3 w-3 rounded-sm bg-emerald-600 inline-block" /> Gross Margin (৳)
+            <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+              <span className="h-3 w-3 rounded-md bg-emerald-600 inline-block" />{" "}
+              Gross Margin (৳)
             </span>
           </div>
         </div>
 
-        <div className="h-72 w-full">
+        <div className="h-72 w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={MONTHLY_SALES_REPORT} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+            <BarChart
+              data={MONTHLY_SALES_REPORT}
+              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+            >
               <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#888888" />
-              <YAxis tick={{ fontSize: 11 }} stroke="#888888" tickFormatter={(val) => `৳${val / 100000}L`} />
-              <Tooltip formatter={(val: any) => formatCurrency(Number(val))} />
-              <Bar dataKey="sales" fill="#6366f1" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="profit" fill="#10b981" radius={[6, 6, 0, 0]} />
+              <YAxis
+                tick={{ fontSize: 11 }}
+                stroke="#888888"
+                tickFormatter={(val) => `৳${val / 100000}L`}
+              />
+              <Tooltip
+                formatter={(val: any) => formatCurrency(Number(val))}
+                contentStyle={{
+                  borderRadius: "12px",
+                  fontSize: "12px",
+                  background: "var(--card)",
+                  borderColor: "var(--border)",
+                  boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                }}
+              />
+              <Bar dataKey="sales" fill="#6366f1" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="profit" fill="#10b981" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Report Data Summary Table */}
-      <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-2xs">
-        <div className="p-4 border-b border-border bg-muted/20">
-          <h3 className="text-sm font-bold text-foreground">Monthly Performance Ledger</h3>
+      <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-subtle-sm">
+        <div className="p-4 border-b border-border/80 bg-muted/30">
+          <h3 className="text-xs sm:text-sm font-bold text-foreground">
+            Monthly Performance Ledger
+          </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-border bg-muted/40">
-                <th className="p-3.5 font-semibold text-foreground">Month</th>
-                <th className="p-3.5 font-semibold text-foreground">Gross Sales (৳)</th>
-                <th className="p-3.5 font-semibold text-foreground">Gross Profit (৳)</th>
-                <th className="p-3.5 font-semibold text-foreground">Margin %</th>
-                <th className="p-3.5 font-semibold text-foreground">Invoices Processed</th>
-                <th className="p-3.5 text-right font-semibold text-foreground">Growth YoY</th>
+              <tr className="border-b border-border/80 bg-muted/40 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                <th className="p-3.5">Month</th>
+                <th className="p-3.5">Gross Sales (৳)</th>
+                <th className="p-3.5">Gross Profit (৳)</th>
+                <th className="p-3.5">Margin %</th>
+                <th className="p-3.5">Invoices Processed</th>
+                <th className="p-3.5 text-right">Growth YoY</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border font-mono">
+            <tbody className="divide-y divide-border/60 font-mono bg-card">
               {MONTHLY_SALES_REPORT.map((row, idx) => (
-                <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                  <td className="p-3.5 font-sans font-bold text-foreground">{row.month} 2025/26</td>
-                  <td className="p-3.5 font-bold text-foreground">{formatCurrency(row.sales)}</td>
-                  <td className="p-3.5 text-emerald-600 font-semibold">{formatCurrency(row.profit)}</td>
-                  <td className="p-3.5 font-sans font-semibold text-muted-foreground">
+                <tr
+                  key={idx}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <td className="p-3.5 font-sans font-bold text-foreground">
+                    {row.month} 2025/26
+                  </td>
+                  <td className="p-3.5 font-bold text-foreground">
+                    {formatCurrency(row.sales)}
+                  </td>
+                  <td className="p-3.5 font-bold text-emerald-600 dark:text-emerald-400">
+                    {formatCurrency(row.profit)}
+                  </td>
+                  <td className="p-3.5 text-muted-foreground">
                     {((row.profit / row.sales) * 100).toFixed(1)}%
                   </td>
-                  <td className="p-3.5 font-sans text-muted-foreground">{Math.round(row.sales / 3200)} bills</td>
-                  <td className="p-3.5 text-right font-sans text-emerald-600 font-bold">+18.2%</td>
+                  <td className="p-3.5 text-muted-foreground">
+                    {Math.floor(row.sales / 3200)} orders
+                  </td>
+                  <td className="p-3.5 text-right text-emerald-600 dark:text-emerald-400 font-bold">
+                    +{14 + idx * 2.3}%
+                  </td>
                 </tr>
               ))}
             </tbody>

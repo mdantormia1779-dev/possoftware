@@ -4,65 +4,103 @@
 
 @layer base {
   :root {
+    /* Main Background: #F8FAFC (Slate 50) */
     --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* Primary Text: #0F172A (Slate 900) */
+    --foreground: 222.2 47.4% 11.2%;
 
+    /* Surface / Card: #FFFFFF */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
 
+    /* Popover Surface: #FFFFFF */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 238 82% 59%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Deep Indigo #4F46E5 */
+    --primary: 243.4 75.4% 58.6%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 244.5 57.9% 50.6%; /* #4338CA */
+    --primary-soft: 234 100% 96.9%; /* #EEF2FF */
 
+    /* Secondary / Neutral Hover: #F1F5F9 */
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 215.4 16.3% 46.9%;
 
+    /* Muted: #64748B */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent: Electric Blue #2563EB */
+    --accent: 217.2 91.2% 59.8%;
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 214 100% 97%; /* #EFF6FF */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Semantic: Success #16A34A / Warning #D97706 / Error #DC2626 */
+    --success: 142.1 76.2% 36.3%;
+    --success-soft: 138.5 76.5% 96.7%; /* #F0FDF4 */
+    --warning: 37.7 92.1% 50.2%;
+    --warning-soft: 48 100% 96.1%; /* #FFFBEB */
+    --destructive: 0 72.2% 50.6%; /* #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+    --destructive-soft: 0 85.7% 97.3%; /* #FEF2F2 */
 
+    /* Border: #E2E8F0 / Border Strong: #CBD5E1 */
     --border: 214.3 31.8% 91.4%;
+    --border-strong: 213.8 27.8% 84.3%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 238 82% 59%;
+    --ring: 243.4 75.4% 58.6%;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 224 71% 4%;
+    /* Main Background: #0B1120 */
+    --background: 222.2 47.4% 8.4%;
+    /* Primary Text: #F8FAFC */
     --foreground: 210 40% 98%;
 
-    --card: 224 71% 7%;
+    /* Surface / Card: #111827 */
+    --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 71% 7%;
+    /* Elevated Surface / Popover: #1E293B */
+    --popover: 217.2 32.6% 17.5%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 238 82% 65%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary: #6366F1 */
+    --primary: 238.7 83.5% 66.7%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 234.5 89.5% 73.9%; /* #818CF8 */
+    --primary-soft: 238.7 83.5% 66.7% / 0.15;
 
-    --secondary: 217.2 32.6% 14%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: #1E293B */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 213.8 27.8% 84.3%;
 
-    --muted: 217.2 32.6% 14%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted: #94A3B8 */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215.3 25% 65.1%;
 
-    --accent: 217.2 32.6% 14%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent: #3B82F6 */
+    --accent: 217.2 91.2% 59.8%;
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 217.2 91.2% 59.8% / 0.15;
 
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Semantic: Success #22C55E / Warning #F59E0B / Error #EF4444 */
+    --success: 142.1 70.6% 45.3%;
+    --success-soft: 142.1 70.6% 45.3% / 0.15;
+    --warning: 37.7 92.1% 50.2%;
+    --warning-soft: 37.7 92.1% 50.2% / 0.15;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-soft: 0 84.2% 60.2% / 0.15;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 238 82% 65%;
+    /* Border: #334155 */
+    --border: 217.2 32.6% 27.5%;
+    --border-strong: 215.3 25% 35%;
+    --input: 217.2 32.6% 27.5%;
+    --ring: 238.7 83.5% 66.7%;
   }
 }
 
@@ -72,24 +110,34 @@
   }
   body {
     @apply bg-background text-foreground antialiased selection:bg-indigo-500/20 selection:text-indigo-600 dark:selection:text-indigo-300;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
   }
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.4);
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Glass & Glow utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.75);
 }
 
 /* Thermal POS Receipt Print Styles */
@@ -106,8 +154,8 @@
     top: 0;
     width: 80mm;
     margin: 0;
-    padding: 10px;
-    font-size: 12px;
+    padding: 8px;
+    font-size: 11px;
     color: black !important;
     background: white !important;
   }

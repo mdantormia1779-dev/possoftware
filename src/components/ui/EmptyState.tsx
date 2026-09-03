@@ -23,17 +23,26 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center p-8 text-center rounded-xl border border-dashed border-border bg-card/50 my-4",
+        "flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 backdrop-blur-xs my-4 select-none",
         className
       )}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/80 text-muted-foreground mb-4">
-        <Icon className="h-7 w-7" />
+      <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground mb-3.5 border border-border/60 shadow-subtle-xs">
+        <Icon className="h-6 w-6 text-foreground/70" />
       </div>
-      <h4 className="text-base font-semibold text-foreground">{title}</h4>
-      <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <h4 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
+        {title}
+      </h4>
+      <p className="mt-1 max-w-sm text-xs sm:text-sm text-muted-foreground leading-relaxed">
+        {description}
+      </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} variant="primary" size="sm" className="mt-5">
+        <Button
+          onClick={onAction}
+          variant="primary"
+          size="sm"
+          className="mt-4.5"
+        >
           {actionLabel}
         </Button>
       )}

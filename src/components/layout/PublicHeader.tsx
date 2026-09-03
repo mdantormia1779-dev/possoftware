@@ -1,16 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, X, Sparkles, Sun, Moon, Shield } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Menu, X, Sparkles, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function PublicHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navLinks = [
     { label: "Features", href: "/features" },
@@ -19,6 +23,11 @@ export function PublicHeader() {
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
+
+  const toggleTheme = () => {
+    const currentTheme = resolvedTheme || theme;
+    setTheme(currentTheme === "dark" ? "light" : "dark");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-lg">
@@ -56,16 +65,17 @@ export function PublicHeader() {
         {/* Action CTAs */}
         <div className="hidden md:flex items-center gap-3">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors relative"
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <Moon className="absolute top-2 left-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </button>
 
           <Link
             href="/login"
-            className="px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
+            className="px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted rounded-xl transition-colors"
           >
             Sign In
           </Link>
@@ -82,14 +92,17 @@ export function PublicHeader() {
         {/* Mobile menu trigger */}
         <div className="flex md:hidden items-center gap-2">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="p-2 rounded-lg text-muted-foreground"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors relative"
           >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute top-2 left-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg text-muted-foreground"
+            aria-label="Toggle mobile menu"
+            className="p-2 rounded-xl text-muted-foreground hover:bg-muted"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

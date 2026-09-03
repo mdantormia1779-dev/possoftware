@@ -32,6 +32,7 @@ export interface Organization {
   maxProducts: number;
   themePrimaryColor?: string;
   receiptFooterMessage?: string;
+  createdAt?: string;
 }
 
 export interface User {

@@ -183,11 +183,11 @@ export default function MarketingCampaignsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold text-foreground">Broadcast Message (Bangla / English)</label>
+                <label className="font-semibold text-foreground">Broadcast Message Body</label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="রহমান ফ্যাশন: বৈশাখী ধামাকা শুরু! সব কালেকশনে পাচ্ছেন ফ্ল্যাট ২০% ছাড়। চলে আসুন আমাদের সকল আউটলেটে।"
+                  placeholder="Special Offer: Enjoy 20% off on all items this weekend across all our retail outlets! Use code SAVE20 at checkout."
                   value={newCamp.message}
                   onChange={(e) => setNewCamp({ ...newCamp, message: e.target.value })}
                   className="w-full p-2.5 rounded-lg border border-border bg-background"

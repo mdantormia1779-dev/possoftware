@@ -12,9 +12,9 @@ import {
   Smartphone,
   AlertCircle,
   Check,
-  Percent,
   UserPlus,
   Receipt,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 
@@ -24,7 +24,11 @@ interface PaymentModalProps {
   onSaleComplete: () => void;
 }
 
-export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalProps) {
+export function PaymentModal({
+  isOpen,
+  onClose,
+  onSaleComplete,
+}: PaymentModalProps) {
   const {
     cart,
     clearCart,
@@ -74,15 +78,20 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
   const applyCoupon = () => {
     setCouponError("");
     const coupons = storageService.getCoupons();
-    const found = coupons.find((c) => c.code.toUpperCase() === couponCode.trim().toUpperCase() && c.isActive);
+    const found = coupons.find(
+      (c) =>
+        c.code.toUpperCase() === couponCode.trim().toUpperCase() && c.isActive
+    );
 
     if (!found) {
-      setCouponError("Invalid or expired promo code");
+      setCouponError("Invalid or expired coupon code");
       return;
     }
 
     if (cartSubtotal < found.minPurchase) {
-      setCouponError(`Minimum purchase of ${formatCurrency(found.minPurchase)} required`);
+      setCouponError(
+        `Minimum purchase of ${formatCurrency(found.minPurchase)} required`
+      );
       return;
     }
 
@@ -146,7 +155,10 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
       discountAmount: cartDiscount,
       taxAmount: cartTotalTax,
       grandTotal: cartGrandTotal,
-      paidAmount: paymentMethod === "due" ? 0 : Math.min(numericTender, cartGrandTotal),
+      paidAmount:
+        paymentMethod === "due"
+          ? 0
+          : Math.min(numericTender, cartGrandTotal),
       dueAmount: paymentMethod === "due" ? cartGrandTotal : dueAmount,
       changeAmount: changeAmount,
       paymentMethod: paymentMethod,
@@ -170,20 +182,26 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
     Math.ceil(cartGrandTotal / 500) * 500 + 500,
     Math.ceil(cartGrandTotal / 1000) * 1000 + 1000,
   ];
-  const uniquePresets = Array.from(new Set(tenderPresets)).filter((val) => val >= cartGrandTotal);
+  const uniquePresets = Array.from(new Set(tenderPresets)).filter(
+    (val) => val >= cartGrandTotal
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="relative w-full max-w-2xl rounded-2xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-border/80 bg-card shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-slide">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border p-4 bg-muted/30">
+        <div className="flex items-center justify-between border-b border-border/80 p-4.5 bg-muted/20">
           <div>
-            <h3 className="font-semibold text-foreground text-base">Checkout & Payment</h3>
-            <p className="text-xs text-muted-foreground">Branch: {currentBranch.name} • {cart.length} items</p>
+            <h3 className="font-bold text-foreground text-sm sm:text-base">
+              Checkout & Payment
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Outlet: {currentBranch.name} • {cart.length} items in cart
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted"
           >
             <X className="h-5 w-5" />
           </button>
@@ -194,73 +212,75 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
           {/* Left Column: Payment Methods & Tendering */}
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-2">
+              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-2 px-0.5">
                 Select Payment Method
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("cash")}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all shadow-subtle-xs ${
                     paymentMethod === "cash"
-                      ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold"
-                      : "border-border bg-card hover:bg-muted text-foreground"
+                      ? "border-indigo-600 bg-indigo-50/70 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold ring-1 ring-indigo-600/30"
+                      : "border-border/80 bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <Banknote className="h-5 w-5" />
-                  <span className="text-xs">Cash</span>
+                  <Banknote className="h-4.5 w-4.5 text-emerald-600" />
+                  <span className="text-xs">Cash Taka</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("bkash")}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all shadow-subtle-xs ${
                     paymentMethod === "bkash"
-                      ? "border-pink-600 bg-pink-50/50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 font-semibold"
-                      : "border-border bg-card hover:bg-muted text-foreground"
+                      ? "border-pink-600 bg-pink-50/70 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300 font-bold ring-1 ring-pink-600/30"
+                      : "border-border/80 bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <Smartphone className="h-5 w-5 text-pink-600" />
-                  <span className="text-xs">bKash</span>
+                  <Smartphone className="h-4.5 w-4.5 text-pink-600" />
+                  <span className="text-xs">bKash QR</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("nagad")}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all shadow-subtle-xs ${
                     paymentMethod === "nagad"
-                      ? "border-amber-600 bg-amber-50/50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold"
-                      : "border-border bg-card hover:bg-muted text-foreground"
+                      ? "border-amber-600 bg-amber-50/70 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-bold ring-1 ring-amber-600/30"
+                      : "border-border/80 bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <Smartphone className="h-5 w-5 text-amber-600" />
+                  <Smartphone className="h-4.5 w-4.5 text-amber-600" />
                   <span className="text-xs">Nagad / Rocket</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all shadow-subtle-xs ${
                     paymentMethod === "card"
-                      ? "border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold"
-                      : "border-border bg-card hover:bg-muted text-foreground"
+                      ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 font-bold ring-1 ring-blue-600/30"
+                      : "border-border/80 bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <CreditCard className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs">Debit/Credit Card</span>
+                  <CreditCard className="h-4.5 w-4.5 text-blue-600" />
+                  <span className="text-xs">POS Card</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("due")}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all col-span-2 ${
+                  className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all col-span-2 shadow-subtle-xs ${
                     paymentMethod === "due"
-                      ? "border-rose-600 bg-rose-50/50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-semibold"
-                      : "border-border bg-card hover:bg-muted text-foreground"
+                      ? "border-rose-600 bg-rose-50/70 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 font-bold ring-1 ring-rose-600/30"
+                      : "border-border/80 bg-card hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <AlertCircle className="h-5 w-5 text-rose-600" />
-                  <span className="text-xs">Customer Credit / Due Account</span>
+                  <AlertCircle className="h-4.5 w-4.5 text-rose-600" />
+                  <span className="text-xs">
+                    Customer Due Account (Credit Sale)
+                  </span>
                 </button>
               </div>
             </div>
@@ -268,24 +288,24 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
             {/* Cash Tender Input & Change */}
             {paymentMethod === "cash" && (
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-                  Amount Received (৳)
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block px-0.5">
+                  Amount Received (৳ BDT)
                 </label>
                 <input
                   type="number"
                   value={tenderAmount}
                   onChange={(e) => setTenderAmount(e.target.value)}
-                  className="w-full h-11 px-3 rounded-lg border border-border bg-background text-lg font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full h-11 px-3.5 rounded-xl border border-border/80 bg-card text-lg font-black font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-subtle-xs"
                 />
 
                 {/* Preset Fast Cash Buttons */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
                   {uniquePresets.slice(0, 4).map((amt, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => setTenderAmount(amt.toString())}
-                      className="px-2.5 py-1 text-xs font-medium rounded-md bg-muted hover:bg-muted/80 text-foreground border border-border"
+                      className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-muted/60 hover:bg-muted text-foreground border border-border/60 font-mono shadow-2xs"
                     >
                       {formatCurrency(amt)}
                     </button>
@@ -293,9 +313,17 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
                 </div>
 
                 {/* Change or Due Calculation Pill */}
-                <div className="p-3 rounded-xl bg-muted/40 border border-border mt-2 flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Change to return:</span>
-                  <span className={`text-base font-bold ${changeAmount > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"}`}>
+                <div className="p-3.5 rounded-2xl bg-muted/30 border border-border/70 mt-2 flex items-center justify-between shadow-subtle-xs">
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    Change to return:
+                  </span>
+                  <span
+                    className={`text-base font-black font-mono ${
+                      changeAmount > 0
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-foreground"
+                    }`}
+                  >
                     {formatCurrency(changeAmount)}
                   </span>
                 </div>
@@ -305,7 +333,7 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
             {/* Mobile / Card Reference */}
             {["bkash", "nagad", "rocket", "card"].includes(paymentMethod) && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block px-0.5">
                   Transaction ID / Authorization Code
                 </label>
                 <input
@@ -313,7 +341,7 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
                   placeholder="e.g. 9J3K882LA or Card Last 4 Digits"
                   value={trxId}
                   onChange={(e) => setTrxId(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full h-10 px-3.5 rounded-xl border border-border/80 bg-card text-xs sm:text-sm font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-subtle-xs"
                 />
               </div>
             )}
@@ -324,35 +352,41 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
             {/* Customer Picker */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-0.5">
                   Customer
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowAddCustomer(!showAddCustomer)}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <UserPlus className="h-3 w-3" /> {showAddCustomer ? "Select Existing" : "Add New"}
+                  <UserPlus className="h-3 w-3" />{" "}
+                  {showAddCustomer ? "Select Existing" : "Add New"}
                 </button>
               </div>
 
               {showAddCustomer ? (
-                <div className="p-3 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/30 dark:bg-indigo-950/20 space-y-2">
+                <div className="p-3 rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/40 dark:bg-indigo-950/20 space-y-2 shadow-subtle-xs">
                   <input
                     type="text"
                     placeholder="Customer Name"
                     value={newCustName}
                     onChange={(e) => setNewCustName(e.target.value)}
-                    className="w-full h-8 px-2.5 text-xs rounded border border-border bg-background"
+                    className="w-full h-8 px-2.5 text-xs rounded-lg border border-border/80 bg-card"
                   />
                   <input
                     type="text"
                     placeholder="Phone (e.g. 01712-345678)"
                     value={newCustPhone}
                     onChange={(e) => setNewCustPhone(e.target.value)}
-                    className="w-full h-8 px-2.5 text-xs rounded border border-border bg-background"
+                    className="w-full h-8 px-2.5 text-xs rounded-lg border border-border/80 bg-card font-mono"
                   />
-                  <Button size="sm" variant="primary" onClick={handleQuickAddCustomer} className="w-full h-7 text-xs">
+                  <Button
+                    size="xs"
+                    variant="primary"
+                    onClick={handleQuickAddCustomer}
+                    className="w-full text-xs"
+                  >
                     Save & Select Customer
                   </Button>
                 </div>
@@ -360,31 +394,51 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
                 <select
                   value={cartCustomer?.id || ""}
                   onChange={(e) => {
-                    const selected = customers.find((c) => c.id === e.target.value) || null;
+                    const selected =
+                      customers.find((c) => c.id === e.target.value) || null;
                     setCartCustomer(selected);
                   }}
-                  className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full h-10 px-3 rounded-xl border border-border/80 bg-card text-xs sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-subtle-xs"
                 >
                   <option value="">Walk-in Customer (General)</option>
                   {customers.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name} ({c.phone}) - {c.loyaltyPoints} Pts {c.dueBalance > 0 ? `[Due: ${formatCurrency(c.dueBalance)}]` : ""}
+                      {c.name} ({c.phone}) - {c.loyaltyPoints} Pts{" "}
+                      {c.dueBalance > 0
+                        ? `[Due: ${formatCurrency(c.dueBalance)}]`
+                        : ""}
                     </option>
                   ))}
                 </select>
               )}
 
               {cartCustomer && (
-                <div className="text-[11px] text-muted-foreground flex justify-between bg-muted/40 p-2 rounded-lg">
-                  <span>Loyalty Points: <strong className="text-foreground">{cartCustomer.loyaltyPoints}</strong></span>
-                  <span>Due Balance: <strong className={cartCustomer.dueBalance > 0 ? "text-rose-600" : "text-emerald-600"}>{formatCurrency(cartCustomer.dueBalance)}</strong></span>
+                <div className="text-[11px] text-muted-foreground flex justify-between bg-muted/30 p-2.5 rounded-xl border border-border/60">
+                  <span>
+                    Loyalty Points:{" "}
+                    <strong className="text-foreground font-mono">
+                      {cartCustomer.loyaltyPoints}
+                    </strong>
+                  </span>
+                  <span>
+                    Due Balance:{" "}
+                    <strong
+                      className={`font-mono ${
+                        cartCustomer.dueBalance > 0
+                          ? "text-rose-600"
+                          : "text-emerald-600"
+                      }`}
+                    >
+                      {formatCurrency(cartCustomer.dueBalance)}
+                    </strong>
+                  </span>
                 </div>
               )}
             </div>
 
             {/* Coupon Promo */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+              <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block px-0.5">
                 Promo / Coupon Code
               </label>
               <div className="flex gap-2">
@@ -392,54 +446,71 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
                   type="text"
                   placeholder="e.g. EID2026"
                   value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  className="flex-1 h-9 px-3 rounded-lg border border-border bg-background text-xs uppercase font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onChange={(e) =>
+                    setCouponCode(e.target.value.toUpperCase())
+                  }
+                  className="flex-1 h-9 px-3 rounded-xl border border-border/80 bg-card text-xs uppercase font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-subtle-xs"
                 />
-                <Button size="sm" variant="outline" onClick={applyCoupon}>
+                <Button size="xs" variant="outline" onClick={applyCoupon}>
                   Apply
                 </Button>
               </div>
-              {couponError && <p className="text-[11px] text-rose-600">{couponError}</p>}
+              {couponError && (
+                <p className="text-[11px] text-rose-600 font-medium">
+                  {couponError}
+                </p>
+              )}
               {cartDiscount > 0 && (
-                <p className="text-[11px] text-emerald-600 font-medium">Promo applied: -{formatCurrency(cartDiscount)} discount!</p>
+                <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                  <Check className="h-3 w-3" /> Promo applied: -
+                  {formatCurrency(cartDiscount)} discount!
+                </p>
               )}
             </div>
 
             {/* Financial Summary */}
-            <div className="p-4 rounded-xl bg-muted/50 border border-border space-y-1.5 text-xs">
+            <div className="p-4 rounded-2xl bg-muted/30 border border-border/80 space-y-1.5 text-xs font-mono shadow-subtle-xs">
               <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal ({cart.length} items):</span>
-                <span className="text-foreground font-medium">{formatCurrency(cartSubtotal)}</span>
+                <span className="font-sans">Subtotal ({cart.length} items):</span>
+                <span className="text-foreground font-bold">
+                  {formatCurrency(cartSubtotal)}
+                </span>
               </div>
               {cartDiscount > 0 && (
                 <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                  <span>Discount:</span>
-                  <span className="font-semibold">-{formatCurrency(cartDiscount)}</span>
+                  <span className="font-sans">Discount:</span>
+                  <span className="font-bold">
+                    -{formatCurrency(cartDiscount)}
+                  </span>
                 </div>
               )}
               <div className="flex justify-between text-muted-foreground">
-                <span>VAT ({cartTaxRate}% included):</span>
-                <span className="text-foreground font-medium">{formatCurrency(cartTotalTax)}</span>
+                <span className="font-sans">VAT ({cartTaxRate}% included):</span>
+                <span className="text-foreground font-bold">
+                  {formatCurrency(cartTotalTax)}
+                </span>
               </div>
-              <div className="flex justify-between text-base font-bold text-foreground pt-2 border-t border-border">
-                <span>Payable Total:</span>
-                <span className="text-indigo-600 dark:text-indigo-400">{formatCurrency(cartGrandTotal)}</span>
+              <div className="flex justify-between text-base font-black text-foreground pt-2 border-t border-border/80">
+                <span className="font-sans text-sm font-bold">Payable Total:</span>
+                <span className="text-indigo-600 dark:text-indigo-400 text-lg">
+                  {formatCurrency(cartGrandTotal)}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between border-t border-border p-4 bg-muted/30">
-          <Button variant="outline" size="sm" onClick={onClose}>
+        <div className="flex items-center justify-between border-t border-border/80 p-4.5 bg-muted/20">
+          <Button variant="outline" size="xs" onClick={onClose}>
             Cancel
           </Button>
           <Button
             variant="primary"
-            size="lg"
+            size="md"
             isLoading={isProcessing}
             onClick={handleCompleteSale}
-            className="px-8 font-semibold"
+            className="px-6 font-bold shadow-md shadow-indigo-500/25"
           >
             <Receipt className="h-4 w-4 mr-2" />
             Complete Sale ({formatCurrency(cartGrandTotal)})

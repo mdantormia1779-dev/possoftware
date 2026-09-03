@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
-import { Barcode, Search, Plus, Check } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Barcode, Plus, Check, Zap } from "lucide-react";
 
 export function BarcodeScannerSimulator() {
   const { addToCart } = useTenant();
@@ -47,26 +46,26 @@ export function BarcodeScannerSimulator() {
   return (
     <div className="relative">
       <form onSubmit={handleScanSubmit} className="relative flex items-center">
-        <div className="absolute left-3 flex items-center pointer-events-none text-muted-foreground">
-          <Barcode className="h-5 w-5" />
+        <div className="absolute left-3.5 flex items-center pointer-events-none text-muted-foreground">
+          <Barcode className="h-4 w-4 text-indigo-500" />
         </div>
         <input
           type="text"
           value={barcodeInput}
           onChange={(e) => setBarcodeInput(e.target.value)}
-          placeholder="Scan barcode or type SKU (e.g. 890123456701, PANJ-NAVY-01)..."
-          className={`w-full h-11 pl-10 pr-24 rounded-xl border bg-card text-sm text-foreground placeholder:text-muted-foreground shadow-xs focus:outline-none focus:ring-2 transition-all ${
+          placeholder="Scan barcode or SKU (e.g. 890123456701, PANJ-NAVY-01)..."
+          className={`w-full h-10 pl-10 pr-20 rounded-xl border bg-card text-xs sm:text-sm font-mono text-foreground placeholder:text-muted-foreground/70 shadow-subtle-xs focus:outline-none focus:ring-2 transition-all ${
             scanError
               ? "border-rose-500 ring-2 ring-rose-500/30"
-              : "border-border focus:ring-indigo-500"
+              : "border-border/80 focus:ring-indigo-500/50 focus:border-indigo-500"
           }`}
         />
-        <div className="absolute right-1.5 flex items-center gap-1">
+        <div className="absolute right-1.5 flex items-center">
           <button
             type="submit"
-            className="h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium flex items-center gap-1 transition-all"
+            className="h-7 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1 transition-all shadow-subtle-xs"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3 w-3" />
             Add
           </button>
         </div>
@@ -74,17 +73,17 @@ export function BarcodeScannerSimulator() {
 
       {/* Visual Scan Toast Alert */}
       {lastScanned && (
-        <div className="absolute top-12 left-0 right-0 z-20 flex items-center justify-between p-2.5 rounded-lg bg-emerald-600 text-white text-xs font-medium shadow-lg animate-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-11.5 left-0 right-0 z-20 flex items-center justify-between p-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold shadow-subtle-md animate-fade-slide">
           <span className="flex items-center gap-1.5 truncate">
-            <Check className="h-4 w-4 shrink-0" />
+            <Check className="h-3.5 w-3.5 shrink-0" />
             Added &ldquo;{lastScanned}&rdquo; to cart!
           </span>
-          <span className="text-[10px] opacity-80 shrink-0">1x Added</span>
+          <span className="text-[10px] opacity-90 shrink-0 font-mono">1x Added</span>
         </div>
       )}
 
       {scanError && (
-        <div className="absolute top-12 left-0 right-0 z-20 p-2.5 rounded-lg bg-rose-600 text-white text-xs font-medium shadow-lg animate-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-11.5 left-0 right-0 z-20 p-2.5 rounded-xl bg-rose-600 text-white text-xs font-semibold shadow-subtle-md animate-fade-slide">
           No product found with barcode &ldquo;{barcodeInput}&rdquo;.
         </div>
       )}

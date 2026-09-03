@@ -3,9 +3,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "XYZ Business OS — Multi-Tenant SaaS Business Management Platform",
+  title: "XYZ Business OS — Multi-Tenant SaaS Enterprise Management Platform",
   description:
-    "একটা Login, পুরো Business Control — Online ও Offline, দুই অবস্থায়ই। POS, Inventory, Accounting, HR, Payroll ও CRM for Bangladeshi SMBs.",
+    "Unified Business Operating System — Online & Offline POS, Multi-Branch Inventory, Automated Double-Entry Accounting, HR, Payroll, and CRM.",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
+      <body className="min-h-screen bg-background text-foreground antialiased font-sans" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

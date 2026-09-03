@@ -16,8 +16,7 @@ export function PublicFooter() {
               <span className="font-extrabold text-base text-foreground">XYZ Business OS</span>
             </div>
             <p className="max-w-sm text-xs leading-relaxed">
-              “একটা Login, পুরো Business Control — Online ও Offline, দুই অবস্থায়ই।”
-              Modern multi-tenant SaaS ERP crafted specifically for Bangladeshi SMBs, retail stores, super shops, and multi-branch enterprises.
+              Unified business operating system engineered for modern retail stores, super shops, and multi-branch commercial enterprises.
             </p>
             <div className="flex items-center gap-2 text-[11px] text-foreground font-semibold">
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />

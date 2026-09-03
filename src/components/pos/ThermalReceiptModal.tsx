@@ -2,9 +2,8 @@
 
 import React, { useRef } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
-import { Sale } from "@/lib/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
-import { X, Printer, Download, ShoppingBag, CheckCircle2 } from "lucide-react";
+import { X, Printer, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/Button";
 
 export function ThermalReceiptModal() {
@@ -24,43 +23,57 @@ export function ThermalReceiptModal() {
   const sale = activeReceiptSale;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="relative w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md max-h-[90vh] flex flex-col rounded-3xl border border-border/80 bg-card shadow-2xl overflow-hidden animate-fade-slide">
         {/* Modal Topbar (Not printed) */}
-        <div className="no-print flex items-center justify-between border-b border-border p-4 bg-muted/40">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+        <div className="no-print flex items-center justify-between border-b border-border/80 p-4.5 bg-muted/20">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
               <CheckCircle2 className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-foreground">Sale Completed Successfully</h3>
-              <p className="text-xs text-muted-foreground">{sale.invoiceNumber}</p>
+              <h3 className="font-bold text-xs sm:text-sm text-foreground">
+                Sale Completed Successfully
+              </h3>
+              <p className="text-[11px] text-muted-foreground font-mono">
+                {sale.invoiceNumber}
+              </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Thermal Receipt Paper Simulation */}
-        <div className="flex-1 overflow-y-auto p-6 flex justify-center bg-muted/20">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 flex justify-center bg-muted/30">
           <div
             id="thermal-receipt"
             ref={receiptRef}
-            className="w-[80mm] max-w-full bg-white text-black p-4 font-mono text-[11px] shadow-md border border-neutral-200 rounded-sm leading-tight"
+            className="w-[80mm] max-w-full bg-white text-black p-4 font-mono text-[11px] shadow-md border border-neutral-200 rounded-sm leading-tight select-text"
           >
             {/* Store Header */}
             <div className="text-center space-y-1 border-b border-dashed border-neutral-400 pb-3">
-              <div className="font-bold text-sm uppercase tracking-wide">{currentOrg.name}</div>
-              <div className="text-[10px] text-neutral-600">{currentOrg.address}</div>
-              <div className="text-[10px] text-neutral-600">Tel: {currentOrg.phone}</div>
+              <div className="font-bold text-sm uppercase tracking-wide">
+                {currentOrg.name}
+              </div>
+              <div className="text-[10px] text-neutral-600">
+                {currentOrg.address}
+              </div>
+              <div className="text-[10px] text-neutral-600">
+                Tel: {currentOrg.phone}
+              </div>
               {currentOrg.taxNumber && (
-                <div className="text-[10px] font-semibold text-neutral-700">BIN / VAT Reg: {currentOrg.taxNumber}</div>
+                <div className="text-[10px] font-semibold text-neutral-700">
+                  BIN / VAT Reg: {currentOrg.taxNumber}
+                </div>
               )}
-              <div className="text-[10px] font-bold mt-1 uppercase">MUSHAK-6.3 / RETAIL INVOICE</div>
+              <div className="text-[10px] font-bold mt-1 uppercase bg-neutral-100 py-0.5 rounded">
+                MUSHAK-6.3 / RETAIL INVOICE
+              </div>
             </div>
 
             {/* Invoice Meta */}
@@ -109,10 +122,16 @@ export function ThermalReceiptModal() {
                 <tbody className="divide-y divide-dotted divide-neutral-200">
                   {sale.items.map((item, idx) => (
                     <tr key={idx}>
-                      <td className="py-1 max-w-[120px] truncate">{item.productName}</td>
+                      <td className="py-1 max-w-[120px] truncate">
+                        {item.productName}
+                      </td>
                       <td className="text-center py-1">{item.quantity}</td>
-                      <td className="text-right py-1">{formatCurrency(item.unitPrice, false)}</td>
-                      <td className="text-right py-1 font-semibold">{formatCurrency(item.quantity * item.unitPrice, false)}</td>
+                      <td className="text-right py-1">
+                        {formatCurrency(item.unitPrice, false)}
+                      </td>
+                      <td className="text-right py-1 font-semibold">
+                        {formatCurrency(item.quantity * item.unitPrice, false)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -143,7 +162,9 @@ export function ThermalReceiptModal() {
               </div>
               <div className="flex justify-between">
                 <span>Paid ({sale.paymentMethod.toUpperCase()}):</span>
-                <span className="font-semibold">{formatCurrency(sale.paidAmount)}</span>
+                <span className="font-semibold">
+                  {formatCurrency(sale.paidAmount)}
+                </span>
               </div>
               {sale.changeAmount && sale.changeAmount > 0 ? (
                 <div className="flex justify-between font-bold">
@@ -161,7 +182,10 @@ export function ThermalReceiptModal() {
 
             {/* Footer */}
             <div className="text-center pt-3 text-[10px] space-y-1">
-              <div className="font-medium">{currentOrg.receiptFooterMessage || "Thank you for your business!"}</div>
+              <div className="font-medium">
+                {currentOrg.receiptFooterMessage ||
+                  "Thank you for your business!"}
+              </div>
               <div className="text-[8px] text-neutral-500">
                 Powered by XYZ Business OS • www.xyzbusiness.os
               </div>
@@ -170,14 +194,14 @@ export function ThermalReceiptModal() {
         </div>
 
         {/* Modal Actions (Not printed) */}
-        <div className="no-print flex items-center justify-between border-t border-border p-4 bg-muted/40">
-          <Button variant="outline" size="sm" onClick={handleClose}>
+        <div className="no-print flex items-center justify-between border-t border-border/80 p-4.5 bg-muted/20">
+          <Button variant="outline" size="xs" onClick={handleClose}>
             Close
           </Button>
           <div className="flex items-center gap-2">
-            <Button variant="primary" size="sm" onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-1.5" />
-              Print Receipt
+            <Button variant="primary" size="xs" onClick={handlePrint}>
+              <Printer className="h-3.5 w-3.5 mr-1.5" />
+              Print Receipt (80mm)
             </Button>
           </div>
         </div>
