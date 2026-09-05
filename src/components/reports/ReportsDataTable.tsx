@@ -8,7 +8,7 @@ interface ReportsDataTableProps {
 
 export function ReportsDataTable({ data }: ReportsDataTableProps) {
   return (
-    <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-subtle-sm">
+    <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-subtle-sm print:border-neutral-300 print:shadow-none print:rounded-none">
       <div className="p-4 border-b border-border/80 bg-muted/30">
         <h3 className="text-xs sm:text-sm font-bold text-foreground">
           Monthly Performance Ledger

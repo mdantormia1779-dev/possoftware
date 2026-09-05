@@ -29,7 +29,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
   return (
     <aside
-      className={`border-r border-border/80 bg-card shrink-0 flex flex-col justify-between overflow-y-auto transition-all duration-200 md:flex ${
+      className={`no-print border-r border-border/80 bg-card shrink-0 flex flex-col justify-between overflow-y-auto transition-all duration-200 md:flex ${
         sidebarCollapsed ? "w-18" : "w-64"
       } ${
         mobileMenuOpen

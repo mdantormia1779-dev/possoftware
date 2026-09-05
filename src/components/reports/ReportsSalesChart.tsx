@@ -16,7 +16,7 @@ interface ReportsSalesChartProps {
 
 export function ReportsSalesChart({ data }: ReportsSalesChartProps) {
   return (
-    <div className="p-5 sm:p-6 rounded-3xl border border-border/80 bg-card shadow-subtle-sm space-y-4">
+    <div className="p-5 sm:p-6 rounded-3xl border border-border/80 bg-card shadow-subtle-sm space-y-4 print:border-neutral-300 print:shadow-none print:p-2">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
           <h3 className="text-sm sm:text-base font-bold text-foreground tracking-tight">

@@ -24,7 +24,7 @@ export function ThermalReceiptModal() {
   const sale = activeReceiptSale;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="no-print fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="relative w-full max-w-md max-h-[90vh] flex flex-col rounded-2xl border border-border bg-card shadow-subtle-lg overflow-hidden animate-fade-slide">
         {/* Modal Topbar */}
         <div className="no-print flex items-center justify-between border-b border-border px-5 py-4 bg-muted/30">

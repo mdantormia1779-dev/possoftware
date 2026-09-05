@@ -23,7 +23,7 @@ export default function FinancialReportsPage() {
         onPrint={() => window.print()}
       />
 
-      <div className="p-8 sm:p-12 rounded-3xl border border-border bg-card shadow-sm text-xs space-y-8 font-sans">
+      <div className="p-8 sm:p-12 rounded-3xl border border-border bg-card shadow-sm text-xs space-y-8 font-sans print:p-0 print:border-none print:shadow-none print:bg-white">
         <ReportDocHeader currentOrg={currentOrg} activeTab={activeTab} />
 
         {activeTab === "pnl" && <ProfitLossReport {...pnl} />}

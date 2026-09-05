@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+﻿import React, { useState, useRef } from "react";
 import { Printer } from "lucide-react";
 import { Employee } from "@/types";
 import { Button } from "@/components/ui/Button";
+import { printDocument } from "@/utils/printDocument";
 import { EmployeeProfileHeader } from "./EmployeeProfileHeader";
 import { EmployeeProfileTabsBar, EmployeeProfileTab as TabType } from "./EmployeeProfileTabsBar";
 import { EmployeeProfileTab } from "./EmployeeProfileTab";
@@ -17,27 +18,39 @@ interface EmployeeProfileDrawerProps {
 
 export function EmployeeProfileDrawer({ emp, onClose }: EmployeeProfileDrawerProps) {
   const [activeTab, setActiveTab] = useState<TabType>("profile");
+  const dossierRef = useRef<HTMLDivElement>(null);
 
   if (!emp) return null;
+
+  const handlePrint = () => {
+    printDocument(dossierRef.current, {
+      title: `Employee-Dossier-${emp.name.replace(/\s+/g, "-")}`,
+      size: "a4",
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-card border border-border rounded-3xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-        <EmployeeProfileHeader emp={emp} onClose={onClose} />
+        <div ref={dossierRef} className="space-y-6">
+          <EmployeeProfileHeader emp={emp} onClose={onClose} />
 
-        <EmployeeProfileTabsBar activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className="no-print">
+            <EmployeeProfileTabsBar activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
 
-        {activeTab === "profile" && <EmployeeProfileTab emp={emp} />}
-        {activeTab === "attendance" && <EmployeeAttendanceTab />}
-        {activeTab === "leave" && <EmployeeLeaveTab />}
-        {activeTab === "payroll" && <EmployeePayrollTab emp={emp} />}
-        {activeTab === "commissions" && <EmployeeCommissionsTab emp={emp} />}
+          {activeTab === "profile" && <EmployeeProfileTab emp={emp} />}
+          {activeTab === "attendance" && <EmployeeAttendanceTab />}
+          {activeTab === "leave" && <EmployeeLeaveTab />}
+          {activeTab === "payroll" && <EmployeePayrollTab emp={emp} />}
+          {activeTab === "commissions" && <EmployeeCommissionsTab emp={emp} />}
+        </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-border">
+        <div className="no-print flex items-center justify-between pt-3 border-t border-border">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.print()}
+            onClick={handlePrint}
             className="gap-1.5 text-xs font-bold"
           >
             <Printer className="h-4 w-4" /> Print Full Employee Dossier

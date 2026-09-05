@@ -21,7 +21,7 @@ export function NotificationsDrawer({ isOpen, onClose }: NotificationsDrawerProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="no-print fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-sm h-full bg-card border-l border-border/80 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
         <div className="flex items-center justify-between p-4.5 border-b border-border/80 bg-muted/20">
           <div className="flex items-center gap-2">

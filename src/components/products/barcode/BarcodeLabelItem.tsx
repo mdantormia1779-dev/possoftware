@@ -19,7 +19,7 @@ export function BarcodeLabelItem({
 }: BarcodeLabelItemProps) {
   return (
     <div
-      className="bg-white text-black p-2.5 rounded border border-neutral-300 shadow-xs flex flex-col items-center justify-between text-center font-mono select-none"
+      className="bg-white text-black p-2.5 rounded border border-neutral-300 shadow-xs flex flex-col items-center justify-between text-center font-mono select-none print:shadow-none print:border-neutral-800 print:break-inside-avoid"
       style={{ minHeight: "100px" }}
     >
       {includeStoreName && (

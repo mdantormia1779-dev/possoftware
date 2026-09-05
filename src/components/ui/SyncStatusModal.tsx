@@ -22,7 +22,7 @@ export function SyncStatusModal() {
   if (!isSyncModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="no-print fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="relative w-full max-w-lg rounded-3xl border border-border/80 bg-card shadow-2xl overflow-hidden animate-fade-slide">
         <SyncStatusHeader
           isOnline={isOnline}

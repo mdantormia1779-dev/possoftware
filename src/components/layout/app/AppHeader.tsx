@@ -44,7 +44,7 @@ export function AppHeader({
   onOpenNotifications,
 }: AppHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 h-16 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md px-3 sm:px-5 flex items-center justify-between shadow-subtle-xs transition-colors">
+    <header className="no-print sticky top-0 z-40 h-16 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md px-3 sm:px-5 flex items-center justify-between shadow-subtle-xs transition-colors">
       <div className="flex items-center gap-2.5 sm:gap-3">
         <button
           onClick={onToggleMobile}

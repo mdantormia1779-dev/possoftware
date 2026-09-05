@@ -73,7 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onOpenNotifications={() => setNotificationsOpen(true)}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden print:overflow-visible print:block">
         <AppSidebar
           currentOrg={currentOrg}
           currentBranch={currentBranch}
@@ -85,8 +85,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onCloseMobile={() => setMobileMenuOpen(false)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8 print:p-0 print:overflow-visible print:bg-white">
+          <div className="max-w-7xl mx-auto print:max-w-none print:w-full print:p-0">{children}</div>
         </main>
       </div>
     </div>

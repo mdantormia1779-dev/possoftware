@@ -17,7 +17,7 @@ export function ReportsFilterBar({
   branches,
 }: ReportsFilterBarProps) {
   return (
-    <div className="p-3.5 sm:p-4 rounded-2xl border border-border/80 bg-card shadow-subtle-xs grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+    <div className="no-print p-3.5 sm:p-4 rounded-2xl border border-border/80 bg-card shadow-subtle-xs grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
       <div>
         <label className="font-bold text-foreground block mb-1">
           Report Category

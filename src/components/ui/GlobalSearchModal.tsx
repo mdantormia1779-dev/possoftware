@@ -44,7 +44,7 @@ export function GlobalSearchModal() {
     filteredSales.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="no-print fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-border/80 bg-card shadow-2xl animate-fade-slide">
         <div className="flex items-center border-b border-border/80 px-4.5 py-3.5 bg-muted/20">
           <Search className="h-5 w-5 text-muted-foreground mr-3 shrink-0" />
