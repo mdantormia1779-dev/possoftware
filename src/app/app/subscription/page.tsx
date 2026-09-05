@@ -3,27 +3,25 @@
 import React from "react";
 import Link from "next/link";
 import { useTenant } from "@/lib/context/TenantContext";
-import { Shield, Sparkles, CheckCircle2, CreditCard, ArrowRight, Zap } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { Shield, Zap } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { SubscriptionUsageMeters } from "@/components/subscription/SubscriptionUsageMeters";
 
 export default function TenantSubscriptionPage() {
-  const { currentOrg, branches } = useTenant();
+  const { currentOrg } = useTenant();
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
           <Shield className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-          <span>SaaS Subscription & Plan Usage</span>
+          <span>SaaS Subscription &amp; Plan Usage</span>
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">
           Manage your subscription tier, resource meters, branch limits, and billing renewal
         </p>
       </div>
 
-      {/* Current Plan Card */}
       <div className="p-8 rounded-3xl border-2 border-indigo-600 bg-card shadow-lg relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
@@ -47,46 +45,8 @@ export default function TenantSubscriptionPage() {
           </div>
         </div>
 
-        {/* Resource Usage Meters */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 mt-6 border-t border-border">
-          {/* Branches Meter */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-semibold">
-              <span>Branch Outlets</span>
-              <span className="text-indigo-600">3 of {currentOrg.maxBranches}</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <div className="bg-indigo-600 h-full w-full rounded-full" />
-            </div>
-            <span className="text-[10px] text-muted-foreground block">100% quota utilized</span>
-          </div>
+        <SubscriptionUsageMeters currentOrg={currentOrg} />
 
-          {/* Staff Meter */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-semibold">
-              <span>Staff Accounts</span>
-              <span className="text-indigo-600">4 of {currentOrg.maxStaff}</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <div className="bg-indigo-600 h-full w-1/5 rounded-full" />
-            </div>
-            <span className="text-[10px] text-muted-foreground block">16 seats remaining</span>
-          </div>
-
-          {/* Products Meter */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-semibold">
-              <span>SKU Capacity</span>
-              <span className="text-indigo-600">10 of {currentOrg.maxProducts}</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <div className="bg-indigo-600 h-full w-[2%] rounded-full" />
-            </div>
-            <span className="text-[10px] text-muted-foreground block">Unlimited capacity</span>
-          </div>
-        </div>
-
-        {/* Upgrade Callout */}
         <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-xs text-muted-foreground">
             Need more than 3 branches or dedicated API access?

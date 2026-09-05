@@ -61,6 +61,7 @@ export function PublicFooter() {
             </h4>
             <ul className="space-y-2">
               <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
+              <li><Link href="/blog" className="hover:text-foreground">Blog & Guides</Link></li>
               <li><Link href="/pricing" className="hover:text-foreground">Pricing & Plans</Link></li>
               <li><Link href="/contact" className="hover:text-foreground">Book Demo</Link></li>
               <li><Link href="/login" className="hover:text-foreground">Portal Login</Link></li>

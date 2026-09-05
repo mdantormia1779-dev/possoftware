@@ -23,17 +23,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 backdrop-blur-xs my-4 select-none",
+        "flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-[12px] border border-dashed border-[#E2E8F0] dark:border-[#1E293B] bg-white/50 dark:bg-[#111827]/40 my-4 select-none",
         className
       )}
     >
-      <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-muted/60 text-muted-foreground mb-3.5 border border-border/60 shadow-subtle-xs">
-        <Icon className="h-6 w-6 text-foreground/70" />
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF2FF] dark:bg-indigo-950/40 text-[#4F46E5] dark:text-[#818CF8] mb-3.5 border border-indigo-200/50 dark:border-indigo-800/40 shadow-subtle-xs">
+        <Icon className="h-5 w-5" />
       </div>
-      <h4 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
+      <h4 className="text-sm sm:text-base font-semibold text-[#0F172A] dark:text-[#F8FAFC] tracking-tight">
         {title}
       </h4>
-      <p className="mt-1 max-w-sm text-xs sm:text-sm text-muted-foreground leading-relaxed">
+      <p className="mt-1 max-w-sm text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed">
         {description}
       </p>
       {actionLabel && onAction && (
@@ -41,7 +41,7 @@ export function EmptyState({
           onClick={onAction}
           variant="primary"
           size="sm"
-          className="mt-4.5"
+          className="mt-4"
         >
           {actionLabel}
         </Button>

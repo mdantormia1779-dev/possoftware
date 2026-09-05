@@ -21,24 +21,24 @@ export function StatCard({
   isPositive,
   icon: Icon,
   description,
-  iconBgColor = "bg-indigo-50 dark:bg-indigo-950/60",
-  iconTextColor = "text-indigo-600 dark:text-indigo-400",
+  iconBgColor = "bg-[#EEF2FF] dark:bg-indigo-950/40",
+  iconTextColor = "text-[#4F46E5] dark:text-[#818CF8]",
   className,
 }: StatCardProps) {
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-subtle-sm transition-all duration-200 hover:shadow-subtle-md hover:border-indigo-300/60 dark:hover:border-indigo-800/60",
+        "group relative overflow-hidden rounded-[12px] border border-[#E2E8F0] dark:border-[#1E293B] bg-white dark:bg-[#111827] p-5 sm:p-6 shadow-subtle-xs transition-all duration-150 hover:border-[#CBD5E1] dark:hover:border-[#334155] hover:shadow-subtle-sm",
         className
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#475569] dark:text-[#94A3B8] truncate">
           {title}
         </span>
         <div
           className={cn(
-            "p-2 rounded-xl border border-border/40 shrink-0 transition-transform duration-200 group-hover:scale-105",
+            "p-2 rounded-lg border border-transparent shrink-0 transition-colors",
             iconBgColor,
             iconTextColor
           )}
@@ -47,21 +47,21 @@ export function StatCard({
         </div>
       </div>
 
-      <div className="mt-2.5 flex items-baseline gap-2">
-        <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-mono">
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC] font-mono leading-none">
           {value}
         </span>
       </div>
 
       {(change || description) && (
-        <div className="mt-2.5 flex items-center flex-wrap gap-1.5 text-xs">
+        <div className="mt-3 flex items-center flex-wrap gap-2 text-xs">
           {change && (
             <span
               className={cn(
-                "inline-flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full text-[11px]",
+                "inline-flex items-center gap-1 font-semibold px-2 py-0.5 rounded-md text-[11px]",
                 isPositive
-                  ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60"
-                  : "text-rose-700 bg-rose-50 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60"
+                  ? "text-[#047857] bg-[#ECFDF5] dark:bg-emerald-950/40 dark:text-[#34D399] border border-emerald-200/80 dark:border-emerald-800/60"
+                  : "text-[#B91C1C] bg-[#FEF2F2] dark:bg-rose-950/40 dark:text-[#F87171] border border-rose-200/80 dark:border-rose-800/60"
               )}
             >
               {isPositive ? (
@@ -73,7 +73,7 @@ export function StatCard({
             </span>
           )}
           {description && (
-            <span className="text-muted-foreground text-[11px] truncate">
+            <span className="text-[#475569] dark:text-[#94A3B8] text-[12px] truncate">
               {description}
             </span>
           )}

@@ -1,0 +1,58 @@
+import { WifiOff, Boxes, BookOpen, Users, Megaphone, BarChart3 } from "lucide-react";
+
+export const BENTO_MODULES = [
+  {
+    icon: WifiOff,
+    title: "100% Offline-First POS Engine",
+    badge: "Dexie.js + IndexedDB",
+    desc: "Broadband down? Keep scanning barcodes and issuing receipts without interruption. All queued bills auto-sync with zero data loss once reconnected.",
+    colSpan: "lg:col-span-2",
+    accent: "text-amber-500 dark:text-amber-400",
+    bgAccent: "bg-amber-500/10",
+  },
+  {
+    icon: Boxes,
+    title: "Multi-Branch Stock Matrix",
+    badge: "Transfer Pipeline",
+    desc: "Centralized warehouse control with dispatch, in-transit tracking, and receiving audits between Banani, Dhanmondi, and Chittagong.",
+    colSpan: "lg:col-span-1",
+    accent: "text-indigo-500 dark:text-indigo-400",
+    bgAccent: "bg-indigo-500/10",
+  },
+  {
+    icon: BookOpen,
+    title: "Automated Double-Entry Ledger",
+    badge: "Auto Journal",
+    desc: "Every cash sale, bKash transfer, supplier bill, and payroll automatically posts debits and credits. Real-time P&L, Balance Sheet & Mushak-6.3.",
+    colSpan: "lg:col-span-1",
+    accent: "text-emerald-500 dark:text-emerald-400",
+    bgAccent: "bg-emerald-500/10",
+  },
+  {
+    icon: Users,
+    title: "Staff Commissions & Payroll",
+    badge: "Attendance & KPI",
+    desc: "Biometric and pin attendance logs with automated percentage commissions tied directly to POS terminal sales per cashier.",
+    colSpan: "lg:col-span-2",
+    accent: "text-purple-500 dark:text-purple-400",
+    bgAccent: "bg-purple-500/10",
+  },
+  {
+    icon: Megaphone,
+    title: "Customer 360 & Loyalty CRM",
+    badge: "SMS & Points",
+    desc: "Lifetime customer valuation, reward points accumulation, festive Eid/Puja discount SMS broadcasting, and authorized credit terms.",
+    colSpan: "lg:col-span-2",
+    accent: "text-cyan-500 dark:text-cyan-400",
+    bgAccent: "bg-cyan-500/10",
+  },
+  {
+    icon: BarChart3,
+    title: "Executive Business Intelligence",
+    badge: "Real-Time Velocity",
+    desc: "Live gross profit calculation, hourly velocity charts, shrinkage detection, and comparative branch revenue scorecards.",
+    colSpan: "lg:col-span-1",
+    accent: "text-rose-500 dark:text-rose-400",
+    bgAccent: "bg-rose-500/10",
+  },
+];
