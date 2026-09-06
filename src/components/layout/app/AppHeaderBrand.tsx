@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Layers } from "lucide-react";
 import { Organization, Branch, UserRole } from "@/types";
 
 interface AppHeaderBrandProps {
@@ -13,22 +14,24 @@ export function AppHeaderBrand({
   currentBranch,
   currentRole,
 }: AppHeaderBrandProps) {
+  const orgName = currentOrg?.name || "XYZ Business OS";
+
   return (
-    <Link href="/app/dashboard" className="flex items-center gap-2.5 group select-none">
-      <div className="h-8.5 w-8.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white font-black text-base shadow-sm">
-        X
+    <Link
+      href="/app/dashboard"
+      className="flex items-center gap-2.5 group select-none shrink-0"
+      title={orgName}
+    >
+      <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0 transition-transform duration-200 group-hover:scale-105">
+        <Layers className="h-4.5 w-4.5 text-white" />
       </div>
-      <div className="hidden sm:block">
-        <span className="font-black text-xs sm:text-sm tracking-tight text-foreground flex items-center gap-1">
-          {currentOrg.name}
+
+      <div className="flex flex-col min-w-0 max-w-[140px] sm:max-w-[170px] md:max-w-[200px] lg:max-w-[220px]">
+        <span className="font-extrabold text-xs sm:text-sm tracking-tight text-foreground whitespace-nowrap truncate leading-tight">
+          {orgName}
         </span>
-        <span className="text-[10px] text-muted-foreground block leading-none font-medium">
-          {currentRole === "company_owner" && "Enterprise OS"}
-          {currentRole === "branch_manager" && `${currentBranch.name} Hub`}
-          {currentRole === "accountant" && "General Ledger Desk"}
-          {currentRole === "cashier" && "POS Counter Till"}
-          {currentRole === "staff" && "Floor Station"}
-          {currentRole === "super_admin" && "Super Admin"}
+        <span className="text-[10px] text-muted-foreground font-semibold whitespace-nowrap truncate leading-none mt-0.5">
+          XYZ POS &bull; {currentRole === "company_owner" ? "Enterprise OS" : currentBranch?.name || "Branch"}
         </span>
       </div>
     </Link>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { PaymentMethod } from "@/types";
 import { storageService } from "@/lib/services/storage";
+import { salesService } from "@/services/sales.service";
 import { buildSaleData } from "./buildSaleData";
 import { applyCouponHelper } from "./applyCouponHelper";
 import { createQuickCustomer } from "./createQuickCustomer";
@@ -38,8 +39,7 @@ export function usePaymentCheckout(isOpen: boolean, onClose: () => void, onCompl
   };
 
   const handleAddCustomer = (name: string, phone: string) => {
-    const newCust = createQuickCustomer(tenant.currentOrg.id, name, phone);
-    tenant.setCartCustomer(newCust);
+    tenant.setCartCustomer(createQuickCustomer(tenant.currentOrg.id, name, phone));
   };
 
   const handleCompleteSale = async () => {
@@ -64,6 +64,10 @@ export function usePaymentCheckout(isOpen: boolean, onClose: () => void, onCompl
     });
 
     const newSale = storageService.createSale(saleData, !tenant.isOnline);
+    if (tenant.isOnline) {
+      salesService.createSale(saleData, tenant.currentOrg?.id, tenant.currentBranch?.id).catch(() => {});
+    }
+
     setIsProcessing(false);
     tenant.clearCart();
     onClose();

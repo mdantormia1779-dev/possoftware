@@ -1,8 +1,15 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { ShieldCheck, Plus } from "lucide-react";
+import { useTenant } from "@/lib/context/TenantContext";
 
 export function SuperAdminHeader() {
+  const { currentUser } = useTenant();
+  const adminName = currentUser?.name || "Global Administrator";
+  const adminEmail = currentUser?.email || "superadmin@xyzpos.com";
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-1">
       <div>
@@ -11,7 +18,7 @@ export function SuperAdminHeader() {
           <span>SaaS Platform Control Center</span>
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Platform-wide tenant metrics, Monthly Recurring Revenue (MRR), and system infrastructure
+          Welcome back, <span className="text-foreground font-semibold">{adminName}</span> ({adminEmail}) &bull; Platform infrastructure &amp; tenant control
         </p>
       </div>
 

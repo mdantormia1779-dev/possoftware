@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import { Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useTenant } from "@/lib/context/TenantContext";
 
 interface StaffAttendanceBannerProps {
   branchName: string;
@@ -13,6 +16,10 @@ export function StaffAttendanceBanner({
   isClockedIn,
   onToggleClock,
 }: StaffAttendanceBannerProps) {
+  const { currentUser } = useTenant();
+  const staffName = currentUser?.name || "Kamrul Hassan";
+  const staffEmail = currentUser?.email || "staff@rahmanfashion.com.bd";
+
   return (
     <div className="p-5 rounded-3xl bg-gradient-to-r from-purple-500/10 via-purple-500/5 to-transparent border border-purple-200/80 dark:border-purple-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="space-y-1">
@@ -34,7 +41,7 @@ export function StaffAttendanceBanner({
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Shift: Morning Retail • Check-in: 09:15 AM • Department: Apparel &amp; Footwear
+          Associate: <span className="font-semibold text-foreground">{staffName}</span> ({staffEmail}) &bull; Morning Retail &bull; Dept: Apparel
         </p>
       </div>
 

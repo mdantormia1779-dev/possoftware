@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
+import { supplierService } from "@/services/supplier.service";
 import { Supplier } from "@/types";
 
 export function useSuppliers() {
   const { currentOrg } = useTenant();
-  const [suppliers, setSuppliers] = useState<Supplier[]>(() =>
-    storageService.getSuppliers()
-  );
+  const [suppliers, setSuppliers] = useState<Supplier[]>(() => storageService.getSuppliers());
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    supplierService.getSuppliers(currentOrg?.id).then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setSuppliers(res.data);
+      }
+    });
+  }, [currentOrg?.id]);
 
   const filteredSuppliers = suppliers.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -26,7 +33,7 @@ export function useSuppliers() {
   }) => {
     const created: Supplier = {
       id: `supp-${Date.now()}`,
-      organizationId: currentOrg.id,
+      organizationId: currentOrg?.id || "org-1",
       name: data.name,
       companyName: data.companyName,
       phone: data.phone,
@@ -37,7 +44,8 @@ export function useSuppliers() {
     };
 
     storageService.addSupplier(created);
-    setSuppliers(storageService.getSuppliers());
+    setSuppliers((prev) => [created, ...prev]);
+    supplierService.createSupplier(created, currentOrg?.id).catch(() => {});
   };
 
   return {

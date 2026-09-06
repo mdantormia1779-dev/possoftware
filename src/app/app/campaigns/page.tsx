@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
+import { marketingService } from "@/services/marketing.service";
 import { Campaign } from "@/lib/types";
 import { CampaignsHeader } from "@/components/campaigns/CampaignsHeader";
 import { CampaignGrid } from "@/components/campaigns/CampaignGrid";
@@ -20,13 +21,21 @@ export default function MarketingCampaignsPage() {
     message: "",
   });
 
+  useEffect(() => {
+    marketingService.getCampaigns(currentOrg?.id).then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setCampaigns(res.data);
+      }
+    });
+  }, [currentOrg?.id]);
+
   const handleCreateCampaign = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCamp.title || !newCamp.message) return;
 
     const created: Campaign = {
       id: `cmp-${Date.now()}`,
-      organizationId: currentOrg.id,
+      organizationId: currentOrg?.id || "org-1",
       title: newCamp.title,
       channel: newCamp.channel,
       targetAudience: newCamp.targetAudience,
@@ -39,16 +48,15 @@ export default function MarketingCampaignsPage() {
     };
 
     storageService.addCampaign(created);
-    setCampaigns(storageService.getCampaigns());
+    setCampaigns((prev) => [created, ...prev]);
+    marketingService.createCampaign(created, currentOrg?.id).catch(() => {});
     setShowAddModal(false);
   };
 
   return (
     <div className="space-y-6">
       <CampaignsHeader onNewCampaignClick={() => setShowAddModal(true)} />
-
       <CampaignGrid campaigns={campaigns} />
-
       <CreateCampaignModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}

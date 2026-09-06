@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { formatDate } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { DashboardUserBar } from "@/components/dashboard/DashboardUserBar";
 import { OwnerDashboard } from "@/components/dashboard/OwnerDashboard";
 import { BranchManagerDashboard } from "@/components/dashboard/BranchManagerDashboard";
 import { AccountantDashboard } from "@/components/dashboard/AccountantDashboard";
@@ -21,6 +23,8 @@ export default function DashboardPage() {
         branchName={currentBranch.name}
         dateRange={dateRange}
       />
+
+      <DashboardUserBar />
 
       {/* Render Exclusively the Logged-in User's Role Dashboard */}
       <div>

@@ -4,6 +4,7 @@ import { ShoppingCart, WifiOff, Bell } from "lucide-react";
 import { UserRole } from "@/types";
 import { AppHeaderRoleBadge } from "./AppHeaderRoleBadge";
 import { AppHeaderThemeToggle } from "./AppHeaderThemeToggle";
+import { AppHeaderUserMenu } from "./AppHeaderUserMenu";
 
 interface AppHeaderActionsProps {
   currentRole: UserRole;
@@ -25,7 +26,7 @@ export function AppHeaderActions({
   onOpenNotifications,
 }: AppHeaderActionsProps) {
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
       <AppHeaderRoleBadge currentRole={currentRole} />
 
       <button
@@ -81,6 +82,8 @@ export function AppHeaderActions({
           Super Admin
         </Link>
       )}
+
+      <AppHeaderUserMenu />
     </div>
   );
 }

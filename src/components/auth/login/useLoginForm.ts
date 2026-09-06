@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTenant } from "@/lib/context/TenantContext";
 import { UserRole } from "@/lib/types";
+import { authService } from "@/services/auth.service";
 
 export function useLoginForm() {
   const router = useRouter();
-  const { setCurrentRole } = useTenant();
+  const { setCurrentRole, setCurrentUser, setCurrentOrg, setCurrentBranch } = useTenant();
 
   const [emailOrPhone, setEmailOrPhone] = useState("owner@rahmanfashion.com.bd");
   const [password, setPassword] = useState("password123");
@@ -17,60 +18,62 @@ export function useLoginForm() {
   const [activeRoleLoading, setActiveRoleLoading] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!emailOrPhone.trim()) {
-      setErrorMessage("Please enter your email or phone number.");
-      return;
-    }
-    if (!password) {
-      setErrorMessage("Please enter your password.");
-      return;
-    }
+    const idVal = emailOrPhone.trim();
+    if (!idVal) return setErrorMessage("Please enter your email or phone number.");
+    if (!password) return setErrorMessage("Please enter your password.");
 
     setIsLoading(true);
+    try {
+      const res = await authService.login({ emailOrPhone: idVal, password });
+      if (!res.success || !res.data) {
+        setErrorMessage(res.error || "Invalid email/phone or password");
+        setIsLoading(false);
+        return;
+      }
 
-    const lower = emailOrPhone.toLowerCase();
-    let detectedRole: UserRole = "company_owner";
-    let target = "/app/dashboard";
+      const { user, organization, branch } = res.data;
+      setCurrentUser(user);
+      if (user.role) setCurrentRole(user.role as UserRole);
+      if (organization) setCurrentOrg(organization);
+      if (branch) setCurrentBranch(branch);
 
-    if (lower.includes("cashier")) {
-      detectedRole = "cashier";
-    } else if (lower.includes("manager")) {
-      detectedRole = "branch_manager";
-    } else if (lower.includes("accountant")) {
-      detectedRole = "accountant";
-    } else if (lower.includes("staff")) {
-      detectedRole = "staff";
-    } else if (lower.includes("admin")) {
-      detectedRole = "super_admin";
-      target = "/super-admin";
-    }
-
-    setCurrentRole(detectedRole);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("xyz_user_role", detectedRole);
-    }
-
-    setTimeout(() => {
-      setIsLoading(false);
+      const target = user.role === "super_admin" ? "/super-admin" : "/app/dashboard";
       router.push(target);
-    }, 450);
+    } catch {
+      setErrorMessage("Network error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleQuickRoleLogin = (role: UserRole, email: string, targetRoute: string) => {
+  const handleQuickRoleLogin = async (role: UserRole, email: string, targetRoute: string) => {
     setEmailOrPhone(email);
     setPassword("password123");
     setActiveRoleLoading(role);
-    setCurrentRole(role);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("xyz_user_role", role);
-    }
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const res = await authService.login({ emailOrPhone: email, password: "password123" });
+      if (res.success && res.data) {
+        const { user, organization, branch } = res.data;
+        setCurrentUser(user);
+        if (user.role) setCurrentRole(user.role as UserRole);
+        if (organization) setCurrentOrg(organization);
+        if (branch) setCurrentBranch(branch);
+      } else {
+        setCurrentRole(role);
+      }
       router.push(targetRoute);
-    }, 400);
+    } catch {
+      setCurrentRole(role);
+      router.push(targetRoute);
+    } finally {
+      setActiveRoleLoading(null);
+    }
   };
 
   return {
@@ -90,3 +93,4 @@ export function useLoginForm() {
     handleQuickRoleLogin,
   };
 }
+

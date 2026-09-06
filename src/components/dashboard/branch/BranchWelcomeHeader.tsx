@@ -1,13 +1,20 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Store, Truck, ShoppingCart } from "lucide-react";
 import { Branch } from "@/types";
+import { useTenant } from "@/lib/context/TenantContext";
 
 interface BranchWelcomeHeaderProps {
   currentBranch: Branch;
 }
 
 export function BranchWelcomeHeader({ currentBranch }: BranchWelcomeHeaderProps) {
+  const { currentUser } = useTenant();
+  const managerName = currentUser?.name || currentBranch.managerName || "Store Manager";
+  const managerEmail = currentUser?.email || "manager@rahmanfashion.com.bd";
+
   return (
     <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-200/80 dark:border-amber-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="space-y-1">
@@ -23,7 +30,7 @@ export function BranchWelcomeHeader({ currentBranch }: BranchWelcomeHeaderProps)
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Manager: {currentBranch.managerName || "Store Manager"} • City: {currentBranch.city} • Code: {currentBranch.code}
+          Manager: <span className="font-semibold text-foreground">{managerName}</span> ({managerEmail}) • City: {currentBranch.city}
         </p>
       </div>
 

@@ -7,13 +7,13 @@ import {
   computePasswordStrength,
   validateRegisterStep1,
   validateRegisterStep2,
-  runWorkspaceSetupSimulation,
+  executeWorkspaceRegistration,
 } from "./registerUtils";
 import { INITIAL_REGISTER_DATA, DEMO_REGISTER_DATA } from "./registerData";
 
 export function useRegisterForm() {
   const router = useRouter();
-  const { currentOrg, setCurrentOrg, setCurrentRole, currentBranch, setCurrentBranch } = useTenant();
+  const { setCurrentUser, setCurrentOrg, setCurrentRole, setCurrentBranch } = useTenant();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [formData, setFormData] = useState(INITIAL_REGISTER_DATA);
@@ -53,11 +53,12 @@ export function useRegisterForm() {
 
     setErrors({});
     setIsLoading(true);
-    runWorkspaceSetupSimulation(
+    executeWorkspaceRegistration(
       formData,
       setSetupPhase,
       setIsLoading,
-      { currentOrg, setCurrentOrg, currentBranch, setCurrentBranch, setCurrentRole },
+      setErrors,
+      { setCurrentUser, setCurrentOrg, setCurrentBranch, setCurrentRole },
       router
     );
   };

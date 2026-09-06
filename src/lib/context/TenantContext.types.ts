@@ -2,6 +2,7 @@ import {
   Organization,
   Branch,
   UserRole,
+  User,
   CartItem,
   Product,
   Customer,
@@ -11,6 +12,8 @@ import {
 } from "../types";
 
 export interface TenantContextType {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
   currentOrg: Organization;
   setCurrentOrg: (org: Organization) => void;
   currentBranch: Branch;

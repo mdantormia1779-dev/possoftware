@@ -30,38 +30,54 @@ export function validateRegisterStep2(formData: {
   return errs;
 }
 
-export function runWorkspaceSetupSimulation(
+export async function executeWorkspaceRegistration(
   formData: any,
   setSetupPhase: (s: string) => void,
   setIsLoading: (b: boolean) => void,
-  tenant: { currentOrg: any; setCurrentOrg: any; currentBranch: any; setCurrentBranch: any; setCurrentRole: any },
+  setErrors: (errs: { [key: string]: string }) => void,
+  tenant: {
+    setCurrentUser?: (u: any) => void;
+    setCurrentOrg?: (o: any) => void;
+    setCurrentBranch?: (b: any) => void;
+    setCurrentRole?: (r: any) => void;
+  },
   router: any
 ) {
-  setSetupPhase("Creating your secure tenant workspace...");
-  setTimeout(() => setSetupPhase("Provisioning offline IndexedDB storage & branch..."), 450);
-  setTimeout(() => {
-    setSetupPhase("Configuring NBR VAT & POS terminal...");
-    if (tenant.setCurrentOrg && tenant.currentOrg) {
-      tenant.setCurrentOrg({
-        ...tenant.currentOrg,
-        name: formData.companyName.trim() || tenant.currentOrg.name,
-        businessType: formData.businessType,
-        email: formData.email.trim() || tenant.currentOrg.email,
-        phone: formData.phone.trim() || tenant.currentOrg.phone,
-      });
+  setSetupPhase("Provisioning your enterprise workspace on cloud database...");
+  try {
+    const { authService } = await import("@/services/auth.service");
+    const res = await authService.register({
+      ownerName: formData.ownerName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      password: formData.password,
+      companyName: formData.companyName.trim(),
+      businessType: formData.businessType || "Retail",
+      branchName: formData.branchName.trim(),
+      city: formData.city || "Dhaka",
+    });
+
+    if (!res.success || !res.data) {
+      setIsLoading(false);
+      setErrors({ email: res.error || "Registration failed. Please try again." });
+      return;
     }
-    if (tenant.setCurrentBranch && tenant.currentBranch) {
-      tenant.setCurrentBranch({
-        ...tenant.currentBranch,
-        name: formData.branchName.trim() || tenant.currentBranch.name,
-        city: formData.city || tenant.currentBranch.city,
-      });
-    }
+
+    setSetupPhase("Configuring NBR VAT & Chart of Accounts...");
+    const { user, organization, branch } = res.data;
+
+    if (tenant.setCurrentUser) tenant.setCurrentUser(user);
+    if (tenant.setCurrentOrg && organization) tenant.setCurrentOrg(organization);
+    if (tenant.setCurrentBranch && branch) tenant.setCurrentBranch(branch);
     if (tenant.setCurrentRole) tenant.setCurrentRole("company_owner");
-  }, 900);
-  setTimeout(() => setSetupPhase("Ready! Launching XYZ Business OS..."), 1350);
-  setTimeout(() => {
+
+    setSetupPhase("Ready! Launching XYZ Business OS...");
+    setTimeout(() => {
+      setIsLoading(false);
+      router.push("/app/dashboard");
+    }, 500);
+  } catch {
     setIsLoading(false);
-    router.push("/app/dashboard");
-  }, 1700);
+    setErrors({ email: "Network error occurred during registration. Please try again." });
+  }
 }

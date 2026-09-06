@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity } from "lucide-react";
 import { ADMIN_NAV } from "./SuperAdminNav";
+import { SuperAdminUserFooter } from "./SuperAdminUserFooter";
 
 interface SuperAdminSidebarProps {
   mobileOpen: boolean;
@@ -20,7 +20,7 @@ export function SuperAdminSidebar({ mobileOpen, onClose }: SuperAdminSidebarProp
           : "hidden md:flex"
       }`}
     >
-      <div className="p-3.5 space-y-1">
+      <div className="p-3.5 space-y-1 flex-1">
         <h4 className="px-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
           Platform Administration
         </h4>
@@ -53,12 +53,7 @@ export function SuperAdminSidebar({ mobileOpen, onClose }: SuperAdminSidebarProp
         })}
       </div>
 
-      <div className="p-3.5 border-t border-border/80 bg-muted/20 text-xs text-muted-foreground space-y-1">
-        <div className="flex items-center gap-1.5 font-bold text-foreground">
-          <Activity className="h-3.5 w-3.5 text-emerald-500" /> Multi-Tenant Platform
-        </div>
-        <div className="text-[11px]">Next.js 15 & Dexie.js Engine</div>
-      </div>
+      <SuperAdminUserFooter />
     </aside>
   );
 }

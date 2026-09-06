@@ -1,4 +1,4 @@
-﻿export interface PrintDocumentOptions {
+export interface PrintDocumentOptions {
   title?: string;
   size?: "a4" | "thermal-80mm" | "auto";
   customStyles?: string;
@@ -43,6 +43,9 @@ export function printDocument(
       <head>
         <meta charset="utf-8" />
         <title>${title}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
         ${styleTags}
         <style>
           @page {
@@ -60,6 +63,8 @@ export function printDocument(
             padding: ${isThermal ? "6px 8px" : "0"} !important;
             width: ${isThermal ? "80mm" : "100%"} !important;
             min-height: 0 !important;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'calt' 1, 'tnum' 1 !important;
           }
           .no-print { display: none !important; }
           ${options.customStyles || ""}

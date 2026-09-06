@@ -1,4 +1,4 @@
-﻿import { printDocument } from "./printDocument";
+import { printDocument } from "./printDocument";
 
 /**
  * Isolated thermal receipt printer.
@@ -10,9 +10,10 @@ export function printReceipt(receiptElement: HTMLElement | null): void {
     title: "POS Receipt",
     customStyles: `
       body {
-        font-family: 'Courier New', Courier, 'Lucida Console', monospace !important;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         font-size: 11px !important;
         line-height: 1.25 !important;
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'calt' 1, 'tnum' 1 !important;
       }
       table { width: 100% !important; border-collapse: collapse !important; }
       th, td { padding: 3px 0 !important; vertical-align: top !important; }

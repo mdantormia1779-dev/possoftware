@@ -1,8 +1,15 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { BookOpen, ShieldCheck, Receipt, BarChart3 } from "lucide-react";
+import { useTenant } from "@/lib/context/TenantContext";
 
 export function AccountantHeader() {
+  const { currentUser } = useTenant();
+  const accountantName = currentUser?.name || "Farhan Ahmed, ACA";
+  const accountantEmail = currentUser?.email || "accountant@rahmanfashion.com.bd";
+
   return (
     <div className="p-5 rounded-3xl bg-gradient-to-r from-blue-500/10 via-blue-500/5 to-transparent border border-blue-200/80 dark:border-blue-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="space-y-1">
@@ -18,7 +25,7 @@ export function AccountantHeader() {
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Double-entry bookkeeping, NBR 5% Mushak 6.3 tracking &amp; automated ledger postings
+          Fiscal Officer: <span className="font-semibold text-foreground">{accountantName}</span> ({accountantEmail}) &bull; Double-entry bookkeeping &amp; automated ledger postings
         </p>
       </div>
 

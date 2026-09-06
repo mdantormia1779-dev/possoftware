@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { X, Layers } from "lucide-react";
 import { AppSidebarIdentity } from "./AppSidebarIdentity";
 import { AppSidebarNavList } from "./AppSidebarNavList";
 import { AppSidebarFooter } from "./AppSidebarFooter";
@@ -41,10 +41,10 @@ export function AppSidebar({
         {mobileMenuOpen && (
           <div className="flex items-center justify-between pb-3 border-b border-border/80">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
-                X
+              <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shrink-0 shadow-xs">
+                <Layers className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="font-bold text-sm text-foreground">
+              <span className="font-bold text-sm text-foreground truncate">
                 {currentOrg.name}
               </span>
             </div>

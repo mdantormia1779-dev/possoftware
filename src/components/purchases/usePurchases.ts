@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
+import { purchaseService } from "@/services/purchase.service";
 import { PurchaseOrder } from "@/types";
 import { buildNewPO } from "./buildNewPO";
 
@@ -11,6 +12,14 @@ export function usePurchases() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  useEffect(() => {
+    purchaseService.getPurchases(currentOrg?.id).then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setPurchases(res.data);
+      }
+    });
+  }, [currentOrg?.id]);
 
   const filteredPurchases = purchases.filter((po) =>
     po.poNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,6 +48,11 @@ export function usePurchases() {
     const updated = [newPO, ...purchases];
     setPurchases(updated);
     storageService.savePurchases(updated);
+    purchaseService.createPurchase({
+      supplierId: data.supplier,
+      items: [{ productId: products[0]?.id || "prod-1", unitCost: data.unitCost, quantity: data.qty, batchNumber: data.batchNo }],
+      paidAmount: data.paidAmount,
+    }, currentOrg?.id, data.branchId).catch(() => {});
     setShowCreateModal(false);
   };
 
@@ -57,6 +71,7 @@ export function usePurchases() {
 
     setPurchases(updated);
     storageService.savePurchases(updated);
+    purchaseService.updatePurchase(po.id, { status: "RECEIVED" }, currentOrg?.id).catch(() => {});
     if (selectedPO?.id === po.id) {
       setSelectedPO({
         ...po,

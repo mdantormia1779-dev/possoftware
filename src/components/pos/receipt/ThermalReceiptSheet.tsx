@@ -17,7 +17,7 @@ export const ThermalReceiptSheet = forwardRef<HTMLDivElement, ThermalReceiptShee
       <div
         id="thermal-receipt"
         ref={ref}
-        className="w-[80mm] max-w-full bg-white text-black p-4 font-mono text-[11px] shadow-md border border-neutral-200 rounded-sm leading-tight select-text"
+        className="w-[80mm] max-w-full bg-white text-black p-4 font-sans tabular-nums text-[11px] shadow-md border border-neutral-200 rounded-sm leading-tight select-text"
       >
         <ReceiptHeader organization={organization} />
         <ReceiptMeta sale={sale} />

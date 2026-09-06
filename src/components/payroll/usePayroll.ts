@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
 import { storageService } from "@/lib/services/storage";
+import { hrService } from "@/services/hr.service";
 import { PayrollRun, PayrollItem } from "@/lib/types";
 
 export function usePayroll() {
@@ -8,6 +9,15 @@ export function usePayroll() {
   const [payrollRuns, setPayrollRuns] = useState<PayrollRun[]>(() => storageService.getPayrollRuns());
   const [selectedRun, setSelectedRun] = useState<PayrollRun | null>(payrollRuns[0] || null);
   const [activePayslipItem, setActivePayslipItem] = useState<PayrollItem | null>(null);
+
+  useEffect(() => {
+    hrService.getPayrollRuns(currentOrg?.id).then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setPayrollRuns(res.data);
+        setSelectedRun(res.data[0]);
+      }
+    });
+  }, [currentOrg?.id]);
 
   const employees = storageService.getEmployees();
 
@@ -34,7 +44,7 @@ export function usePayroll() {
 
     const newRun: PayrollRun = {
       id: `pr-${Date.now()}`,
-      organizationId: currentOrg.id,
+      organizationId: currentOrg?.id || "org-1",
       monthYear: "March 2026",
       totalAmount,
       status: "approved",
@@ -46,6 +56,7 @@ export function usePayroll() {
     storageService.addPayrollRun(newRun);
     setPayrollRuns(storageService.getPayrollRuns());
     setSelectedRun(newRun);
+    hrService.runPayroll("March 2026", items, currentOrg?.id).catch(() => {});
   };
 
   return {

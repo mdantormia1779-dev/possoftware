@@ -34,7 +34,7 @@ export function ThermalReceiptModal() {
             </div>
             <div>
               <h3 className="font-bold text-sm text-foreground">Sale Completed Successfully</h3>
-              <p className="text-[11px] text-muted-foreground font-mono">{sale.invoiceNumber}</p>
+              <p className="text-[11px] text-muted-foreground font-sans tabular-nums font-medium">{sale.invoiceNumber}</p>
             </div>
           </div>
           <button

@@ -29,41 +29,50 @@ enum PlanTier {
 }
 
 model Organization {
-  id               String             @id @default(uuid())
-  name             String
-  slug             String             @unique
-  businessType     String // Retail, Grocery, Fashion, Electronics, Restaurant, Pharmacy
-  logoUrl          String?
-  currency         String             @default("BDT")
-  currencySymbol   String             @default("৳")
-  phone            String?
-  email            String?
-  address          String?
-  taxNumber        String? // BIN / VAT Registration Number
-  subscriptionPlan PlanTier           @default(STARTER)
+  id                 String             @id @default(uuid())
+  name               String
+  slug               String             @unique
+  businessType       String // Retail, Grocery, Fashion, Electronics, Restaurant, Pharmacy
+  logoUrl            String?
+  currency           String             @default("BDT")
+  currencySymbol     String             @default("৳")
+  phone              String?
+  email              String?
+  address            String?
+  taxNumber          String? // BIN / VAT Registration Number (e.g. Mushak-6.3)
+  subscriptionPlan   PlanTier           @default(STARTER)
   subscriptionStatus SubscriptionStatus @default(TRIAL)
-  trialEndsAt      DateTime?
+  trialEndsAt        DateTime?
   subscriptionEndsAt DateTime?
-  maxBranches      Int                @default(1)
-  maxStaff         Int                @default(5)
-  maxProducts      Int                @default(5000)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  maxBranches        Int                @default(1)
+  maxStaff           Int                @default(5)
+  maxProducts        Int                @default(5000)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 
-  users            User[]
-  branches         Branch[]
-  products         Product[]
-  categories       Category[]
-  customers        Customer[]
-  suppliers        Supplier[]
-  sales            Sale[]
-  purchases        PurchaseOrder[]
-  stockTransfers   StockTransfer[]
-  employees        Employee[]
-  accounts         ChartOfAccount[]
-  journalEntries   JournalEntry[]
-  coupons          Coupon[]
-  campaigns        Campaign[]
+  users              User[]
+  branches           Branch[]
+  products           Product[]
+  categories         Category[]
+  customers          Customer[]
+  suppliers          Supplier[]
+  sales              Sale[]
+  purchases          PurchaseOrder[]
+  stockTransfers     StockTransfer[]
+  employees          Employee[]
+  accounts           ChartOfAccount[]
+  journalEntries     JournalEntry[]
+  coupons            Coupon[]
+  campaigns          Campaign[]
+  bankAccounts       BankAccount[]
+  shifts             CashDrawerSession[]
+  parkedSales        ParkedSale[]
+  auditLogs          AuditLog[]
+  notifications      SystemNotification[]
+  invoices           SubscriptionInvoice[]
+
+  @@index([slug])
+  @@index([subscriptionStatus])
 }
 
 // --------------------------------------------------------
@@ -97,6 +106,13 @@ model User {
 
   salesHandled   Sale[]
   journalsCreated JournalEntry[]
+  shiftsOpened   CashDrawerSession[] @relation("ShiftOpenedBy")
+  shiftsClosed   CashDrawerSession[] @relation("ShiftClosedBy")
+  auditLogs      AuditLog[]
+  notifications  SystemNotification[]
+
+  @@index([organizationId])
+  @@index([email])
 }
 
 // --------------------------------------------------------
@@ -124,6 +140,10 @@ model Branch {
   transfersFrom  StockTransfer[] @relation("SourceBranch")
   transfersTo    StockTransfer[] @relation("DestinationBranch")
   branchStocks   BranchStock[]
+  shifts         CashDrawerSession[]
+  parkedSales    ParkedSale[]
+
+  @@index([organizationId])
 }
 
 // --------------------------------------------------------
@@ -141,6 +161,8 @@ model Category {
   updatedAt      DateTime     @updatedAt
 
   products       Product[]
+
+  @@index([organizationId])
 }
 
 model Product {
@@ -168,17 +190,25 @@ model Product {
   saleItems      SaleItem[]
   purchaseItems  PurchaseOrderItem[]
   variants       ProductVariant[]
+  transferItems  StockTransferItem[]
+  parkedItems    ParkedSaleItem[]
+
+  @@index([organizationId])
+  @@index([barcode])
+  @@index([sku])
 }
 
 model ProductVariant {
-  id             String       @id @default(uuid())
-  productId      String
-  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  name           String // e.g. "Size L - Blue"
-  sku            String
-  barcode        String?
-  priceAdjustment Decimal     @default(0.0)
-  stock          Int          @default(0)
+  id              String       @id @default(uuid())
+  productId       String
+  product         Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name            String // e.g. "Size L - Blue"
+  sku             String
+  barcode         String?
+  priceAdjustment Decimal      @default(0.0)
+  stock           Int          @default(0)
+
+  @@index([productId])
 }
 
 model BranchStock {
@@ -194,10 +224,12 @@ model BranchStock {
   updatedAt      DateTime     @updatedAt
 
   @@unique([branchId, productId])
+  @@index([branchId])
+  @@index([productId])
 }
 
 // --------------------------------------------------------
-// STOCK TRANSFERS & ADJUSTMENTS
+// STOCK TRANSFERS & CHALLANS
 // --------------------------------------------------------
 
 enum TransferStatus {
@@ -210,22 +242,26 @@ enum TransferStatus {
 }
 
 model StockTransfer {
-  id                    String         @id @default(uuid())
-  organizationId        String
-  organization          Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  transferNumber        String // e.g. TR-2026-001
-  sourceBranchId        String
-  sourceBranch          Branch         @relation("SourceBranch", fields: [sourceBranchId], references: [id])
-  destinationBranchId   String
-  destinationBranch     Branch         @relation("DestinationBranch", fields: [destinationBranchId], references: [id])
-  status                TransferStatus @default(PENDING)
-  notes                 String?
-  dispatchedAt          DateTime?
-  receivedAt            DateTime?
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
+  id                  String         @id @default(uuid())
+  organizationId      String
+  organization        Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transferNumber      String // e.g. TR-2026-001
+  sourceBranchId      String
+  sourceBranch        Branch         @relation("SourceBranch", fields: [sourceBranchId], references: [id])
+  destinationBranchId String
+  destinationBranch   Branch         @relation("DestinationBranch", fields: [destinationBranchId], references: [id])
+  status              TransferStatus @default(PENDING)
+  notes               String?
+  dispatchedAt        DateTime?
+  receivedAt          DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
-  items                 StockTransferItem[]
+  items               StockTransferItem[]
+
+  @@index([organizationId])
+  @@index([sourceBranchId])
+  @@index([destinationBranchId])
 }
 
 model StockTransferItem {
@@ -233,11 +269,14 @@ model StockTransferItem {
   stockTransferId String
   stockTransfer   StockTransfer @relation(fields: [stockTransferId], references: [id], onDelete: Cascade)
   productId       String
+  product         Product       @relation(fields: [productId], references: [id])
   quantity        Int
+
+  @@index([stockTransferId])
 }
 
 // --------------------------------------------------------
-// CUSTOMERS & CRM
+// CUSTOMERS & LOYALTY
 // --------------------------------------------------------
 
 model Customer {
@@ -256,6 +295,24 @@ model Customer {
   updatedAt      DateTime     @updatedAt
 
   sales          Sale[]
+  loyaltyTxns    LoyaltyTransaction[]
+
+  @@index([organizationId])
+  @@index([phone])
+}
+
+model LoyaltyTransaction {
+  id             String       @id @default(uuid())
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  saleId         String?
+  sale           Sale?        @relation(fields: [saleId], references: [id])
+  points         Int // positive for earned, negative for redeemed
+  type           String // EARNED, REDEEMED, ADJUSTED
+  notes          String?
+  createdAt      DateTime     @default(now())
+
+  @@index([customerId])
 }
 
 // --------------------------------------------------------
@@ -282,31 +339,42 @@ enum SaleStatus {
 }
 
 model Sale {
-  id             String        @id @default(uuid())
+  id             String             @id @default(uuid())
   organizationId String
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   branchId       String
-  branch         Branch        @relation(fields: [branchId], references: [id])
+  branch         Branch             @relation(fields: [branchId], references: [id])
   cashierId      String
-  cashier        User          @relation(fields: [cashierId], references: [id])
+  cashier        User               @relation(fields: [cashierId], references: [id])
   customerId     String?
-  customer       Customer?     @relation(fields: [customerId], references: [id])
-  invoiceNumber  String        @unique // e.g. INV-2026-0001
+  customer       Customer?          @relation(fields: [customerId], references: [id])
+  shiftId        String?
+  shift          CashDrawerSession? @relation(fields: [shiftId], references: [id])
+  invoiceNumber  String             @unique // e.g. INV-2026-0001
   subtotal       Decimal
-  discountAmount Decimal       @default(0.0)
-  taxAmount      Decimal       @default(0.0)
+  discountAmount Decimal            @default(0.0)
+  taxAmount      Decimal            @default(0.0)
   grandTotal     Decimal
   paidAmount     Decimal
-  dueAmount      Decimal       @default(0.0)
-  paymentMethod  PaymentMethod @default(CASH)
-  status         SaleStatus    @default(COMPLETED)
-  isOfflineSync  Boolean       @default(false)
+  dueAmount      Decimal            @default(0.0)
+  changeAmount   Decimal            @default(0.0)
+  paymentMethod  PaymentMethod      @default(CASH)
+  status         SaleStatus         @default(COMPLETED)
+  isOfflineSync  Boolean            @default(false)
   localOfflineId String? // Client UUID
   notes          String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   items          SaleItem[]
+  payments       SalePayment[]
+  returns        SaleReturn[]
+  loyaltyTxns    LoyaltyTransaction[]
+
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([invoiceNumber])
+  @@index([createdAt])
 }
 
 model SaleItem {
@@ -321,6 +389,105 @@ model SaleItem {
   discountAmount Decimal      @default(0.0)
   taxAmount      Decimal      @default(0.0)
   totalPrice     Decimal
+
+  @@index([saleId])
+}
+
+model SalePayment {
+  id             String        @id @default(uuid())
+  saleId         String
+  sale           Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  method         PaymentMethod
+  amount         Decimal
+  transactionRef String?
+  createdAt      DateTime      @default(now())
+
+  @@index([saleId])
+}
+
+model SaleReturn {
+  id             String           @id @default(uuid())
+  saleId         String
+  sale           Sale             @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  returnNumber   String           @unique // e.g. RET-2026-0001
+  totalRefund    Decimal
+  reason         String?
+  createdAt      DateTime         @default(now())
+
+  items          SaleReturnItem[]
+
+  @@index([saleId])
+}
+
+model SaleReturnItem {
+  id             String       @id @default(uuid())
+  saleReturnId   String
+  saleReturn     SaleReturn   @relation(fields: [saleReturnId], references: [id], onDelete: Cascade)
+  productName    String
+  quantity       Int
+  refundAmount   Decimal
+}
+
+// --------------------------------------------------------
+// POS REGISTER SHIFTS & PARKED SALES
+// --------------------------------------------------------
+
+model CashDrawerSession {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id])
+  openedById     String
+  openedBy       User         @relation("ShiftOpenedBy", fields: [openedById], references: [id])
+  closedById     String?
+  closedBy       User?        @relation("ShiftClosedBy", fields: [closedById], references: [id])
+  openingCash    Decimal      @default(0.0)
+  closingCash    Decimal?
+  expectedCash   Decimal?
+  cashVariance   Decimal?
+  cashSales      Decimal      @default(0.0)
+  cardSales      Decimal      @default(0.0)
+  mobileSales    Decimal      @default(0.0)
+  cashPayouts    Decimal      @default(0.0)
+  status         String       @default("OPEN") // OPEN, CLOSED
+  openedAt       DateTime     @default(now())
+  closedAt       DateTime?
+  notes          String?
+
+  sales          Sale[]
+
+  @@index([organizationId])
+  @@index([branchId])
+}
+
+model ParkedSale {
+  id             String           @id @default(uuid())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch           @relation(fields: [branchId], references: [id])
+  parkedBy       String
+  customerName   String?
+  customerPhone  String?
+  totalAmount    Decimal
+  notes          String?
+  parkedAt       DateTime         @default(now())
+
+  items          ParkedSaleItem[]
+
+  @@index([organizationId])
+  @@index([branchId])
+}
+
+model ParkedSaleItem {
+  id             String       @id @default(uuid())
+  parkedSaleId   String
+  parkedSale     ParkedSale   @relation(fields: [parkedSaleId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id])
+  quantity       Int
+  unitPrice      Decimal
 }
 
 // --------------------------------------------------------
@@ -341,6 +508,8 @@ model Supplier {
   updatedAt      DateTime     @updatedAt
 
   purchaseOrders PurchaseOrder[]
+
+  @@index([organizationId])
 }
 
 enum PurchaseStatus {
@@ -369,6 +538,9 @@ model PurchaseOrder {
   updatedAt      DateTime       @updatedAt
 
   items          PurchaseOrderItem[]
+
+  @@index([organizationId])
+  @@index([supplierId])
 }
 
 model PurchaseOrderItem {
@@ -382,6 +554,8 @@ model PurchaseOrderItem {
   receivedQty     Int           @default(0)
   batchNumber     String?
   expiryDate      DateTime?
+
+  @@index([purchaseOrderId])
 }
 
 // --------------------------------------------------------
@@ -400,7 +574,7 @@ model ChartOfAccount {
   id             String       @id @default(uuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  code           String // e.g. "1001"
+  code           String // e.g. "1001", "1010", "4010"
   name           String // e.g. "Cash in Hand", "bKash Merchant Account"
   type           AccountType
   balance        Decimal      @default(0.0)
@@ -409,6 +583,41 @@ model ChartOfAccount {
   updatedAt      DateTime     @updatedAt
 
   journalLines   JournalLine[]
+
+  @@index([organizationId])
+}
+
+model BankAccount {
+  id             String            @id @default(uuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  bankName       String // e.g. "Dutch-Bangla Bank", "BRAC Bank"
+  accountName    String
+  accountNumber  String
+  branchName     String?
+  routingNumber  String?
+  balance        Decimal           @default(0.0)
+  isActive       Boolean           @default(true)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  transactions   BankTransaction[]
+
+  @@index([organizationId])
+}
+
+model BankTransaction {
+  id             String       @id @default(uuid())
+  bankAccountId  String
+  bankAccount    BankAccount  @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  type           String // DEPOSIT, WITHDRAWAL, TRANSFER_IN, TRANSFER_OUT
+  amount         Decimal
+  reference      String?
+  description    String?
+  date           DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+
+  @@index([bankAccountId])
 }
 
 model JournalEntry {
@@ -426,6 +635,9 @@ model JournalEntry {
   updatedAt      DateTime     @updatedAt
 
   lines          JournalLine[]
+
+  @@index([organizationId])
+  @@index([entryNumber])
 }
 
 model JournalLine {
@@ -437,6 +649,9 @@ model JournalLine {
   debit          Decimal        @default(0.0)
   credit         Decimal        @default(0.0)
   notes          String?
+
+  @@index([journalEntryId])
+  @@index([accountId])
 }
 
 // --------------------------------------------------------
@@ -472,6 +687,9 @@ model Employee {
   attendances    Attendance[]
   leaves         Leave[]
   payrollItems   PayrollItem[]
+
+  @@index([organizationId])
+  @@index([branchId])
 }
 
 enum AttendanceStatus {
@@ -491,6 +709,9 @@ model Attendance {
   checkOut       DateTime?
   status         AttendanceStatus @default(PRESENT)
   notes          String?
+
+  @@index([employeeId])
+  @@index([date])
 }
 
 model Leave {
@@ -503,6 +724,8 @@ model Leave {
   reason         String?
   isApproved     Boolean      @default(false)
   createdAt      DateTime     @default(now())
+
+  @@index([employeeId])
 }
 
 enum PayrollStatus {
@@ -534,6 +757,9 @@ model PayrollItem {
   commission     Decimal      @default(0.0)
   netSalary      Decimal
   isPaid         Boolean      @default(false)
+
+  @@index([payrollRunId])
+  @@index([employeeId])
 }
 
 // --------------------------------------------------------
@@ -558,6 +784,9 @@ model Coupon {
   expiresAt      DateTime?
   isActive       Boolean      @default(true)
   createdAt      DateTime     @default(now())
+
+  @@index([organizationId])
+  @@index([code])
 }
 
 enum CampaignChannel {
@@ -585,4 +814,78 @@ model Campaign {
   status         CampaignStatus  @default(DRAFT)
   scheduledAt    DateTime?
   createdAt      DateTime        @default(now())
+
+  @@index([organizationId])
+}
+
+// --------------------------------------------------------
+// NOTIFICATIONS & AUDIT LOGS
+// --------------------------------------------------------
+
+model SystemNotification {
+  id             String        @id @default(uuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  title          String
+  message        String
+  type           String        @default("INFO") // INFO, WARNING, ALERT, SUCCESS
+  isRead         Boolean       @default(false)
+  link           String?
+  createdAt      DateTime      @default(now())
+
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model AuditLog {
+  id             String        @id @default(uuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  action         String // LOGIN, LOGOUT, SUPER_ADMIN_TAKEOVER, PRICE_OVERRIDE, REFUND, VOID_SALE, STOCK_ADJUSTMENT
+  entityType     String? // SALE, PRODUCT, USER, BRANCH
+  entityId       String?
+  details        String? // JSON metadata
+  ipAddress      String?
+  createdAt      DateTime      @default(now())
+
+  @@index([organizationId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// --------------------------------------------------------
+// SUPER ADMIN & SUBSCRIPTION BILLING
+// --------------------------------------------------------
+
+model PlatformPlan {
+  id             String   @id @default(uuid())
+  name           String
+  tier           PlanTier @unique
+  monthlyPrice   Decimal
+  yearlyPrice    Decimal
+  maxBranches    Int
+  maxStaff       Int
+  maxProducts    Int
+  features       String // Comma-separated or JSON list
+  createdAt      DateTime @default(now())
+}
+
+model SubscriptionInvoice {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoiceNumber  String       @unique // e.g. SUB-2026-0001
+  amount         Decimal
+  billingCycle   String // MONTHLY, YEARLY
+  paymentMethod  String? // BKASH, NAGAD, CARD, BANK
+  transactionId  String?
+  status         String       @default("PAID") // PAID, PENDING, FAILED
+  paidAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId])
 }
