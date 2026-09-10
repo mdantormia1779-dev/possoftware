@@ -2,7 +2,15 @@ import React from "react";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { PLAN_DISTRIBUTION } from "./superAdminData";
 
-export function SuperAdminPlanMix() {
+interface SuperAdminPlanMixProps {
+  planData?: Array<{ name: string; value: number; color: string }>;
+  totalTenants?: number;
+}
+
+export function SuperAdminPlanMix({ planData, totalTenants }: SuperAdminPlanMixProps) {
+  const data = planData && planData.length > 0 ? planData : PLAN_DISTRIBUTION;
+  const count = totalTenants ?? data.reduce((sum, d) => sum + d.value, 0);
+
   return (
     <div className="rounded-3xl border border-border/80 bg-card p-5 space-y-4 shadow-subtle-sm flex flex-col justify-between">
       <div>
@@ -10,7 +18,7 @@ export function SuperAdminPlanMix() {
           Subscription Tier Mix
         </h3>
         <p className="text-xs text-muted-foreground">
-          Distribution across 312 tenant companies
+          Distribution across {count} tenant companies
         </p>
       </div>
 
@@ -18,7 +26,7 @@ export function SuperAdminPlanMix() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={PLAN_DISTRIBUTION}
+              data={data}
               cx="50%"
               cy="50%"
               innerRadius={45}
@@ -26,7 +34,7 @@ export function SuperAdminPlanMix() {
               paddingAngle={4}
               dataKey="value"
             >
-              {PLAN_DISTRIBUTION.map((entry, index) => (
+              {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
@@ -36,7 +44,7 @@ export function SuperAdminPlanMix() {
       </div>
 
       <div className="space-y-2 text-xs font-mono">
-        {PLAN_DISTRIBUTION.map((item, idx) => (
+        {data.map((item, idx) => (
           <div key={idx} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span

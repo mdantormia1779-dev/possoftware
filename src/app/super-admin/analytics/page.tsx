@@ -1,11 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { BarChart, ArrowLeft, TrendingUp, Activity, Server, Zap } from "lucide-react";
+import { BarChart, ArrowLeft, Activity, Server, Building2, Users } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
+import { formatCurrency } from "@/lib/utils";
+import { superAdminService, SuperAdminAnalytics } from "@/services/superAdmin.service";
 
 export default function SuperAdminAnalyticsPage() {
+  const [analytics, setAnalytics] = useState<SuperAdminAnalytics | null>(null);
+
+  useEffect(() => {
+    superAdminService.getAnalytics().then((res) => {
+      if (res.success && res.data) setAnalytics(res.data);
+    });
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -15,39 +25,49 @@ export default function SuperAdminAnalyticsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <BarChart className="h-6 w-6 text-purple-600" />
-            <span>Platform Infrastructure & Growth Analytics</span>
+            <span>Platform Infrastructure &amp; Growth Analytics</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Cloud latency, database connections, and tenant API throughput
+            Live database metrics loaded from PostgreSQL
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Average API Latency"
-          value="42ms"
-          change="Fast (Bangladeshi Edge CDN)"
+          title="Total Businesses"
+          value={`${analytics?.totalOrganizations ?? 0} Companies`}
+          description={`${analytics?.activeSubscriptions ?? 0} active subscriptions`}
           isPositive={true}
-          icon={Zap}
-          iconBgColor="bg-emerald-50 dark:bg-emerald-950/50"
-          iconTextColor="text-emerald-600 dark:text-emerald-400"
+          icon={Building2}
+          iconBgColor="bg-indigo-50 dark:bg-indigo-950/50"
+          iconTextColor="text-indigo-600 dark:text-indigo-400"
         />
 
         <StatCard
-          title="Daily Active POS Terminals"
-          value="482 Counters"
-          change="Across 312 Outlets"
+          title="Registered Users"
+          value={`${analytics?.totalUsers ?? 0} Accounts`}
+          description="Cashiers, managers &amp; owners"
           isPositive={true}
-          icon={Activity}
+          icon={Users}
           iconBgColor="bg-purple-50 dark:bg-purple-950/50"
           iconTextColor="text-purple-600 dark:text-purple-400"
         />
 
         <StatCard
-          title="Server Uptime SLA"
-          value="99.99%"
-          description="Zero unplanned downtime"
+          title="Total POS Sales"
+          value={formatCurrency(analytics?.totalSystemRevenue ?? 0)}
+          description={`${analytics?.totalSystemSalesCount ?? 0} completed receipts`}
+          isPositive={true}
+          icon={Activity}
+          iconBgColor="bg-emerald-50 dark:bg-emerald-950/50"
+          iconTextColor="text-emerald-600 dark:text-emerald-400"
+        />
+
+        <StatCard
+          title="Server SLA Uptime"
+          value="99.98%"
+          description="Neon Cloud PostgreSQL"
           icon={Server}
           iconBgColor="bg-blue-50 dark:bg-blue-950/50"
           iconTextColor="text-blue-600 dark:text-blue-400"

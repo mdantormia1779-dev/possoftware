@@ -12,3 +12,4 @@ export * from "./accounting.service";
 export * from "./dashboard.service";
 export * from "./marketing.service";
 export * from "./auth.service";
+export * from "./superAdmin.service";

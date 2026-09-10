@@ -7,7 +7,17 @@ export type UserRole =
   | "staff";
 
 export type PlanTier = "starter" | "business" | "enterprise";
-export type SubscriptionStatus = "trial" | "active" | "past_due" | "cancelled" | "expired";
+export type SubscriptionStatus =
+  | "trial"
+  | "active"
+  | "past_due"
+  | "cancelled"
+  | "expired"
+  | "TRIAL"
+  | "ACTIVE"
+  | "PAST_DUE"
+  | "CANCELLED"
+  | "EXPIRED";
 
 export interface Organization {
   id: string;

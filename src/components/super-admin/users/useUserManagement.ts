@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { PlatformUser } from "./userTypes";
-import { INITIAL_USERS } from "./mockUsers";
+import { superAdminService } from "@/services/superAdmin.service";
 
 export function useUserManagement() {
-  const [users, setUsers] = useState<PlatformUser[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<PlatformUser[]>([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showInviteModal, setShowInviteModal] = useState(false);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await superAdminService.getUsers();
+      if (res.success && res.data) setUsers(res.data);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter((u) => {
     const q = search.toLowerCase();
@@ -18,36 +29,22 @@ export function useUserManagement() {
       u.email.toLowerCase().includes(q) ||
       u.organization.toLowerCase().includes(q) ||
       u.phone.includes(search);
-    const matchRole = roleFilter === "all" || u.role === roleFilter;
+    const matchRole = roleFilter === "all" || u.role.toLowerCase() === roleFilter.toLowerCase();
     const matchStatus = statusFilter === "all" || u.status === statusFilter;
     return matchSearch && matchRole && matchStatus;
   });
 
-  const toggleUserStatus = (id: string) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, status: u.status === "active" ? "suspended" : "active" } : u))
-    );
+  const toggleUserStatus = async (id: string) => {
+    const target = users.find((u) => u.id === id);
+    if (!target) return;
+    const newActive = target.status !== "active";
+    await superAdminService.updateUserStatus(id, newActive);
+    fetchUsers();
   };
 
-  const handleCreateUser = (newUser: {
-    name: string;
-    email: string;
-    role: PlatformUser["role"];
-    org: string;
-  }) => {
-    const created: PlatformUser = {
-      id: `usr-${Date.now().toString().slice(-3)}`,
-      name: newUser.name,
-      email: newUser.email,
-      phone: "+880 1700-998877",
-      role: newUser.role,
-      organization: newUser.org,
-      organizationId: "org-01",
-      status: "active",
-      lastLogin: "Never",
-      twoFactorEnabled: false,
-    };
-    setUsers([created, ...users]);
+  const handleCreateUser = () => {
+    fetchUsers();
+    setShowInviteModal(false);
   };
 
   const handleImpersonate = (user: PlatformUser) => {

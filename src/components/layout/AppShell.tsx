@@ -46,10 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background text-foreground flex flex-col antialiased selection:bg-indigo-500/20 selection:text-indigo-600">
       <GlobalSearchModal />
       <SyncStatusModal />
-      <NotificationsDrawer
-        isOpen={notificationsOpen}
-        onClose={() => setNotificationsOpen(false)}
-      />
+      <NotificationsDrawer isOpen={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
       <ThermalReceiptModal />
 
       {isSuperAdminTakeover && <SuperAdminBanner orgName={currentOrg.name} />}
@@ -85,8 +82,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onCloseMobile={() => setMobileMenuOpen(false)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8 print:p-0 print:overflow-visible print:bg-white">
-          <div className="max-w-7xl mx-auto print:max-w-none print:w-full print:p-0">{children}</div>
+        <main className={`flex-1 ${isPosPage ? "overflow-hidden p-0" : "overflow-y-auto p-4 sm:p-6 lg:p-8"} bg-background print:p-0 print:overflow-visible print:bg-white`}>
+          <div className={isPosPage ? "h-full w-full" : "max-w-7xl mx-auto print:max-w-none print:w-full print:p-0"}>
+            {children}
+          </div>
         </main>
       </div>
     </div>

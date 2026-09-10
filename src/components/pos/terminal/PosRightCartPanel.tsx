@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { PosCartHeader } from "./PosCartHeader";
+import { PosOrderTypeTabs, OrderType } from "./PosOrderTypeTabs";
 import { PosCartCustomerBar } from "./PosCartCustomerBar";
 import { PosCartItemsList } from "./PosCartItemsList";
 import { PosCartSummary } from "./PosCartSummary";
@@ -40,28 +41,36 @@ export function PosRightCartPanel({
   onHoldSale,
   onOpenPayment,
 }: PosRightCartPanelProps) {
+  const [orderType, setOrderType] = useState<OrderType>("dine_in");
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="w-96 xl:w-[420px] bg-white dark:bg-[#111827] border-l border-[#E2E8F0] dark:border-[#1E293B] flex flex-col justify-between shrink-0 shadow-subtle-sm">
-      <PosCartHeader
-        totalItems={totalItems}
-        heldCount={heldCount}
-        hasItems={cart.length > 0}
-        onOpenHeld={onOpenHeld}
-        onClearCart={onClearCart}
-      />
+    <div className="w-80 sm:w-96 xl:w-[410px] bg-white dark:bg-slate-900 border-l border-slate-200/80 dark:border-slate-800 flex flex-col justify-between shrink-0 shadow-sm z-10">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <PosCartHeader
+          totalItems={totalItems}
+          heldCount={heldCount}
+          hasItems={cart.length > 0}
+          onOpenHeld={onOpenHeld}
+          onClearCart={onClearCart}
+        />
 
-      <PosCartCustomerBar
-        customer={cartCustomer}
-        onClearCustomer={onClearCustomer}
-      />
+        <PosOrderTypeTabs
+          orderType={orderType}
+          onChangeOrderType={setOrderType}
+        />
 
-      <PosCartItemsList
-        cart={cart}
-        onUpdateQty={onUpdateQty}
-        onRemoveItem={onRemoveItem}
-      />
+        <PosCartCustomerBar
+          customer={cartCustomer}
+          onClearCustomer={onClearCustomer}
+        />
+
+        <PosCartItemsList
+          cart={cart}
+          onUpdateQty={onUpdateQty}
+          onRemoveItem={onRemoveItem}
+        />
+      </div>
 
       <PosCartSummary
         cartLength={cart.length}

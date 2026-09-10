@@ -3,7 +3,9 @@ import { hashPassword } from "./crypto";
 import { seedOrganizationAccounts } from "./auth-seed";
 
 export async function ensureDemoPersonas(targetEmail?: string) {
-  const isDemo = targetEmail?.includes("rahmanfashion.com.bd") || targetEmail === "superadmin@xyzpos.com";
+  const isDemo =
+    targetEmail?.includes("rahmanfashion.com.bd") ||
+    targetEmail?.includes("xyzpos.com");
   if (!isDemo) return null;
 
   let org = await prisma.organization.findFirst({
@@ -46,6 +48,7 @@ export async function ensureDemoPersonas(targetEmail?: string) {
     { email: "accountant@rahmanfashion.com.bd", name: "Kazi Farhana", role: "ACCOUNTANT" as const, phone: "01733333333" },
     { email: "cashier1@rahmanfashion.com.bd", name: "Anisur Rahman", role: "CASHIER" as const, phone: "01744444444" },
     { email: "superadmin@xyzpos.com", name: "Global Administrator", role: "SUPER_ADMIN" as const, phone: "01700000000" },
+    { email: "admin@xyzpos.com.bd", name: "Global Administrator", role: "SUPER_ADMIN" as const, phone: "01700000001" },
   ];
 
   for (const p of personas) {

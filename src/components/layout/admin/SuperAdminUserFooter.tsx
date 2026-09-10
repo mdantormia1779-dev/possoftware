@@ -18,6 +18,12 @@ export function SuperAdminUserFooter() {
       await authService.logout();
     } catch {}
     setCurrentUser(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("xyz_user");
+      localStorage.removeItem("xyz_auth_token");
+      localStorage.removeItem("super_admin_controlling");
+      localStorage.removeItem("super_admin_controlling_name");
+    }
     router.push("/login");
   };
 

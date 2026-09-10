@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertCircle } from "lucide-react";
+import { SearchX } from "lucide-react";
 import { Product } from "@/types";
 import { PosProductCard } from "./PosProductCard";
 import { PosProductCompactRow } from "./PosProductCompactRow";
@@ -7,6 +7,7 @@ import { PosProductCompactRow } from "./PosProductCompactRow";
 interface PosProductListProps {
   products: Product[];
   branchId: string;
+  cartQuantities?: Record<string, number>;
   viewMode: "grid" | "compact";
   onAddToCart: (product: Product) => void;
 }
@@ -14,26 +15,33 @@ interface PosProductListProps {
 export function PosProductList({
   products,
   branchId,
+  cartQuantities = {},
   viewMode,
   onAddToCart,
 }: PosProductListProps) {
   if (products.length === 0) {
     return (
-      <div className="text-center py-20 text-[#94A3B8] text-xs sm:text-sm space-y-2">
-        <AlertCircle className="h-8 w-8 mx-auto text-[#94A3B8] opacity-50" />
-        <p>No products match your search or filter.</p>
+      <div className="h-full flex flex-col items-center justify-center py-24 text-slate-400 text-xs sm:text-sm space-y-3">
+        <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+          <SearchX className="h-7 w-7 text-slate-400" />
+        </div>
+        <div className="text-center space-y-1">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">No products found</p>
+          <p className="text-[11px] text-slate-400">Try changing your search query or selected category.</p>
+        </div>
       </div>
     );
   }
 
   if (viewMode === "grid") {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3.5 pb-8">
         {products.map((product) => (
           <PosProductCard
             key={product.id}
             product={product}
             branchId={branchId}
+            cartQuantity={cartQuantities[product.id] || 0}
             onAddToCart={onAddToCart}
           />
         ))}
@@ -42,7 +50,7 @@ export function PosProductList({
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2 pb-8">
       {products.map((product) => (
         <PosProductCompactRow
           key={product.id}

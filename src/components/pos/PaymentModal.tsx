@@ -26,16 +26,16 @@ export function PaymentModal({ isOpen, onClose, onSaleComplete }: PaymentModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl rounded-2xl border border-border bg-card shadow-subtle-lg overflow-hidden flex flex-col max-h-[90vh] animate-fade-slide">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4 bg-muted/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 px-6 py-4 bg-slate-50/50 dark:bg-slate-950/40">
           <div>
-            <h3 className="font-bold text-foreground text-base tracking-tight">Checkout &amp; Payment</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base tracking-tight">Checkout &amp; Payment</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
               Outlet: {tenant.currentBranch.name} • {tenant.cart.length} {tenant.cart.length === 1 ? "item" : "items"} in cart
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>

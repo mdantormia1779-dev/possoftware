@@ -1,7 +1,7 @@
 import React from "react";
-import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { ShoppingBag, PlusCircle } from "lucide-react";
 import { CartItem } from "@/types";
-import { formatCurrency } from "@/lib/utils";
+import { PosCartItemRow } from "./PosCartItemRow";
 
 interface PosCartItemsListProps {
   cart: CartItem[];
@@ -9,21 +9,17 @@ interface PosCartItemsListProps {
   onRemoveItem: (productId: string) => void;
 }
 
-export function PosCartItemsList({
-  cart,
-  onUpdateQty,
-  onRemoveItem,
-}: PosCartItemsListProps) {
+export function PosCartItemsList({ cart, onUpdateQty, onRemoveItem }: PosCartItemsListProps) {
   if (cart.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center text-[#94A3B8] space-y-3">
-        <div className="p-4 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#1E293B] shadow-subtle-xs">
-          <ShoppingCart className="h-6 w-6 text-[#94A3B8]" />
+      <div className="h-full flex flex-col items-center justify-center p-6 text-center text-slate-400 space-y-3">
+        <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <ShoppingBag className="h-7 w-7 text-indigo-400" />
         </div>
-        <div className="space-y-1 max-w-[210px]">
-          <p className="text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC]">Cart is empty</p>
-          <p className="text-[11px] text-[#94A3B8] leading-relaxed">
-            Scan a barcode or click any product card on the left to add items.
+        <div className="space-y-1 max-w-[220px]">
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-200">Order is empty</p>
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            Click any product card from the left catalog or scan a barcode to begin order.
           </p>
         </div>
       </div>
@@ -31,55 +27,23 @@ export function PosCartItemsList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2">
+    <div className="flex-1 overflow-y-auto p-3.5 space-y-2">
       {cart.map((item) => (
-        <div
+        <PosCartItemRow
           key={item.product.id}
-          className="p-3 rounded-[10px] border border-[#E2E8F0] dark:border-[#1E293B] bg-white dark:bg-[#111827] shadow-subtle-xs flex items-center justify-between gap-2.5 text-xs"
-        >
-          <div className="min-w-0 flex-1">
-            <h5 className="font-semibold text-[#0F172A] dark:text-[#F8FAFC] truncate text-xs">
-              {item.product.name}
-            </h5>
-            <span className="text-[11px] text-[#94A3B8] font-mono">
-              {formatCurrency(item.unitPrice)} / {item.product.unit}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#1E293B] p-0.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B]">
-            <button
-              type="button"
-              onClick={() => onUpdateQty(item.product.id, -1)}
-              className="h-6 w-6 rounded-md bg-white dark:bg-[#111827] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center justify-center font-bold text-[#0F172A] dark:text-[#F8FAFC] text-xs shadow-2xs transition-colors"
-            >
-              <Minus className="h-3 w-3" />
-            </button>
-            <span className="w-6 text-center font-semibold text-[#0F172A] dark:text-[#F8FAFC] text-xs font-mono">
-              {item.quantity}
-            </span>
-            <button
-              type="button"
-              onClick={() => onUpdateQty(item.product.id, 1)}
-              className="h-6 w-6 rounded-md bg-white dark:bg-[#111827] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center justify-center font-bold text-[#0F172A] dark:text-[#F8FAFC] text-xs shadow-2xs transition-colors"
-            >
-              <Plus className="h-3 w-3" />
-            </button>
-          </div>
-
-          <div className="text-right shrink-0 min-w-[70px]">
-            <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC] block font-mono text-xs">
-              {formatCurrency(item.quantity * item.unitPrice)}
-            </span>
-            <button
-              type="button"
-              onClick={() => onRemoveItem(item.product.id)}
-              className="text-[10px] text-[#94A3B8] hover:text-[#EF4444] transition-colors"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
+          item={item}
+          onUpdateQty={onUpdateQty}
+          onRemoveItem={onRemoveItem}
+        />
       ))}
+
+      <button
+        type="button"
+        className="w-full py-2 px-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-indigo-400 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-all bg-slate-50/40 dark:bg-slate-900/40"
+      >
+        <PlusCircle className="h-3.5 w-3.5" />
+        <span>Add Special Note or Custom Item</span>
+      </button>
     </div>
   );
 }

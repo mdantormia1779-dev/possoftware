@@ -1,0 +1,3058 @@
+{
+  "info": {
+    "_postman_id": "xyz-pos-collection-2026",
+    "name": "XYZ Retail OS - Complete API Collection",
+    "description": "Production-ready Postman collection for XYZ POS / Retail OS with auto-auth handling.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "organizationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "branchId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "owner@rahmanfashion.com.bd",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password123",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "saleId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication (লগইন ও ইউজার)",
+      "item": [
+        {
+          "name": "Login (Auto-saves Token & Org)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "query": []
+            },
+            "description": "Logs in user, automatically sets {{authToken}}, {{organizationId}}, and {{branchId}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailOrPhone\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('authToken', res.data.token);",
+                  "    pm.environment.set('authToken', res.data.token);",
+                  "}",
+                  "if (res && res.data && res.data.organization) {",
+                  "    pm.collectionVariables.set('organizationId', res.data.organization.id);",
+                  "    pm.environment.set('organizationId', res.data.organization.id);",
+                  "}",
+                  "if (res && res.data && res.data.branch) {",
+                  "    pm.collectionVariables.set('branchId', res.data.branch.id);",
+                  "    pm.environment.set('branchId', res.data.branch.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Current User (Me)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ],
+              "query": []
+            },
+            "description": "Returns currently authenticated user profile and tenant details."
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Manager\",\n  \"email\": \"testmanager@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"01799999999\",\n  \"businessName\": \"Test Superstore\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard & Reports (ড্যাশবোর্ড ও রিপোর্ট)",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Returns today sales, total products, low stock count, recent sales."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reports",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "sales",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Fetch comprehensive business sales and performance reports."
+          },
+          "response": []
+        },
+        {
+          "name": "Super Admin Analytics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/super-admin/analytics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "super-admin",
+                "analytics"
+              ],
+              "query": []
+            },
+            "description": "Platform wide analytics for super admin."
+          },
+          "response": []
+        },
+        {
+          "name": "Super Admin Plans",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/super-admin/plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "super-admin",
+                "plans"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Super Admin Organizations",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/super-admin/organizations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "super-admin",
+                "organizations"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Super Admin Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/super-admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "super-admin",
+                "users"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Products & Categories (পণ্য ও ক্যাটাগরি)",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Search Products (by query)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "shirt",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cotton Casual Shirt\",\n  \"nameBn\": \"কটন ক্যাজুয়াল শার্ট\",\n  \"sku\": \"SHIRT-001\",\n  \"barcode\": \"89411001\",\n  \"purchasePrice\": 650,\n  \"sellingPrice\": 1200,\n  \"taxRate\": 5,\n  \"minStockAlert\": 10,\n  \"initialStock\": 40\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('productId', res.data.id);",
+                  "    pm.environment.set('productId', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "{{productId}}"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "{{productId}}"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sellingPrice\": 1250,\n  \"minStockAlert\": 12\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Scan Barcode",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/barcode",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "barcode"
+              ],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "89411001",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Men's Fashion\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Sales & POS (বিক্রয় ও পিওএস)",
+      "item": [
+        {
+          "name": "Get Sales List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create POS Sale (Checkout)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"CASH\",\n  \"subtotal\": 1200,\n  \"discountAmount\": 0,\n  \"taxAmount\": 60,\n  \"grandTotal\": 1260,\n  \"paidAmount\": 1300,\n  \"notes\": \"Counter sale test\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"unitPrice\": 1200,\n      \"subtotal\": 1200,\n      \"discountAmount\": 0,\n      \"taxAmount\": 60,\n      \"totalAmount\": 1260\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('saleId', res.data.id);",
+                  "    pm.environment.set('saleId', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Sale By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/{{saleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                "{{saleId}}"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sale Return",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/sales/returns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "sales",
+                "returns"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"saleId\": \"{{saleId}}\",\n  \"reason\": \"Customer size exchange\",\n  \"refundAmount\": 1260,\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1,\n      \"refundAmount\": 1260\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get POS Shifts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pos/shifts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pos",
+                "shifts"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Open POS Shift",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pos/shifts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pos",
+                "shifts"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"openingCash\": 5000,\n  \"notes\": \"Morning register opening\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Parked Orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pos/parked",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pos",
+                "parked"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Customers & Loyalty (গ্রাহক ও লয়্যালটি)",
+      "item": [
+        {
+          "name": "Get Customers List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Search Customer (phone/name)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "017",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mohammad Tanvir\",\n  \"phone\": \"01711223344\",\n  \"email\": \"tanvir@example.com\",\n  \"address\": \"Dhanmondi, Dhaka\",\n  \"creditLimit\": 50000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "    pm.collectionVariables.set('customerId', res.data.id);",
+                  "    pm.environment.set('customerId', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Customer By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customers",
+                "{{customerId}}"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Loyalty Program",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loyalty"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Configure Loyalty Program",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "loyalty"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pointsPerHundred\": 1,\n  \"minRedeemPoints\": 100,\n  \"pointValue\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Inventory & Purchases (ইনভেন্টরি ও ক্রয়)",
+      "item": [
+        {
+          "name": "Get Stock Levels",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/inventory/stock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "stock"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Transfers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/inventory/transfers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "transfers"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Stock Transfer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/inventory/transfers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "inventory",
+                "transfers"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromBranchId\": \"{{branchId}}\",\n  \"toBranchId\": \"{{targetBranchId}}\",\n  \"notes\": \"Transfer between branches\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 5\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Suppliers List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/suppliers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "suppliers"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Supplier",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/suppliers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "suppliers"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Apex Textile Mills\",\n  \"contactPerson\": \"Rafiq Chowdhury\",\n  \"phone\": \"01755555555\",\n  \"email\": \"supplier@apextextiles.com\",\n  \"address\": \"Tejgaon Industrial Area, Dhaka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Purchases List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/purchases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "purchases"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Purchase Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/purchases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "purchases"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supplierId\": \"{{supplierId}}\",\n  \"paidAmount\": 5000,\n  \"notes\": \"Seasonal restock\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 20,\n      \"unitCost\": 650\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Accounting & Finance (অ্যাকাউন্টিং ও অর্থ)",
+      "item": [
+        {
+          "name": "Get Chart of Accounts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "accounts"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Account",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "accounts"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"1050\",\n  \"name\": \"Petty Cash Dhaka\",\n  \"type\": \"ASSET\",\n  \"balance\": 5000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "transactions"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/transactions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "transactions"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{accountId}}\",\n  \"type\": \"EXPENSE\",\n  \"amount\": 1500,\n  \"description\": \"Office utility bill payment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bank Accounts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/banks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "banks"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Journal Entries",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounting/journals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "accounting",
+                "journals"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. HR & Payroll (এইচআর ও কর্মকর্তা)",
+      "item": [
+        {
+          "name": "Get Employees",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "employees"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employee",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "employees"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"EMP-101\",\n  \"name\": \"Sabbir Hossain\",\n  \"email\": \"sabbir@rahmanfashion.com.bd\",\n  \"phone\": \"01766666666\",\n  \"department\": \"Sales\",\n  \"designation\": \"Junior Cashier\",\n  \"salary\": 18000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/attendance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "attendance"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Attendance",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/attendance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "attendance"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"status\": \"PRESENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leave Requests",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/leaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "leaves"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payroll",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/hr/payroll",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hr",
+                "payroll"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Organization & Settings (প্রতিষ্ঠান ও শাখা)",
+      "item": [
+        {
+          "name": "Get Organization Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/organization",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "organization"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Branches List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/branches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "branches"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Branch",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/branches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "branches"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uttara Branch\",\n  \"code\": \"BR-UTR-02\",\n  \"address\": \"Sector 3, Uttara\",\n  \"city\": \"Dhaka\",\n  \"phone\": \"01788888888\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Coupons",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/marketing/coupons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "marketing",
+                "coupons"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Create Coupon",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/marketing/coupons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "marketing",
+                "coupons"
+              ],
+              "query": []
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EID50\",\n  \"type\": \"PERCENTAGE\",\n  \"discount\": 10,\n  \"minPurchase\": 1000,\n  \"validUntil\": \"2026-12-31T23:59:59.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Marketing Campaigns",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/marketing/campaigns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "marketing",
+                "campaigns"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/audit-logs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "audit-logs"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notifications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-branch-id",
+                "value": "{{branchId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -2,8 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    webpackBuildWorker: false,
+    cpus: 1,
+  },
   images: {
-    domains: ["images.unsplash.com", "avatars.githubusercontent.com"],
+    remotePatterns: [
+      { hostname: "images.unsplash.com" },
+      { hostname: "avatars.githubusercontent.com" },
+    ],
   },
 };
 

@@ -60,7 +60,7 @@ export const DEMO_PERSONAS: DemoPersona[] = [
   {
     role: "super_admin",
     title: "Super Admin",
-    email: "admin@xyzpos.com.bd",
+    email: "superadmin@xyzpos.com",
     icon: Shield,
     colorClass: "text-purple-600 dark:text-purple-400",
     bgClass: "hover:border-purple-400 dark:hover:border-purple-600",

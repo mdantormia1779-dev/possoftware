@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { PosCatalogHeader } from "./PosCatalogHeader";
 import { PosProductList } from "./PosProductList";
-import { Category, Product } from "@/types";
+import { Category, Product, CartItem } from "@/types";
 
 interface PosLeftCatalogPanelProps {
   searchQuery: string;
@@ -14,6 +14,7 @@ interface PosLeftCatalogPanelProps {
   onToggleViewMode: () => void;
   filteredProducts: Product[];
   branchId: string;
+  cart: CartItem[];
   onAddToCart: (product: Product) => void;
 }
 
@@ -28,10 +29,18 @@ export function PosLeftCatalogPanel({
   onToggleViewMode,
   filteredProducts,
   branchId,
+  cart,
   onAddToCart,
 }: PosLeftCatalogPanelProps) {
+  const cartQuantities = useMemo(() => {
+    return cart.reduce<Record<string, number>>((acc, item) => {
+      acc[item.product.id] = (acc[item.product.id] || 0) + item.quantity;
+      return acc;
+    }, {});
+  }, [cart]);
+
   return (
-    <div className="flex-1 flex flex-col border-r border-border/80 overflow-hidden bg-muted/15">
+    <div className="flex-1 flex flex-col border-r border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-950/40">
       <PosCatalogHeader
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
@@ -39,14 +48,16 @@ export function PosLeftCatalogPanel({
         onSelectCategory={onSelectCategory}
         categories={categories}
         totalProductsCount={totalProductsCount}
+        filteredCount={filteredProducts.length}
         viewMode={viewMode}
         onToggleViewMode={onToggleViewMode}
       />
 
-      <div className="flex-1 overflow-y-auto p-3.5 sm:p-4">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-5">
         <PosProductList
           products={filteredProducts}
           branchId={branchId}
+          cartQuantities={cartQuantities}
           viewMode={viewMode}
           onAddToCart={onAddToCart}
         />

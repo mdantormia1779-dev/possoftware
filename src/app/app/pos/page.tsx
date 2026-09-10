@@ -14,7 +14,7 @@ export default function PosTerminalPage() {
   const state = usePosTerminalState();
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col -m-4 sm:-m-6 lg:-m-8 overflow-hidden bg-background select-none">
+    <div className="h-full w-full flex flex-col overflow-hidden bg-slate-50/50 dark:bg-slate-950 select-none">
       <PosBanner
         isOnline={tenant.isOnline}
         syncQueueLength={tenant.syncQueue.length}
@@ -33,6 +33,7 @@ export default function PosTerminalPage() {
           onToggleViewMode={() => state.setViewMode(state.viewMode === "grid" ? "compact" : "grid")}
           filteredProducts={state.filteredProducts}
           branchId={tenant.currentBranch.id}
+          cart={tenant.cart}
           onAddToCart={(p) => tenant.addToCart(p, 1)}
         />
 

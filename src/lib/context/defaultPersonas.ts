@@ -6,7 +6,7 @@ export const DEFAULT_PERSONAS: Record<UserRole, { name: string; email: string }>
   accountant: { name: "Farhan Ahmed, ACA", email: "accountant@rahmanfashion.com.bd" },
   cashier: { name: "Sadia Islam", email: "cashier@rahmanfashion.com.bd" },
   staff: { name: "Kamrul Hassan", email: "staff@rahmanfashion.com.bd" },
-  super_admin: { name: "Global Administrator", email: "admin@xyzpos.com.bd" },
+  super_admin: { name: "Global Administrator", email: "superadmin@xyzpos.com" },
 };
 
 export function getDefaultUserForRole(role: UserRole): User {
