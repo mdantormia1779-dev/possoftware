@@ -58,26 +58,28 @@ export function useNotificationState(currentRole: UserRole = "company_owner", cu
     notificationService.createNotification(newNotif).catch(() => {});
   }, [myId, currentUser?.name, currentRole]);
 
+  const isSuperAdmin = currentRole === "super_admin" || currentUser?.role === "super_admin";
+
   const updateNotification = useCallback(async (id: string, updates: Partial<NotificationItem>) => {
     const existing = notifications.find((n) => n.id === id);
-    if (existing?.createdBy && existing.createdBy !== myId) return;
+    if (!isSuperAdmin && existing?.createdBy && existing.createdBy !== myId) return;
     storageService.updateNotification(id, updates);
     setNotifications(storageService.getNotifications());
-    notificationService.updateNotification(id, { ...updates, userId: myId }).catch(() => {});
-  }, [notifications, myId]);
+    notificationService.updateNotification(id, { ...updates, userId: myId, role: currentRole }).catch(() => {});
+  }, [notifications, myId, isSuperAdmin, currentRole]);
 
   const deleteNotification = useCallback(async (id: string) => {
     const existing = notifications.find((n) => n.id === id);
-    if (existing?.createdBy && existing.createdBy !== myId) {
+    if (!isSuperAdmin && existing?.createdBy && existing.createdBy !== myId) {
       storageService.clearNotificationForUser(id, myId);
       setNotifications(storageService.getNotifications());
-      notificationService.deleteNotification(id, myId, true).catch(() => {});
+      notificationService.deleteNotification(id, myId, true, currentRole).catch(() => {});
       return;
     }
     storageService.deleteNotification(id);
     setNotifications(storageService.getNotifications());
-    notificationService.deleteNotification(id, myId).catch(() => {});
-  }, [notifications, myId]);
+    notificationService.deleteNotification(id, myId, false, currentRole).catch(() => {});
+  }, [notifications, myId, isSuperAdmin, currentRole]);
 
   const deleteAllNotifications = useCallback(async () => {
     storageService.clearAllNotificationsForUser(myId);
@@ -88,10 +90,8 @@ export function useNotificationState(currentRole: UserRole = "company_owner", cu
   return {
     notifications: roleNotifications, allNotifications: notifications,
     unreadNotificationCount: roleNotifications.filter((n) => !n.isRead).length,
+    isSuperAdmin,
     markNotificationRead, markAllNotificationsRead, addNotification,
     updateNotification, deleteNotification, deleteAllNotifications, refreshNotifications,
   };
 }
-
-
-

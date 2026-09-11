@@ -6,6 +6,7 @@ import { NotificationItem } from "@/types";
 interface NotificationItemRowProps {
   notification: NotificationItem;
   currentUserId?: string;
+  isSuperAdmin?: boolean;
   onMarkRead: (id: string) => void;
   onClose?: () => void;
   onEdit?: (notification: NotificationItem) => void;
@@ -22,9 +23,9 @@ function getNotificationIcon(type: string) {
 }
 
 export function NotificationItemRow({
-  notification: n, currentUserId, onMarkRead, onClose, onEdit, onDelete,
+  notification: n, currentUserId, isSuperAdmin, onMarkRead, onClose, onEdit, onDelete,
 }: NotificationItemRowProps) {
-  const isCreator = !n.createdBy || !currentUserId || n.createdBy === currentUserId;
+  const isCreator = isSuperAdmin || !n.createdBy || !currentUserId || n.createdBy === currentUserId;
 
   return (
     <div
@@ -58,7 +59,7 @@ export function NotificationItemRow({
                   Details <ChevronRight className="h-3 w-3 ml-0.5" />
                 </Link>
               )}
-              {n.createdByName && !isCreator && (
+              {n.createdByName && (!currentUserId || n.createdBy !== currentUserId) && (
                 <span className="text-[9px] text-muted-foreground italic">By {n.createdByName}</span>
               )}
             </div>

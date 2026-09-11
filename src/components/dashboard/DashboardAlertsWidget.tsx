@@ -12,7 +12,7 @@ import { DeleteNotificationModal } from "@/components/notifications/DeleteNotifi
 
 export function DashboardAlertsWidget() {
   const {
-    notifications, unreadNotificationCount, currentRole, currentUser,
+    notifications, unreadNotificationCount, currentRole, currentUser, isSuperAdmin,
     markNotificationRead, addNotification, updateNotification, deleteNotification,
   } = useTenant();
 
@@ -22,7 +22,7 @@ export function DashboardAlertsWidget() {
 
   const displayList = notifications.slice(0, 3);
   const targetItem = notifications.find((n) => n.id === deleteId);
-  const isTargetCreator = targetItem ? (!targetItem.createdBy || targetItem.createdBy === currentUser?.id) : true;
+  const isTargetCreator = targetItem ? (isSuperAdmin || !targetItem.createdBy || targetItem.createdBy === currentUser?.id) : true;
 
   return (
     <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-subtle-xs">
@@ -52,7 +52,7 @@ export function DashboardAlertsWidget() {
         ) : (
           displayList.map((n) => (
             <NotificationItemRow
-              key={n.id} notification={n} currentUserId={currentUser?.id}
+              key={n.id} notification={n} currentUserId={currentUser?.id} isSuperAdmin={isSuperAdmin}
               onMarkRead={markNotificationRead} onEdit={(notif) => setEditItem(notif)} onDelete={(id) => setDeleteId(id)}
             />
           ))

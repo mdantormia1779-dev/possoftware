@@ -23,7 +23,7 @@ export const notificationService = {
 
   async updateNotification(
     id: string,
-    data: Partial<NotificationItem>
+    data: Partial<NotificationItem> & { userId?: string; role?: string }
   ): Promise<NotificationItem | undefined> {
     const res = await apiRequest<NotificationItem>(`/api/notifications/${id}`, {
       method: "PUT",
@@ -32,10 +32,11 @@ export const notificationService = {
     return res.data;
   },
 
-  async deleteNotification(id: string, userId?: string, clearOnly?: boolean): Promise<{ id: string } | undefined> {
+  async deleteNotification(id: string, userId?: string, clearOnly?: boolean, role?: string): Promise<{ id: string } | undefined> {
     const q = new URLSearchParams();
     if (userId) q.set("userId", userId);
     if (clearOnly) q.set("clearOnly", "true");
+    if (role) q.set("role", role);
     const query = q.toString() ? `?${q.toString()}` : "";
     const res = await apiRequest<{ id: string }>(`/api/notifications/${id}${query}`, { method: "DELETE" });
     return res.data;

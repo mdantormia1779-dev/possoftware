@@ -14,6 +14,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     if (!existing) return apiError("Notification not found", 404);
 
     const requesterId = body.userId || ctxUserId;
+    const isSuperAdmin = body.role === "super_admin" || req.headers.get("x-user-role") === "super_admin";
     if (body.action === "clear_for_user" && requesterId) {
       let cleared: string[] = [];
       try { cleared = existing.clearedBy ? JSON.parse(existing.clearedBy) : []; } catch {}
@@ -25,7 +26,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       return apiSuccess(updated, "Notification cleared for user");
     }
 
-    if (existing.createdBy && requesterId && existing.createdBy !== requesterId) {
+    if (!isSuperAdmin && existing.createdBy && requesterId && existing.createdBy !== requesterId) {
       return apiError("Only the creator of this notification can edit it", 403);
     }
 
@@ -54,9 +55,10 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     if (!existing) return apiError("Notification not found", 404);
 
     const requesterId = req.nextUrl.searchParams.get("userId") || ctxUserId;
+    const isSuperAdmin = req.nextUrl.searchParams.get("role") === "super_admin" || req.headers.get("x-user-role") === "super_admin";
     const clearOnly = req.nextUrl.searchParams.get("clearOnly") === "true";
 
-    if (clearOnly || (existing.createdBy && requesterId && existing.createdBy !== requesterId)) {
+    if (!isSuperAdmin && (clearOnly || (existing.createdBy && requesterId && existing.createdBy !== requesterId))) {
       let cleared: string[] = [];
       try { cleared = existing.clearedBy ? JSON.parse(existing.clearedBy) : []; } catch {}
       if (requesterId && !cleared.includes(requesterId)) cleared.push(requesterId);

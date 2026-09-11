@@ -17,7 +17,7 @@ interface NotificationsDrawerProps {
 
 export function NotificationsDrawer({ isOpen, onClose }: NotificationsDrawerProps) {
   const {
-    notifications, unreadNotificationCount, markNotificationRead, markAllNotificationsRead,
+    notifications, unreadNotificationCount, isSuperAdmin, markNotificationRead, markAllNotificationsRead,
     addNotification, updateNotification, deleteNotification, deleteAllNotifications, currentUser,
   } = useTenant();
 
@@ -31,7 +31,7 @@ export function NotificationsDrawer({ isOpen, onClose }: NotificationsDrawerProp
 
   const filtered = activeTab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
   const targetItem = notifications.find((n) => n.id === deleteTargetId);
-  const isTargetCreator = targetItem ? (!targetItem.createdBy || targetItem.createdBy === currentUser?.id) : true;
+  const isTargetCreator = targetItem ? (isSuperAdmin || !targetItem.createdBy || targetItem.createdBy === currentUser?.id) : true;
 
   return (
     <>
@@ -48,7 +48,7 @@ export function NotificationsDrawer({ isOpen, onClose }: NotificationsDrawerProp
           />
           <div className="flex-1 overflow-y-auto p-4">
             <NotificationsDrawerList
-              notifications={filtered} currentUserId={currentUser?.id}
+              notifications={filtered} currentUserId={currentUser?.id} isSuperAdmin={isSuperAdmin}
               onMarkRead={markNotificationRead} onClose={onClose}
               onEdit={(n) => setEditItem(n)} onDelete={(id) => setDeleteTargetId(id)}
             />

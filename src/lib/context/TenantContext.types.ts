@@ -48,6 +48,7 @@ export interface TenantContextType {
   setActiveReceiptSale: (sale: Sale | null) => void;
   notifications: NotificationItem[];
   unreadNotificationCount: number;
+  isSuperAdmin: boolean;
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   addNotification: (item: Partial<NotificationItem>) => Promise<void>;

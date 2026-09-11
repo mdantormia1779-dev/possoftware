@@ -8,6 +8,7 @@ import { NotificationItemRow } from "../NotificationItemRow";
 interface NotificationsDrawerListProps {
   notifications: NotificationItem[];
   currentUserId?: string;
+  isSuperAdmin?: boolean;
   onMarkRead: (id: string) => void;
   onClose: () => void;
   onEdit: (notification: NotificationItem) => void;
@@ -17,6 +18,7 @@ interface NotificationsDrawerListProps {
 export function NotificationsDrawerList({
   notifications,
   currentUserId,
+  isSuperAdmin,
   onMarkRead,
   onClose,
   onEdit,
@@ -38,6 +40,7 @@ export function NotificationsDrawerList({
           key={n.id}
           notification={n}
           currentUserId={currentUserId}
+          isSuperAdmin={isSuperAdmin}
           onMarkRead={onMarkRead}
           onClose={onClose}
           onEdit={onEdit}
