@@ -44,11 +44,11 @@ export function AppHeader({
   onOpenNotifications,
 }: AppHeaderProps) {
   return (
-    <header className="no-print sticky top-0 z-40 h-16 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md px-3 sm:px-5 flex items-center justify-between shadow-subtle-xs transition-colors">
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+    <header className="no-print sticky top-0 z-40 h-16 shrink-0 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md px-2.5 sm:px-4 lg:px-5 flex items-center justify-between shadow-subtle-xs transition-colors gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
         <button
           onClick={onToggleMobile}
-          className="md:hidden p-2 rounded-lg text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B]"
+          className="md:hidden p-1.5 sm:p-2 rounded-lg text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] shrink-0"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

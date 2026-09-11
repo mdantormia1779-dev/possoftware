@@ -28,8 +28,8 @@ export function SuperAdminHeaderProfile() {
   };
 
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2">
-      <div className="flex items-center gap-2 pl-2 sm:pl-2.5 pr-2.5 sm:pr-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-800/50">
+    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <div className="hidden lg:flex items-center gap-2 pl-2 sm:pl-2.5 pr-2.5 sm:pr-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-800/50">
         <div className="h-7 w-7 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
           <User className="h-3.5 w-3.5" />
         </div>
@@ -45,11 +45,11 @@ export function SuperAdminHeaderProfile() {
 
       <button
         onClick={handleSignOut}
-        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold rounded-xl text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border border-rose-200/80 dark:border-rose-900/60 transition-all shadow-subtle-xs cursor-pointer active:scale-95"
+        className="flex items-center gap-1.5 px-2 sm:px-2.5 md:px-3 py-1.5 text-xs font-bold rounded-xl text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border border-rose-200/80 dark:border-rose-900/60 transition-all shadow-subtle-xs cursor-pointer active:scale-95 shrink-0"
         title="Logout from Super Admin"
       >
-        <LogOut className="h-3.5 w-3.5" />
-        <span className="inline font-bold">Logout</span>
+        <LogOut className="h-3.5 w-3.5 shrink-0" />
+        <span className="hidden sm:inline font-bold">Logout</span>
       </button>
     </div>
   );
