@@ -2,84 +2,87 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Layers, ArrowLeft, CheckCircle2, Edit2 } from "lucide-react";
+import { Layers, ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { formatCurrency } from "@/lib/utils";
 import { superAdminService } from "@/services/superAdmin.service";
+import { PlanData } from "@/components/super-admin/plans/planTypes";
+import { PlanCard } from "@/components/super-admin/plans/PlanCard";
+import { CreatePlanModal } from "@/components/super-admin/plans/CreatePlanModal";
+import { EditPlanModal } from "@/components/super-admin/plans/EditPlanModal";
+import { DeletePlanModal } from "@/components/super-admin/plans/DeletePlanModal";
 
-const DEFAULT_PLANS = [
-  { name: "Starter", monthlyPrice: 2999, maxBranches: 1, maxStaff: 5, features: ["1 Branch", "5 Staff Accounts", "5,000 Products"] },
-  { name: "Business", monthlyPrice: 6999, maxBranches: 3, maxStaff: 20, features: ["3 Branches", "20 Staff Accounts", "Full POS & Accounting"] },
-  { name: "Enterprise", monthlyPrice: 14999, maxBranches: 10, maxStaff: 100, features: ["Unlimited Branches", "Dedicated Support", "Custom Domain"] },
+const DEFAULT_PLANS: PlanData[] = [
+  { id: "1", name: "Starter", tier: "STARTER", monthlyPrice: 2999, maxBranches: 1, maxStaff: 5, features: ["1 Branch", "5 Staff Accounts", "5,000 Products"] },
+  { id: "2", name: "Business", tier: "BUSINESS", monthlyPrice: 6999, maxBranches: 3, maxStaff: 20, features: ["3 Branches", "20 Staff Accounts", "Full POS & Accounting"] },
+  { id: "3", name: "Enterprise", tier: "ENTERPRISE", monthlyPrice: 14999, maxBranches: 10, maxStaff: 100, features: ["Unlimited Branches", "Dedicated Support", "Custom Domain"] },
 ];
 
 export default function SuperAdminPlansPage() {
-  const [plans, setPlans] = useState<any[]>(DEFAULT_PLANS);
+  const [plans, setPlans] = useState<PlanData[]>(DEFAULT_PLANS);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<PlanData | null>(null);
+  const [deletingPlan, setDeletingPlan] = useState<PlanData | null>(null);
+
+  const fetchPlans = () => {
+    superAdminService.getPlans().then((res) => {
+      if (res.success && res.data && res.data.length > 0) setPlans(res.data);
+    });
+  };
 
   useEffect(() => {
-    superAdminService.getPlans().then((res) => {
-      if (res.success && res.data && res.data.length > 0) {
-        setPlans(res.data);
-      }
-    });
+    fetchPlans();
   }, []);
+
+  const handleCreate = async (data: PlanData) => {
+    const res = await superAdminService.createPlan(data);
+    if (res.success && res.data) setPlans((prev) => [...prev, res.data]);
+    else fetchPlans();
+  };
+
+  const handleUpdate = async (data: PlanData) => {
+    const res = await superAdminService.updatePlan(data);
+    if (res.success && res.data) {
+      setPlans((prev) => prev.map((p) => (p.id === data.id ? res.data : p)));
+    } else fetchPlans();
+  };
+
+  const handleDelete = async (id: string) => {
+    await superAdminService.deletePlan(id);
+    setPlans((prev) => prev.filter((p) => p.id !== id));
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/super-admin" className="p-2 rounded-lg border border-border hover:bg-muted">
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Layers className="h-6 w-6 text-purple-600" />
-            <span>SaaS Subscription Plans &amp; Tier Pricing</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Configured subscription tiers loaded from PostgreSQL database
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Link href="/super-admin" className="p-2 rounded-lg border border-border hover:bg-muted">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              <Layers className="h-6 w-6 text-purple-600" />
+              <span>SaaS Subscription Plans &amp; Tier Pricing</span>
+            </h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Configured subscription tiers loaded from PostgreSQL database
+            </p>
+          </div>
         </div>
+        <Button variant="primary" size="sm" onClick={() => setIsCreateOpen(true)} className="bg-purple-600 hover:bg-purple-700">
+          <Plus className="h-4 w-4 mr-1.5" />
+          <span>New Plan Tier</span>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan, idx) => {
-          const feats: string[] = Array.isArray(plan.features)
-            ? plan.features
-            : typeof plan.features === "string"
-            ? JSON.parse(plan.features || "[]")
-            : [`${plan.maxBranches || 1} Branches`, `${plan.maxStaff || 5} Staff`];
-
-          return (
-            <div key={plan.id || idx} className="p-6 rounded-3xl border border-border bg-card shadow-xs space-y-4 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                    Active Tier
-                  </span>
-                </div>
-                <div className="text-3xl font-extrabold text-foreground">
-                  {formatCurrency(plan.monthlyPrice)}<span className="text-xs font-normal text-muted-foreground"> / mo</span>
-                </div>
-                <ul className="space-y-2 text-xs text-muted-foreground pt-2">
-                  {feats.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="pt-4 border-t border-border">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Edit2 className="h-3.5 w-3.5 mr-1" /> Plan Settings
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+        {plans.map((plan, idx) => (
+          <PlanCard key={plan.id || idx} plan={plan} onEdit={setEditingPlan} onDelete={setDeletingPlan} />
+        ))}
       </div>
+
+      <CreatePlanModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSave={handleCreate} />
+      <EditPlanModal isOpen={!!editingPlan} plan={editingPlan} onClose={() => setEditingPlan(null)} onSave={handleUpdate} />
+      <DeletePlanModal isOpen={!!deletingPlan} plan={deletingPlan} onClose={() => setDeletingPlan(null)} onConfirm={handleDelete} />
     </div>
   );
 }

@@ -37,6 +37,26 @@ export const superAdminService = {
     return apiRequest<any[]>("/api/super-admin/plans");
   },
 
+  async createPlan(data: any) {
+    return apiRequest<any>("/api/super-admin/plans", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updatePlan(data: any) {
+    return apiRequest<any>("/api/super-admin/plans", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deletePlan(id: string) {
+    return apiRequest<any>(`/api/super-admin/plans?id=${id}`, {
+      method: "DELETE",
+    });
+  },
+
   async getUsers() {
     return apiRequest<any[]>("/api/super-admin/users");
   },
