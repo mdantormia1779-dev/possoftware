@@ -34,7 +34,7 @@ class StorageService {
   getBranches = () => tenantStorage.getBranches();
   addBranch = (branch: any) => tenantStorage.addBranch(branch);
 
-  // Products & Categories
+  // Products, Categories, Stock
   getCategories = () => productStorage.getCategories();
   addCategory = (cat: any) => productStorage.addCategory(cat);
   getProducts = () => productStorage.getProducts();
@@ -49,12 +49,10 @@ class StorageService {
   getSuppliers = () => customerStorage.getSuppliers();
   addSupplier = (s: any) => customerStorage.addSupplier(s);
 
-  // Sales
+  // Sales, Purchases & Transfers
   getSales = () => saleStorage.getSales();
   saveSales = (s: any[]) => saleStorage.saveSales(s);
   createSale = (data: any, isOffline = false) => saleStorage.createSale(data, isOffline);
-
-  // Purchases & Transfers
   getPurchases = () => operationsStorage.getPurchases();
   savePurchases = (p: any[]) => operationsStorage.savePurchases(p);
   addPurchase = (po: any) => operationsStorage.addPurchase(po);
@@ -62,13 +60,11 @@ class StorageService {
   addTransfer = (t: any) => operationsStorage.addTransfer(t);
   updateTransferStatus = (id: string, s: any) => operationsStorage.updateTransferStatus(id, s);
 
-  // Accounting
+  // Accounting, HR & Payroll
   getAccounts = () => accountingStorage.getAccounts();
   addAccount = (a: any) => accountingStorage.addAccount(a);
   getJournalEntries = () => accountingStorage.getJournalEntries();
   addJournalEntry = (e: any) => accountingStorage.addJournalEntry(e);
-
-  // HR & Payroll
   getEmployees = () => hrStorage.getEmployees();
   addEmployee = (e: any) => hrStorage.addEmployee(e);
   getAttendance = () => hrStorage.getAttendance();
@@ -76,13 +72,21 @@ class StorageService {
   getPayrollRuns = () => hrStorage.getPayrollRuns();
   addPayrollRun = (r: any) => hrStorage.addPayrollRun(r);
 
-  // Marketing, Sync, Notifications
+  // Marketing, Sync, Notifications CRUD
   getCoupons = () => marketingStorage.getCoupons();
   addCoupon = (c: any) => marketingStorage.addCoupon(c);
   getCampaigns = () => marketingStorage.getCampaigns();
   addCampaign = (c: any) => marketingStorage.addCampaign(c);
   getNotifications = () => marketingStorage.getNotifications();
+  saveNotifications = (n: any[]) => marketingStorage.saveNotifications(n);
+  addNotification = (n: any) => marketingStorage.addNotification(n);
+  updateNotification = (id: string, u: any) => marketingStorage.updateNotification(id, u);
+  deleteNotification = (id: string) => marketingStorage.deleteNotification(id);
+  clearNotificationForUser = (id: string, uId: string) => marketingStorage.clearNotificationForUser(id, uId);
+  clearAllNotificationsForUser = (uId: string) => marketingStorage.clearAllNotificationsForUser(uId);
+  deleteAllNotifications = () => marketingStorage.deleteAllNotifications();
   markNotificationAsRead = (id: string) => marketingStorage.markNotificationAsRead(id);
+  markAllNotificationsAsRead = () => marketingStorage.markAllNotificationsAsRead();
   getSyncQueue = () => marketingStorage.getSyncQueue();
   addSyncQueueItem = (i: any) => marketingStorage.addSyncQueueItem(i);
   updateSyncQueueItem = (id: string, u: any) => marketingStorage.updateSyncQueueItem(id, u);

@@ -9,6 +9,7 @@ import { BranchSalesProgress } from "./branch/BranchSalesProgress";
 import { BranchRosterSnapshot } from "./branch/BranchRosterSnapshot";
 import { BranchRestockAlerts } from "./branch/BranchRestockAlerts";
 import { BranchRecentSales } from "./branch/BranchRecentSales";
+import { DashboardAlertsWidget } from "./DashboardAlertsWidget";
 
 export function BranchManagerDashboard() {
   const { currentBranch, setActiveReceiptSale } = useTenant();
@@ -17,22 +18,16 @@ export function BranchManagerDashboard() {
   const employees = storageService.getEmployees();
   const transfers = storageService.getTransfers();
 
-  // Branch-specific sales
   const branchSales = sales.filter((s) => s.branchId === currentBranch.id || s.branchName === currentBranch.name);
   const branchSalesTotal = branchSales.reduce((sum, s) => sum + s.grandTotal, 0);
 
-  // Simulated branch daily target
   const branchDailyTarget = 100000;
   const targetPercent = Math.min(Math.round((branchSalesTotal / branchDailyTarget) * 100), 100);
 
-  // Branch staff & attendance
   const branchEmployees = employees.filter((e) => !e.branchId || e.branchId === currentBranch.id);
   const staffOnDutyCount = Math.max(1, Math.round(branchEmployees.length * 0.8));
 
-  // Low stock products at this branch
   const branchLowStock = products.filter((p) => p.totalStock <= p.minStockAlert);
-
-  // Pending transfers related to this branch
   const branchTransfers = transfers.filter(
     (t) => t.sourceBranchId === currentBranch.id || t.destinationBranchId === currentBranch.id
   );
@@ -50,6 +45,8 @@ export function BranchManagerDashboard() {
         lowStockCount={branchLowStock.length}
         transfersCount={branchTransfers.length}
       />
+
+      <DashboardAlertsWidget />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <BranchSalesProgress

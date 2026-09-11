@@ -1,10 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTenant } from "@/lib/context/TenantContext";
-import { X, Bell, CheckCheck } from "lucide-react";
-import { Button } from "./Button";
-import { NotificationItemRow } from "./NotificationItemRow";
+import { NotificationItem } from "@/types";
+import { NotificationsDrawerHeader } from "./notifications/NotificationsDrawerHeader";
+import { NotificationsDrawerTabs } from "./notifications/NotificationsDrawerTabs";
+import { NotificationsDrawerList } from "./notifications/NotificationsDrawerList";
+import { CreateNotificationModal } from "../notifications/CreateNotificationModal";
+import { EditNotificationModal } from "../notifications/EditNotificationModal";
+import { DeleteNotificationModal } from "../notifications/DeleteNotificationModal";
 
 interface NotificationsDrawerProps {
   isOpen: boolean;
@@ -12,68 +16,60 @@ interface NotificationsDrawerProps {
 }
 
 export function NotificationsDrawer({ isOpen, onClose }: NotificationsDrawerProps) {
-  const { notifications, markNotificationRead, unreadNotificationCount } = useTenant();
+  const {
+    notifications, unreadNotificationCount, markNotificationRead, markAllNotificationsRead,
+    addNotification, updateNotification, deleteNotification, deleteAllNotifications, currentUser,
+  } = useTenant();
+
+  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editItem, setEditItem] = useState<NotificationItem | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [clearAllOpen, setClearAllOpen] = useState(false);
 
   if (!isOpen) return null;
 
-  const markAllRead = () => {
-    notifications.forEach((n) => markNotificationRead(n.id));
-  };
+  const filtered = activeTab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
+  const targetItem = notifications.find((n) => n.id === deleteTargetId);
+  const isTargetCreator = targetItem ? (!targetItem.createdBy || targetItem.createdBy === currentUser?.id) : true;
 
   return (
-    <div className="no-print fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm h-full bg-card border-l border-border/80 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
-        <div className="flex items-center justify-between p-4.5 border-b border-border/80 bg-muted/20">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-              <Bell className="h-4 w-4" />
-            </div>
-            <h3 className="font-bold text-foreground text-sm">Notifications</h3>
-            {unreadNotificationCount > 0 && (
-              <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
-                {unreadNotificationCount} new
-              </span>
-            )}
+    <>
+      <div className="no-print fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="relative w-full max-w-sm h-full bg-card border-l border-border/80 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
+          <NotificationsDrawerHeader
+            unreadCount={unreadNotificationCount} totalCount={notifications.length}
+            onOpenCreate={() => setCreateOpen(true)} onMarkAllRead={markAllNotificationsRead}
+            onOpenClearAll={() => setClearAllOpen(true)} onClose={onClose}
+          />
+          <NotificationsDrawerTabs
+            activeTab={activeTab} onTabChange={setActiveTab}
+            totalCount={notifications.length} unreadCount={unreadNotificationCount}
+          />
+          <div className="flex-1 overflow-y-auto p-4">
+            <NotificationsDrawerList
+              notifications={filtered} currentUserId={currentUser?.id}
+              onMarkRead={markNotificationRead} onClose={onClose}
+              onEdit={(n) => setEditItem(n)} onDelete={(id) => setDeleteTargetId(id)}
+            />
           </div>
-          <div className="flex items-center gap-1">
-            {unreadNotificationCount > 0 && (
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={markAllRead}
-                title="Mark all as read"
-                className="text-[11px]"
-              >
-                <CheckCheck className="h-3.5 w-3.5 mr-1" /> All Read
-              </Button>
-            )}
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
-          {notifications.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground text-xs space-y-2">
-              <Bell className="h-8 w-8 mx-auto opacity-30" />
-              <p>No notifications at the moment</p>
-            </div>
-          ) : (
-            notifications.map((n) => (
-              <NotificationItemRow
-                key={n.id}
-                notification={n}
-                onMarkRead={markNotificationRead}
-                onClose={onClose}
-              />
-            ))
-          )}
         </div>
       </div>
-    </div>
+
+      <CreateNotificationModal isOpen={createOpen} onClose={() => setCreateOpen(false)} onCreate={addNotification} />
+      <EditNotificationModal isOpen={!!editItem} onClose={() => setEditItem(null)} notification={editItem} onUpdate={updateNotification} />
+      <DeleteNotificationModal
+        isOpen={!!deleteTargetId} onClose={() => setDeleteTargetId(null)}
+        onConfirm={async () => { if (deleteTargetId) await deleteNotification(deleteTargetId); }}
+        title={isTargetCreator ? "Delete Alert" : "Clear Alert"}
+        description={isTargetCreator ? "Are you sure you want to permanently delete this alert?" : "This will remove this alert from your notifications."}
+      />
+      <DeleteNotificationModal
+        isOpen={clearAllOpen} onClose={() => setClearAllOpen(false)} onConfirm={deleteAllNotifications}
+        title="Clear My Notifications"
+        description="Are you sure you want to clear your notifications? These alerts will be removed from your view only."
+      />
+    </>
   );
 }
+

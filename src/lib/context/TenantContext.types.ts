@@ -49,5 +49,10 @@ export interface TenantContextType {
   notifications: NotificationItem[];
   unreadNotificationCount: number;
   markNotificationRead: (id: string) => void;
+  markAllNotificationsRead: () => void;
+  addNotification: (item: Partial<NotificationItem>) => Promise<void>;
+  updateNotification: (id: string, updates: Partial<NotificationItem>) => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
+  deleteAllNotifications: () => Promise<void>;
   refreshData: () => void;
 }

@@ -4,54 +4,57 @@ import { offlineDb } from "../../db/dexie-db";
 import { STORAGE_KEYS, getItem, setItem, isBrowser } from "./baseStorage";
 
 export class MarketingStorage {
-  public getCoupons(): Coupon[] {
-    return getItem(STORAGE_KEYS.COUPONS, INITIAL_COUPONS);
+  public getCoupons = (): Coupon[] => getItem(STORAGE_KEYS.COUPONS, INITIAL_COUPONS);
+  public addCoupon = (c: Coupon) => setItem(STORAGE_KEYS.COUPONS, [c, ...this.getCoupons()]);
+  public getCampaigns = (): Campaign[] => getItem(STORAGE_KEYS.CAMPAIGNS, INITIAL_CAMPAIGNS);
+  public addCampaign = (c: Campaign) => setItem(STORAGE_KEYS.CAMPAIGNS, [c, ...this.getCampaigns()]);
+  public getNotifications = (): NotificationItem[] => getItem(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+  public saveNotifications = (n: NotificationItem[]) => setItem(STORAGE_KEYS.NOTIFICATIONS, n);
+  public addNotification = (n: NotificationItem) => setItem(STORAGE_KEYS.NOTIFICATIONS, [n, ...this.getNotifications()]);
+
+  public updateNotification(id: string, updates: Partial<NotificationItem>): void {
+    setItem(STORAGE_KEYS.NOTIFICATIONS, this.getNotifications().map((n) => (n.id === id ? { ...n, ...updates } : n)));
   }
 
-  public addCoupon(coupon: Coupon): void {
-    const all = [coupon, ...this.getCoupons()];
-    setItem(STORAGE_KEYS.COUPONS, all);
+  public deleteNotification(id: string): void {
+    setItem(STORAGE_KEYS.NOTIFICATIONS, this.getNotifications().filter((n) => n.id !== id));
   }
 
-  public getCampaigns(): Campaign[] {
-    return getItem(STORAGE_KEYS.CAMPAIGNS, INITIAL_CAMPAIGNS);
-  }
-
-  public addCampaign(campaign: Campaign): void {
-    const all = [campaign, ...this.getCampaigns()];
-    setItem(STORAGE_KEYS.CAMPAIGNS, all);
-  }
-
-  public getNotifications(): NotificationItem[] {
-    return getItem(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
-  }
-
-  public markNotificationAsRead(id: string): void {
-    const notifs = this.getNotifications().map((n) => (n.id === id ? { ...n, isRead: true } : n));
+  public clearNotificationForUser(id: string, userId: string): void {
+    const notifs = this.getNotifications().map((n) => {
+      if (n.id !== id) return n;
+      const list = Array.isArray(n.clearedBy) ? [...n.clearedBy] : [];
+      if (!list.includes(userId)) list.push(userId);
+      return { ...n, clearedBy: list };
+    });
     setItem(STORAGE_KEYS.NOTIFICATIONS, notifs);
   }
 
-  public getSyncQueue(): SyncQueueItem[] {
-    return getItem(STORAGE_KEYS.SYNC_QUEUE, []);
+  public clearAllNotificationsForUser(userId: string): void {
+    const notifs = this.getNotifications().map((n) => {
+      const list = Array.isArray(n.clearedBy) ? [...n.clearedBy] : [];
+      if (!list.includes(userId)) list.push(userId);
+      return { ...n, clearedBy: list };
+    });
+    setItem(STORAGE_KEYS.NOTIFICATIONS, notifs);
   }
 
+  public deleteAllNotifications = () => setItem(STORAGE_KEYS.NOTIFICATIONS, []);
+  public markNotificationAsRead(id: string): void {
+    setItem(STORAGE_KEYS.NOTIFICATIONS, this.getNotifications().map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+  }
+  public markAllNotificationsAsRead = () => setItem(STORAGE_KEYS.NOTIFICATIONS, this.getNotifications().map((n) => ({ ...n, isRead: true })));
+
+  public getSyncQueue = (): SyncQueueItem[] => getItem(STORAGE_KEYS.SYNC_QUEUE, []);
   public addSyncQueueItem(item: SyncQueueItem): void {
-    const queue = [item, ...this.getSyncQueue()];
-    setItem(STORAGE_KEYS.SYNC_QUEUE, queue);
-    if (isBrowser() && offlineDb) {
-      offlineDb.syncQueue.put(item).catch(() => {});
-    }
+    setItem(STORAGE_KEYS.SYNC_QUEUE, [item, ...this.getSyncQueue()]);
+    if (isBrowser() && offlineDb) offlineDb.syncQueue.put(item).catch(() => {});
   }
-
   public updateSyncQueueItem(id: string, updates: Partial<SyncQueueItem>): void {
-    const queue = this.getSyncQueue().map((item) => (item.id === id ? { ...item, ...updates } : item));
-    setItem(STORAGE_KEYS.SYNC_QUEUE, queue);
+    setItem(STORAGE_KEYS.SYNC_QUEUE, this.getSyncQueue().map((i) => (i.id === id ? { ...i, ...updates } : i)));
   }
-
-  public clearCompletedSyncItems(): void {
-    const queue = this.getSyncQueue().filter((item) => item.status !== "completed");
-    setItem(STORAGE_KEYS.SYNC_QUEUE, queue);
-  }
+  public clearCompletedSyncItems = () => setItem(STORAGE_KEYS.SYNC_QUEUE, this.getSyncQueue().filter((i) => i.status !== "completed"));
 }
 
 export const marketingStorage = new MarketingStorage();
+

@@ -7,6 +7,7 @@ import { StaffAttendanceBanner } from "./staff/StaffAttendanceBanner";
 import { StaffKpis } from "./staff/StaffKpis";
 import { StaffPriceChecker } from "./staff/StaffPriceChecker";
 import { StaffOperationsChecklist, TaskItem } from "./staff/StaffOperationsChecklist";
+import { DashboardAlertsWidget } from "./DashboardAlertsWidget";
 
 export function StaffDashboard() {
   const { currentBranch } = useTenant();
@@ -49,6 +50,8 @@ export function StaffDashboard() {
         totalTasksCount={tasks.length}
         skusCount={products.length}
       />
+
+      <DashboardAlertsWidget />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <StaffPriceChecker

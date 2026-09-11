@@ -8,23 +8,20 @@ import { CashierKpis } from "./cashier/CashierKpis";
 import { CashierTillCollections } from "./cashier/CashierTillCollections";
 import { CashierCustomerDueLookup } from "./cashier/CashierCustomerDueLookup";
 import { CashierRecentReceipts } from "./cashier/CashierRecentReceipts";
+import { DashboardAlertsWidget } from "./DashboardAlertsWidget";
 
 export function CashierDashboard() {
   const { currentBranch, setActiveReceiptSale } = useTenant();
   const sales = storageService.getSales();
   const customers = storageService.getCustomers();
-
-  // Search customer due query
   const [customerSearch, setCustomerSearch] = useState("");
 
-  // Shift telemetry
   const branchSales = sales.filter((s) => s.branchId === currentBranch.id || s.branchName === currentBranch.name);
   const shiftOrdersCount = branchSales.length || 28;
   const shiftTotalAmount = branchSales.reduce((sum, s) => sum + s.grandTotal, 0) || 54200;
   const cashInTill = Math.round(shiftTotalAmount * 0.48);
   const avgOrderValue = Math.round(shiftTotalAmount / Math.max(1, shiftOrdersCount));
 
-  // Search filtered customer
   const filteredCustomer = customerSearch.trim()
     ? customers.find(
         (c) =>
@@ -43,6 +40,8 @@ export function CashierDashboard() {
         shiftOrdersCount={shiftOrdersCount}
         avgOrderValue={avgOrderValue}
       />
+
+      <DashboardAlertsWidget />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <CashierTillCollections

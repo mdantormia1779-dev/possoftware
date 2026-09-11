@@ -1,17 +1,21 @@
 import React from "react";
 import Link from "next/link";
-import { ShieldCheck, ArrowLeft, Menu, X } from "lucide-react";
+import { ShieldCheck, ArrowLeft, Menu, X, Bell } from "lucide-react";
 import { AppHeaderThemeToggle } from "../app/AppHeaderThemeToggle";
 import { SuperAdminHeaderProfile } from "./SuperAdminHeaderProfile";
 
 interface SuperAdminHeaderProps {
   mobileOpen: boolean;
   onToggleMobile: () => void;
+  unreadNotificationCount?: number;
+  onOpenNotifications?: () => void;
 }
 
 export function SuperAdminHeader({
   mobileOpen,
   onToggleMobile,
+  unreadNotificationCount = 0,
+  onOpenNotifications,
 }: SuperAdminHeaderProps) {
   return (
     <header className="sticky top-0 z-40 h-16 shrink-0 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md px-2.5 sm:px-4 lg:px-5 flex items-center justify-between shadow-subtle-xs gap-1.5 sm:gap-2">
@@ -49,6 +53,19 @@ export function SuperAdminHeader({
           <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
           <span className="hidden sm:inline">Back to App</span>
         </Link>
+
+        {onOpenNotifications && (
+          <button
+            onClick={onOpenNotifications}
+            className="relative p-1.5 sm:p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors shrink-0"
+            aria-label="View System Notifications"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadNotificationCount > 0 && (
+              <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-card animate-pulse" />
+            )}
+          </button>
+        )}
 
         <AppHeaderThemeToggle />
 

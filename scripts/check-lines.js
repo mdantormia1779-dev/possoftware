@@ -35,6 +35,10 @@ console.log("\nChecking super-admin settings and billing...");
 checkDir("src/components/super-admin/settings");
 checkDir("src/components/super-admin/billing");
 
+console.log("\nChecking notification components...");
+checkDir("src/components/notifications");
+checkDir("src/components/ui/notifications");
+
 console.log("\nChecking modified hook files...");
 const hooks = [
   "src/components/products/useProductsState.ts",
@@ -43,6 +47,16 @@ const hooks = [
   "src/app/app/subscription/checkout/page.tsx",
   "src/app/super-admin/settings/page.tsx",
   "src/app/super-admin/billing/page.tsx",
+  "src/components/dashboard/DashboardAlertsWidget.tsx",
+  "src/components/dashboard/OwnerDashboard.tsx",
+  "src/components/dashboard/BranchManagerDashboard.tsx",
+  "src/components/dashboard/AccountantDashboard.tsx",
+  "src/components/dashboard/CashierDashboard.tsx",
+  "src/components/dashboard/StaffDashboard.tsx",
+  "src/components/layout/admin/SuperAdminHeader.tsx",
+  "src/components/layout/SuperAdminShell.tsx",
+  "src/lib/context/useNotificationState.ts",
+  "src/lib/context/TenantContext.tsx",
 ];
 
 for (const f of hooks) {

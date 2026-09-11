@@ -831,6 +831,11 @@ model SystemNotification {
   title          String
   message        String
   type           String        @default("INFO") // INFO, WARNING, ALERT, SUCCESS
+  targetRole     String?       @default("all") // all, company_owner, branch_manager, accountant, cashier, staff, super_admin
+  createdBy      String?
+  createdByName  String?
+  createdByRole  String?
+  clearedBy      String?       @default("[]")
   isRead         Boolean       @default(false)
   link           String?
   createdAt      DateTime      @default(now())

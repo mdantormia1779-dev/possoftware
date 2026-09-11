@@ -9,6 +9,7 @@ import { OwnerPaymentBreakdown } from "./owner/OwnerPaymentBreakdown";
 import { OwnerBranchSalesChart } from "./owner/OwnerBranchSalesChart";
 import { OwnerCriticalInventoryAndShortcuts } from "./owner/OwnerCriticalInventoryAndShortcuts";
 import { OwnerRecentTransactions } from "./owner/OwnerRecentTransactions";
+import { DashboardAlertsWidget } from "./DashboardAlertsWidget";
 
 export function OwnerDashboard() {
   const { setActiveReceiptSale } = useTenant();
@@ -32,6 +33,8 @@ export function OwnerDashboard() {
         totalDueOutstanding={totalDueOutstanding}
         skusCount={skusCount}
       />
+
+      <DashboardAlertsWidget />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <OwnerSalesVelocityChart />
