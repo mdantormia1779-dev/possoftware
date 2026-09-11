@@ -25,7 +25,7 @@ export function SubscriptionSettingsTab() {
           </p>
         </div>
 
-        <Link href="/pricing">
+        <Link href="/app/subscription/checkout?plan=ENTERPRISE">
           <Button type="button" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs">
             Upgrade to Enterprise
           </Button>

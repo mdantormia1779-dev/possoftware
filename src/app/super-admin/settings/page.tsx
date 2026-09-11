@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Settings, ArrowLeft, Shield, Save, CheckCircle2, Server } from "lucide-react";
+import { Settings, ArrowLeft, Shield, Save, CheckCircle2, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { PaymentSettingsTab } from "@/components/super-admin/settings/PaymentSettingsTab";
 
 export default function SuperAdminSettingsPage() {
+  const [activeTab, setActiveTab] = useState<"payment" | "gateways">("payment");
   const [saved, setSaved] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
@@ -27,7 +29,7 @@ export default function SuperAdminSettingsPage() {
               <span>Platform Global Settings</span>
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Configure global billing gateway secrets, SMS gateways, and SaaS security policies
+              Configure dynamic payment methods, gateway credentials, and system policies
             </p>
           </div>
         </div>
@@ -40,45 +42,49 @@ export default function SuperAdminSettingsPage() {
         )}
       </div>
 
-      <form onSubmit={handleSave} className="p-6 sm:p-8 rounded-3xl border border-border bg-card shadow-xs space-y-6 text-xs">
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold text-foreground">Global SMS Gateway Settings (Bangladesh)</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Primary Provider</label>
-              <select className="w-full h-9 px-3 rounded-lg border border-border bg-background">
-                <option>Onnorokom SMS Gateway</option>
-                <option>Greenweb SMS API</option>
-                <option>BulkSMS BD</option>
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Cost per Message (৳)</label>
-              <input type="number" defaultValue={0.35} step="0.01" className="w-full h-9 px-3 rounded-lg border border-border bg-background" />
+      <div className="flex items-center gap-2 border-b border-border pb-2">
+        <button
+          onClick={() => setActiveTab("payment")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${activeTab === "payment" ? "bg-purple-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+        >
+          Customer Payment Channels (bKash/Nagad/Bank)
+        </button>
+        <button
+          onClick={() => setActiveTab("gateways")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${activeTab === "gateways" ? "bg-purple-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+        >
+          API Keys & SMS Gateway
+        </button>
+      </div>
+
+      {activeTab === "payment" ? (
+        <PaymentSettingsTab />
+      ) : (
+        <form onSubmit={handleSave} className="p-6 sm:p-8 rounded-3xl border border-border bg-card shadow-xs space-y-6 text-xs">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-foreground">Global SMS Gateway Settings (Bangladesh)</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="font-semibold text-foreground">Primary Provider</label>
+                <select className="w-full h-9 px-3 rounded-lg border border-border bg-background">
+                  <option>Onnorokom SMS Gateway</option>
+                  <option>Greenweb SMS API</option>
+                  <option>BulkSMS BD</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-semibold text-foreground">Cost per Message (৳)</label>
+                <input type="number" defaultValue={0.35} step="0.01" className="w-full h-9 px-3 rounded-lg border border-border bg-background" />
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="space-y-4 pt-4 border-t border-border">
-          <h3 className="text-sm font-bold text-foreground">Payment Gateways for SaaS Subscriptions</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">bKash Merchant App Key</label>
-              <input type="password" defaultValue="bkash_live_app_key_xxxxxxxx" className="w-full h-9 px-3 rounded-lg border border-border bg-background font-mono" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">SSLCommerz / Shurjopay Store ID</label>
-              <input type="text" defaultValue="xyzbusinessos_live" className="w-full h-9 px-3 rounded-lg border border-border bg-background font-mono" />
-            </div>
+          <div className="flex justify-end pt-4 border-t border-border">
+            <Button type="submit" variant="primary" size="md">
+              <Save className="h-4 w-4 mr-2" /> Save Configuration
+            </Button>
           </div>
-        </div>
-
-        <div className="flex justify-end pt-4 border-t border-border">
-          <Button type="submit" variant="primary" size="md">
-            <Save className="h-4 w-4 mr-2" /> Save Global Configuration
-          </Button>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 }

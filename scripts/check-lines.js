@@ -28,11 +28,21 @@ checkDir("src/app/api");
 console.log("\nChecking API services in src/services...");
 checkDir("src/services");
 
+console.log("\nChecking subscription components...");
+checkDir("src/components/subscription");
+
+console.log("\nChecking super-admin settings and billing...");
+checkDir("src/components/super-admin/settings");
+checkDir("src/components/super-admin/billing");
+
 console.log("\nChecking modified hook files...");
 const hooks = [
   "src/components/products/useProductsState.ts",
   "src/components/customers/useCustomers.ts",
   "src/components/pos/payment/usePaymentCheckout.ts",
+  "src/app/app/subscription/checkout/page.tsx",
+  "src/app/super-admin/settings/page.tsx",
+  "src/app/super-admin/billing/page.tsx",
 ];
 
 for (const f of hooks) {

@@ -883,9 +883,31 @@ model SubscriptionInvoice {
   billingCycle   String // MONTHLY, YEARLY
   paymentMethod  String? // BKASH, NAGAD, CARD, BANK
   transactionId  String?
+  planTier       String? // STARTER, BUSINESS, ENTERPRISE
+  senderNumber   String? // Customer's mobile or account number
+  notes          String?
   status         String       @default("PAID") // PAID, PENDING, FAILED
   paidAt         DateTime?
+  approvedAt     DateTime?
+  approvedBy     String?
   createdAt      DateTime     @default(now())
 
   @@index([organizationId])
 }
+
+model PlatformPaymentConfig {
+  id            String   @id @default(uuid())
+  method        String   @unique // BKASH, NAGAD, ROCKET, BANK, CARD
+  name          String
+  accountType   String   @default("Merchant")
+  accountNumber String
+  bankName      String?
+  branchName    String?
+  routingNumber String?
+  instructions  String?
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+

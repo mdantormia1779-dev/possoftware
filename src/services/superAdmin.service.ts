@@ -67,4 +67,26 @@ export const superAdminService = {
       body: JSON.stringify({ id, isActive }),
     });
   },
+
+  async getPaymentSettings() {
+    return apiRequest<any[]>("/api/super-admin/payment-settings");
+  },
+
+  async updatePaymentSetting(data: any) {
+    return apiRequest("/api/super-admin/payment-settings", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getBillingInvoices() {
+    return apiRequest<any[]>("/api/super-admin/billing");
+  },
+
+  async processSubscriptionInvoice(invoiceId: string, action: "APPROVE" | "REJECT", rejectionReason?: string) {
+    return apiRequest("/api/super-admin/subscriptions/approve", {
+      method: "POST",
+      body: JSON.stringify({ invoiceId, action, rejectionReason }),
+    });
+  },
 };

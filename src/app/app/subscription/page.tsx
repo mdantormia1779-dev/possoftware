@@ -6,6 +6,7 @@ import { useTenant } from "@/lib/context/TenantContext";
 import { RiShieldCheckFill, RiFlashlightFill, RiVipCrownFill } from "react-icons/ri";
 import { formatDate } from "@/lib/utils";
 import { SubscriptionUsageMeters } from "@/components/subscription/SubscriptionUsageMeters";
+import { SubscriptionUpgradeCards } from "@/components/subscription/SubscriptionUpgradeCards";
 
 export default function TenantSubscriptionPage() {
   const { currentOrg } = useTenant();
@@ -55,7 +56,7 @@ export default function TenantSubscriptionPage() {
             Need more than 3 branches or custom multi-warehouse API integrations?
           </div>
           <Link
-            href="/super-admin/plans"
+            href="/app/subscription/checkout?plan=ENTERPRISE"
             className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition-transform"
           >
             <RiFlashlightFill className="h-4 w-4" />
@@ -63,6 +64,8 @@ export default function TenantSubscriptionPage() {
           </Link>
         </div>
       </div>
+
+      <SubscriptionUpgradeCards currentTier={currentOrg.subscriptionPlan} />
     </div>
   );
 }
