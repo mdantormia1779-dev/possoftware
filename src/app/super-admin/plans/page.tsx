@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Layers, ArrowLeft, Plus } from "lucide-react";
+import { RiCopperCoinLine, RiSparkling2Fill } from "react-icons/ri";
+import { TbArrowLeft, TbPlus } from "react-icons/tb";
 import { Button } from "@/components/ui/Button";
 import { superAdminService } from "@/services/superAdmin.service";
 import { PlanData } from "@/components/super-admin/plans/planTypes";
@@ -55,21 +56,23 @@ export default function SuperAdminPlansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link href="/super-admin" className="p-2 rounded-lg border border-border hover:bg-muted">
-            <ArrowLeft className="h-4 w-4" />
+          <Link href="/super-admin" className="p-2 rounded-xl border border-border bg-card hover:bg-muted transition-colors">
+            <TbArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <Layers className="h-6 w-6 text-purple-600" />
-              <span>SaaS Subscription Plans &amp; Tier Pricing</span>
+            <h1 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+              <div className="p-1.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-600">
+                <RiCopperCoinLine className="h-6 w-6" />
+              </div>
+              <span>SaaS Subscription Plans &amp; Tiers</span>
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Configured subscription tiers loaded from PostgreSQL database
+              Production billing packages, branch quotas, and features configured in PostgreSQL
             </p>
           </div>
         </div>
-        <Button variant="primary" size="sm" onClick={() => setIsCreateOpen(true)} className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="h-4 w-4 mr-1.5" />
+        <Button variant="primary" size="sm" onClick={() => setIsCreateOpen(true)} className="bg-purple-600 hover:bg-purple-700 font-bold shadow-md shadow-purple-600/20">
+          <TbPlus className="h-4 w-4 mr-1.5" />
           <span>New Plan Tier</span>
         </Button>
       </div>

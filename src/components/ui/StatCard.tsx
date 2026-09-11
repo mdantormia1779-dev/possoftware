@@ -1,13 +1,13 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
   title: string;
   value: string | number;
   change?: string;
   isPositive?: boolean;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ className?: string }>;
   description?: string;
   iconBgColor?: string;
   iconTextColor?: string;

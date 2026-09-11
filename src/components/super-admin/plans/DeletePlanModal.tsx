@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { RiDeleteBin2Line, RiAlertLine } from "react-icons/ri";
 import { Button } from "@/components/ui/Button";
 import { PlanData } from "./planTypes";
 
@@ -33,11 +33,13 @@ export function DeletePlanModal({ isOpen, plan, onClose, onConfirm }: DeletePlan
       <div className="bg-card border border-rose-200 dark:border-rose-900 rounded-3xl p-6 sm:p-7 max-w-md w-full space-y-4 shadow-2xl">
         <div className="flex items-center gap-3 text-rose-600">
           <div className="h-10 w-10 rounded-2xl bg-rose-100 dark:bg-rose-950 flex items-center justify-center">
-            <Trash2 className="h-5 w-5" />
+            <RiDeleteBin2Line className="h-5 w-5" />
           </div>
           <div>
             <h3 className="font-bold text-base text-foreground">Delete Subscription Plan</h3>
-            <span className="text-[11px] text-rose-600 font-bold">Irreversible Action</span>
+            <span className="text-[11px] text-rose-600 font-bold flex items-center gap-1">
+              <RiAlertLine className="h-3.5 w-3.5" /> Irreversible Action
+            </span>
           </div>
         </div>
 

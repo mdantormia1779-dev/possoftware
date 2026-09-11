@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Edit2, X } from "lucide-react";
+import { RiEditCircleLine, RiCloseLine } from "react-icons/ri";
 import { Button } from "@/components/ui/Button";
 import { PlanData } from "./planTypes";
 import { PlanFormFields } from "./PlanFormFields";
@@ -18,9 +18,7 @@ export function EditPlanModal({ isOpen, plan, onClose, onSave }: EditPlanModalPr
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (plan) {
-      setData({ ...plan });
-    }
+    if (plan) setData({ ...plan });
   }, [plan]);
 
   if (!isOpen || !data) return null;
@@ -40,12 +38,14 @@ export function EditPlanModal({ isOpen, plan, onClose, onSave }: EditPlanModalPr
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-7 max-w-lg w-full space-y-5 shadow-2xl">
         <div className="flex items-center justify-between border-b border-border/60 pb-3">
-          <div className="flex items-center gap-2">
-            <Edit2 className="h-5 w-5 text-purple-600" />
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600">
+              <RiEditCircleLine className="h-5 w-5" />
+            </div>
             <h3 className="font-bold text-base text-foreground">Update Plan Settings</h3>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-muted-foreground hover:bg-muted">
-            <X className="h-5 w-5" />
+          <button onClick={onClose} className="p-1.5 rounded-xl text-muted-foreground hover:bg-muted">
+            <RiCloseLine className="h-5 w-5" />
           </button>
         </div>
 
@@ -56,7 +56,7 @@ export function EditPlanModal({ isOpen, plan, onClose, onSave }: EditPlanModalPr
             <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" disabled={loading} className="bg-purple-600 hover:bg-purple-700">
+            <Button type="submit" variant="primary" disabled={loading} className="bg-purple-600 hover:bg-purple-700 font-bold">
               {loading ? "Saving..." : "Update Plan"}
             </Button>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UtensilsCrossed, ShoppingBag, Truck } from "lucide-react";
+import { RiRestaurantLine, RiShoppingBag3Line, RiEBike2Line } from "react-icons/ri";
 
 export type OrderType = "dine_in" | "take_away" | "delivery";
 
@@ -18,9 +18,9 @@ export function PosOrderTypeTabs({ orderType: controlledType, onChangeOrderType 
   };
 
   const tabs: Array<{ id: OrderType; label: string; icon: React.ReactNode }> = [
-    { id: "dine_in", label: "Dine In", icon: <UtensilsCrossed className="h-3.5 w-3.5" /> },
-    { id: "take_away", label: "Take Away", icon: <ShoppingBag className="h-3.5 w-3.5" /> },
-    { id: "delivery", label: "Delivery", icon: <Truck className="h-3.5 w-3.5" /> },
+    { id: "dine_in", label: "Dine In", icon: <RiRestaurantLine className="h-3.5 w-3.5" /> },
+    { id: "take_away", label: "Take Away", icon: <RiShoppingBag3Line className="h-3.5 w-3.5" /> },
+    { id: "delivery", label: "Delivery", icon: <RiEBike2Line className="h-3.5 w-3.5" /> },
   ];
 
   return (

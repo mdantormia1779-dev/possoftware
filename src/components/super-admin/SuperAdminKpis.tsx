@@ -1,5 +1,5 @@
 import React from "react";
-import { DollarSign, Building2, CreditCard, Activity } from "lucide-react";
+import { RiCopperCoinLine, RiBuilding4Fill, RiVipCrownFill, RiStockLine } from "react-icons/ri";
 import { StatCard } from "@/components/ui/StatCard";
 import { formatCurrency } from "@/lib/utils";
 import { SuperAdminAnalytics } from "@/services/superAdmin.service";
@@ -23,8 +23,8 @@ export function SuperAdminKpis({ tenantsCount, analytics }: SuperAdminKpisProps)
         value={formatCurrency(mrrVal)}
         description="Calculated from active subscriptions"
         isPositive={true}
-        icon={DollarSign}
-        iconBgColor="bg-purple-50 dark:bg-purple-950/60"
+        icon={RiCopperCoinLine}
+        iconBgColor="bg-purple-100 dark:bg-purple-950/70"
         iconTextColor="text-purple-600 dark:text-purple-400"
       />
 
@@ -33,8 +33,8 @@ export function SuperAdminKpis({ tenantsCount, analytics }: SuperAdminKpisProps)
         value={`${totalOrgs} Companies`}
         description="Total onboarding businesses"
         isPositive={true}
-        icon={Building2}
-        iconBgColor="bg-indigo-50 dark:bg-indigo-950/60"
+        icon={RiBuilding4Fill}
+        iconBgColor="bg-indigo-100 dark:bg-indigo-950/70"
         iconTextColor="text-indigo-600 dark:text-indigo-400"
       />
 
@@ -43,18 +43,18 @@ export function SuperAdminKpis({ tenantsCount, analytics }: SuperAdminKpisProps)
         value={`${activeSubs} Active`}
         description="Live paying tenant plans"
         isPositive={true}
-        icon={CreditCard}
-        iconBgColor="bg-emerald-50 dark:bg-emerald-950/60"
-        iconTextColor="text-emerald-600 dark:text-emerald-400"
+        icon={RiVipCrownFill}
+        iconBgColor="bg-amber-100 dark:bg-amber-950/70"
+        iconTextColor="text-amber-600 dark:text-amber-400"
       />
 
       <StatCard
         title="Platform GMV (Total)"
         value={formatCurrency(gmv)}
         description={`${salesCount} sales processed across POS`}
-        icon={Activity}
-        iconBgColor="bg-blue-50 dark:bg-blue-950/60"
-        iconTextColor="text-blue-600 dark:text-blue-400"
+        icon={RiStockLine}
+        iconBgColor="bg-emerald-100 dark:bg-emerald-950/70"
+        iconTextColor="text-emerald-600 dark:text-emerald-400"
       />
     </div>
   );

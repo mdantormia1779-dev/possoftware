@@ -1,5 +1,5 @@
 import React from "react";
-import { PauseCircle, ArrowRight } from "lucide-react";
+import { RiPauseCircleLine, RiBankCardFill, RiArrowRightLine } from "react-icons/ri";
 import { formatCurrency } from "@/lib/utils";
 
 interface PosCartSummaryProps {
@@ -67,7 +67,7 @@ export function PosCartSummary({
           onClick={onHoldSale}
           className="h-11 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs cursor-pointer"
         >
-          <PauseCircle className="h-4 w-4 text-slate-500" />
+          <RiPauseCircleLine className="h-4 w-4 text-slate-500" />
           <span>Hold Order</span>
         </button>
 
@@ -77,8 +77,9 @@ export function PosCartSummary({
           onClick={onOpenPayment}
           className="h-11 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer active:scale-[0.98]"
         >
-          <span>Process</span>
-          <ArrowRight className="h-4 w-4" />
+          <RiBankCardFill className="h-4 w-4" />
+          <span>Pay Now</span>
+          <RiArrowRightLine className="h-4 w-4" />
         </button>
       </div>
     </div>

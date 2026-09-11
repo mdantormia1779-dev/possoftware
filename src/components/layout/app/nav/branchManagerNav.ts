@@ -1,56 +1,56 @@
 import {
-  LayoutDashboard,
-  ShoppingCart,
-  Receipt,
-  Package,
-  Boxes,
-  Truck,
-  Users,
-  CalendarCheck,
-  Percent,
-  Contact,
-  Tag,
-  BarChart3,
-} from "lucide-react";
+  RiDashboardLine,
+  RiStore2Line,
+  RiReceiptLine,
+  RiBox3Line,
+  RiArchiveStackLine,
+  RiTruckLine,
+  RiTeamLine,
+  RiCalendarCheckLine,
+  RiPercentLine,
+  RiUserSharedLine,
+  RiCoupon3Line,
+  RiBarChartGroupedLine,
+} from "react-icons/ri";
 import { NavSection } from "./nav.types";
 
 export const BRANCH_MANAGER_NAV: NavSection[] = [
   {
     title: "Branch Hub",
     items: [
-      { title: "Branch Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
-      { title: "Counter POS", href: "/app/pos", icon: ShoppingCart, badge: "Fast" },
+      { title: "Branch Dashboard", href: "/app/dashboard", icon: RiDashboardLine },
+      { title: "Counter POS", href: "/app/pos", icon: RiStore2Line, badge: "Fast" },
     ],
   },
   {
     title: "Counter Sales",
     items: [
-      { title: "Branch Invoices", href: "/app/sales", icon: Receipt },
-      { title: "Branch Customers", href: "/app/customers", icon: Contact },
+      { title: "Branch Invoices", href: "/app/sales", icon: RiReceiptLine },
+      { title: "Branch Customers", href: "/app/customers", icon: RiUserSharedLine },
     ],
   },
   {
     title: "Branch Inventory",
     items: [
-      { title: "Products & SKUs", href: "/app/products", icon: Package },
-      { title: "Branch Stock", href: "/app/inventory", icon: Boxes },
-      { title: "Stock Transfers (HQ)", href: "/app/inventory/transfers", icon: Truck, badge: "Inter-Store" },
-      { title: "Purchase Orders", href: "/app/purchases", icon: Boxes },
+      { title: "Products & SKUs", href: "/app/products", icon: RiBox3Line },
+      { title: "Branch Stock", href: "/app/inventory", icon: RiArchiveStackLine },
+      { title: "Stock Transfers (HQ)", href: "/app/inventory/transfers", icon: RiTruckLine, badge: "Inter-Store" },
+      { title: "Purchase Orders", href: "/app/purchases", icon: RiArchiveStackLine },
     ],
   },
   {
     title: "Branch Team",
     items: [
-      { title: "Daily Attendance", href: "/app/attendance", icon: CalendarCheck },
-      { title: "Staff Directory", href: "/app/hr", icon: Users },
-      { title: "Staff Commissions", href: "/app/commissions", icon: Percent },
+      { title: "Daily Attendance", href: "/app/attendance", icon: RiCalendarCheckLine },
+      { title: "Staff Directory", href: "/app/hr", icon: RiTeamLine },
+      { title: "Staff Commissions", href: "/app/commissions", icon: RiPercentLine },
     ],
   },
   {
     title: "Performance",
     items: [
-      { title: "Promo Coupons", href: "/app/coupons", icon: Tag },
-      { title: "Branch Reports", href: "/app/reports", icon: BarChart3 },
+      { title: "Promo Coupons", href: "/app/coupons", icon: RiCoupon3Line },
+      { title: "Branch Reports", href: "/app/reports", icon: RiBarChartGroupedLine },
     ],
   },
 ];
