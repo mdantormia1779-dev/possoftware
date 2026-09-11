@@ -57,6 +57,9 @@ const hooks = [
   "src/components/layout/SuperAdminShell.tsx",
   "src/lib/context/useNotificationState.ts",
   "src/lib/context/TenantContext.tsx",
+  "src/data/mocks/platformPayments.ts",
+  "src/components/super-admin/SuperAdminHeader.tsx",
+  "src/components/layout/admin/SuperAdminNav.ts",
 ];
 
 for (const f of hooks) {

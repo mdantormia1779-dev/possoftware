@@ -47,7 +47,7 @@ export default function SuperAdminSettingsPage() {
           onClick={() => setActiveTab("payment")}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${activeTab === "payment" ? "bg-purple-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
         >
-          Customer Payment Channels (bKash/Nagad/Bank)
+          Manual Payment Methods (bKash/Nagad/Bank)
         </button>
         <button
           onClick={() => setActiveTab("gateways")}

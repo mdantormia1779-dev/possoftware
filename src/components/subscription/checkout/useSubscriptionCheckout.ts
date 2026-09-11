@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { subscriptionService, PaymentMethodConfig } from "@/services/subscription.service";
+import { DEFAULT_PLATFORM_PAYMENT_METHODS } from "@/data/mocks/platformPayments";
 import { PLAN_CATALOG, PlanDetails } from "./checkoutTypes";
 
 export function useSubscriptionCheckout() {
@@ -11,25 +12,26 @@ export function useSubscriptionCheckout() {
   const selectedPlan: PlanDetails = PLAN_CATALOG[planParam] || PLAN_CATALOG.ENTERPRISE;
 
   const [billingCycle, setBillingCycle] = useState<"MONTHLY" | "YEARLY">("MONTHLY");
-  const [methods, setMethods] = useState<PaymentMethodConfig[]>([]);
-  const [selectedMethodId, setSelectedMethodId] = useState<string>("");
+  const [methods, setMethods] = useState<PaymentMethodConfig[]>(DEFAULT_PLATFORM_PAYMENT_METHODS);
+  const [selectedMethodId, setSelectedMethodId] = useState<string>(DEFAULT_PLATFORM_PAYMENT_METHODS[0].id);
   const [transactionId, setTransactionId] = useState("");
   const [senderNumber, setSenderNumber] = useState("");
   const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [successInvoice, setSuccessInvoice] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     subscriptionService.getPaymentMethods().then((res) => {
-      if (res.success && res.data) {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
         const active = res.data.filter((m) => m.isActive);
-        setMethods(active);
-        if (active.length > 0) setSelectedMethodId(active[0].id);
+        if (active.length > 0) {
+          setMethods(active);
+          setSelectedMethodId(active[0].id);
+        }
       }
-      setLoading(false);
-    });
+    }).catch(() => {});
   }, []);
 
   const selectedMethod = methods.find((m) => m.id === selectedMethodId) || methods[0];

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RiShieldStarFill, RiCopperCoinLine, RiBuilding4Line, RiLogoutBoxRLine, RiUserStarFill } from "react-icons/ri";
+import { RiShieldStarFill, RiCopperCoinLine, RiBuilding4Line, RiLogoutBoxRLine, RiUserStarFill, RiMoneyDollarCircleLine } from "react-icons/ri";
 import { useTenant } from "@/lib/context/TenantContext";
 import { authService } from "@/services/auth.service";
 
@@ -52,6 +52,13 @@ export function SuperAdminHeader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end">
+        <Link
+          href="/super-admin/billing"
+          className="px-3 py-2 rounded-xl bg-muted/80 hover:bg-muted border border-border text-foreground text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+        >
+          <RiMoneyDollarCircleLine className="h-4 w-4 text-emerald-600" />
+          <span>Manual Payments</span>
+        </Link>
         <Link
           href="/super-admin/plans"
           className="px-3 py-2 rounded-xl bg-muted/80 hover:bg-muted border border-border text-foreground text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"

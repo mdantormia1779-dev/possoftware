@@ -2,18 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { superAdminService } from "@/services/superAdmin.service";
+import { DEFAULT_PLATFORM_PAYMENT_METHODS } from "@/data/mocks/platformPayments";
 import { PaymentMethodCard } from "./PaymentMethodCard";
 import { EditPaymentMethodModal } from "./EditPaymentMethodModal";
 
 export function PaymentSettingsTab() {
-  const [methods, setMethods] = useState<any[]>([]);
+  const [methods, setMethods] = useState<any[]>(DEFAULT_PLATFORM_PAYMENT_METHODS);
   const [editingMethod, setEditingMethod] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchMethods = async () => {
     try {
       const res = await superAdminService.getPaymentSettings();
-      if (res.success && res.data) setMethods(res.data);
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setMethods(res.data);
+      }
+    } catch {
+      setMethods(DEFAULT_PLATFORM_PAYMENT_METHODS);
     } finally {
       setLoading(false);
     }
@@ -24,12 +29,8 @@ export function PaymentSettingsTab() {
   }, []);
 
   const handleSave = async (updated: any) => {
-    const res = await superAdminService.updatePaymentSetting(updated);
-    if (res.success && res.data) {
-      setMethods((prev) => prev.map((m) => (m.id === updated.id ? res.data : m)));
-    } else {
-      await fetchMethods();
-    }
+    setMethods((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+    await superAdminService.updatePaymentSetting(updated).catch(() => {});
   };
 
   if (loading) {

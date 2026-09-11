@@ -14,7 +14,7 @@ export const ADMIN_NAV = [
   { title: "Organizations (Tenants)", href: "/super-admin/organizations", icon: RiBuilding4Line },
   { title: "Subscriptions", href: "/super-admin/subscriptions", icon: RiVipCrownLine },
   { title: "SaaS Plans", href: "/super-admin/plans", icon: RiCopperCoinLine },
-  { title: "Billing & Revenue", href: "/super-admin/billing", icon: RiMoneyDollarCircleLine },
+  { title: "Manual Payments & Billing", href: "/super-admin/billing", icon: RiMoneyDollarCircleLine },
   { title: "Platform Users", href: "/super-admin/users", icon: RiUserStarLine },
   { title: "Platform Analytics", href: "/super-admin/analytics", icon: RiBarChartGroupedLine },
   { title: "System Settings", href: "/super-admin/settings", icon: RiSettings4Line },
