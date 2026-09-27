@@ -36,7 +36,7 @@ export default function AboutPage() {
         <motion.h1
           variants={fadeUp}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-4xl sm:text-6xl font-extrabold text-foreground tracking-tight leading-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text"
+          className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-balance bg-gradient-to-br from-indigo-600 via-foreground to-cyan-600 dark:from-indigo-400 dark:via-foreground dark:to-cyan-400 bg-clip-text text-transparent"
         >
           Empowering Bangladeshi Businesses with Modern SaaS Tech
         </motion.h1>
@@ -98,7 +98,9 @@ export default function AboutPage() {
           >
             <Heart className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </motion.div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why We Built XYZ Business OS</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-br from-indigo-600 via-foreground to-cyan-600 dark:from-indigo-400 dark:via-foreground dark:to-cyan-400 bg-clip-text text-transparent">
+            Why We Built XYZ Business OS
+          </h2>
         </div>
         <div className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
           <p>
