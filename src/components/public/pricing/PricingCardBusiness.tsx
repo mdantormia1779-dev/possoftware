@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { Check } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -36,12 +39,39 @@ export function PricingCardBusiness({ price, isYearly }: PricingCardBusinessProp
           <li className="flex items-center gap-2.5"><Check className="h-4 w-4 text-emerald-500" /> Customer Loyalty &amp; Broadcast CRM</li>
         </ul>
       </div>
-      <Link
-        href="/register"
-        className="w-full text-center py-3 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 transition-transform active:scale-95"
+
+      <motion.div
+        className="relative"
+        animate={{ scale: [1, 1.045, 1, 1.045, 1] }}
+        transition={{
+          duration: 1.4,
+          times: [0, 0.25, 0.4, 0.65, 1],
+          repeat: Infinity,
+          repeatDelay: 1.6,
+          ease: "easeInOut",
+        }}
+        whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+        whileTap={{ scale: 0.95 }}
       >
-        Start Business Trial
-      </Link>
+        {/* Pulsing glow ring behind the button, synced to the heartbeat */}
+        <motion.span
+          className="absolute inset-0 rounded-xl bg-indigo-500"
+          animate={{ opacity: [0.35, 0, 0.35, 0], scale: [1, 1.15, 1, 1.15] }}
+          transition={{
+            duration: 1.4,
+            times: [0, 0.25, 0.4, 0.65],
+            repeat: Infinity,
+            repeatDelay: 1.6,
+            ease: "easeInOut",
+          }}
+        />
+        <Link
+          href="/register"
+          className="relative block w-full text-center py-3 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 transition-colors duration-300"
+        >
+          Start Business Trial
+        </Link>
+      </motion.div>
     </div>
   );
 }
