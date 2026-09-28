@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
 import { Article } from "./blogData";
 
@@ -8,7 +9,10 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   return (
-    <div className="p-6 rounded-2xl border border-border bg-card shadow-xs hover:shadow-lg transition-all hover:border-indigo-300 dark:hover:border-indigo-700 flex flex-col justify-between">
+    <Link
+      href={`/blog/${article.id}`}
+      className="p-6 rounded-2xl border border-border bg-card shadow-xs hover:shadow-lg transition-all hover:border-indigo-300 dark:hover:border-indigo-700 flex flex-col justify-between"
+    >
       <div className="space-y-3">
         <span className="inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold bg-muted text-foreground">
           {article.category}
@@ -29,6 +33,6 @@ export function ArticleCard({ article }: ArticleCardProps) {
           <Clock className="h-3 w-3" /> {article.readTime}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }
