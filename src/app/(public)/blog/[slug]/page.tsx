@@ -139,7 +139,7 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
         category={article.category}
         caption={`${article.category} · ${article.readTime}`}
       />
-
+        {/* main content */}
       <main className="mx-auto max-w-[1200px] px-4 pb-20 pt-12 sm:px-8">
         <ArticleContent content={article.content}>
           {/* Tags Section */}

@@ -15,7 +15,7 @@ export default function BlogDetailsLoading() {
           <Skeleton className="h-5 w-2/3" />
           <Skeleton className="h-4 w-64" />
         </div>
-
+         {/* article cover */}
         <Skeleton className="aspect-[16/9] w-full rounded-2xl sm:aspect-[2.7/1]" />
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-[76px]">
