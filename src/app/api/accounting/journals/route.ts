@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { getTenantContext } from "@/lib/api-auth";
+import prisma from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {

@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { getTenantContext } from "@/lib/api-auth";
+import prisma from "@/lib/prisma";
 
 interface RouteParams { params: Promise<{ id: string }>; }
 

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { hashPassword } from "@/lib/crypto";
 import { signAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth-token";
 import { seedOrganizationAccounts } from "@/lib/auth-seed";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {

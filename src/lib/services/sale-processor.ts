@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+
+import prisma from "../prisma";
 
 export async function processSaleTransaction(data: {
   organizationId: string;

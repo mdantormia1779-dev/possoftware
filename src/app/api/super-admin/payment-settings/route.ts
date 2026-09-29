@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { DEFAULT_PLATFORM_PAYMENT_METHODS } from "@/data/mocks/platformPayments";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {

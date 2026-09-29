@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
