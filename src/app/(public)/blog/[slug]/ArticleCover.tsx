@@ -1,25 +1,28 @@
-import Image from "next/image";
+import { BlogCover } from "@/components/public/blog/ArticleCard";
 
 interface ArticleCoverProps {
   src?: string;
   alt: string;
+  category: string;
+  caption?: string;
 }
 
-export function ArticleCover({ src, alt }: ArticleCoverProps) {
-  if (!src) return null;
-
+export function ArticleCover({ src, alt, category, caption }: ArticleCoverProps) {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6 mb-6">
-      <div className="relative w-full aspect-16/9 rounded-2xl overflow-hidden border border-border/60 shadow-sm">
-        <Image
-          src={src}
+    <figure className="mx-auto max-w-[1200px] px-4 sm:px-8">
+      <div className="aspect-[16/9] w-full overflow-hidden rounded-2xl border border-slate-200 sm:aspect-[2.7/1] dark:border-slate-800">
+        <BlogCover
+          src={src ?? ""}
           alt={alt}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 768px"
-          className="object-cover"
+          category={category}
+          className="h-full w-full"
         />
       </div>
-    </div>
+      {caption && (
+        <figcaption className="mt-3 text-center text-[11px] text-slate-500 dark:text-slate-400">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
   );
 }
