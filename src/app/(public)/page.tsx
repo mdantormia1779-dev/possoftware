@@ -9,6 +9,7 @@ import { LandingBentoSection } from "@/components/public/landing/LandingBentoSec
 import { LandingPricingSection } from "@/components/public/landing/LandingPricingSection";
 import { LandingFaqSection } from "@/components/public/landing/LandingFaqSection";
 import { LandingCtaSection } from "@/components/public/landing/LandingCtaSection";
+import { LandingFeaturesSection } from "@/components/public/landing/LandingFeaturesSection";
 
 export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -32,8 +33,9 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div ref={heroRef} className="space-y-24 sm:space-y-32 pb-24 overflow-hidden">
+    <div ref={heroRef} className="space-y-24 sm:space-y-32 pb-24 overflow-hidden px-30">
       <LandingHeroSection glowRef={glowRef} />
+      <LandingFeaturesSection/>
       <LandingCategoriesSection />
       <LandingOfflineSimulator />
       <LandingBentoSection />
