@@ -1,21 +1,20 @@
 import React from "react";
-import Link from "next/link";
-import { ARTICLES } from "@/components/public/blog/blogData";
-import { ArticleCard } from "@/components/public/blog/ArticleCard";
+import type { Metadata } from "next";
+import { BlogListing } from "../../../components/public/blog/BlogListing";
+import { BlogNewsletter } from "../../../components/public/blog/BlogNewsletter";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Blog | XYZ Business OS",
-  description: "Read our latest articles",
+  description:
+    "Practical guides, industry trends and product tips from the team behind XYZ Business OS.",
 };
 
-export default function BlogListPage() {
+export default function BlogListPage(): React.JSX.Element {
   return (
-    <main className="max-w-6xl mx-auto px-4 py-16">
-      <h1 className="text-4xl font-extrabold mb-8 text-foreground">Blog Articles</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {ARTICLES.map((article) => (
-          <ArticleCard key={article.id} article={article} />
-        ))}
+    <main className="min-h-screen bg-white dark:bg-slate-950">
+      <BlogListing />
+      <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 sm:pt-24">
+        <BlogNewsletter />
       </div>
     </main>
   );
