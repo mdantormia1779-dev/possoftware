@@ -1,8 +1,6 @@
-"use client";
-
-import React, { useEffect, useRef, useState, type CSSProperties } from "react";
+import React from "react";
 import Link from "next/link";
-import { Heart, ArrowUp } from "lucide-react";
+import { Store } from "lucide-react";
 
 /* -------------------------------- Types -------------------------------- */
 
@@ -14,6 +12,12 @@ interface FooterLink {
 interface FooterColumn {
   title: string;
   links: FooterLink[];
+}
+
+interface SocialLink {
+  label: string;
+  href: string;
+  path: React.ReactNode;
 }
 
 /* -------------------------------- Data --------------------------------- */
@@ -59,210 +63,151 @@ const LEGAL_LINKS: FooterLink[] = [
   { label: "Terms of Service", href: "/terms" },
 ];
 
-const STAGGER_MS = 90;
-
-/* -------------------------------- Hooks -------------------------------- */
-
-function useInView<T extends HTMLElement>(threshold = 0.15) {
-  const ref = useRef<T>(null);
-  const [inView, setInView] = useState<boolean>(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect(); // ekbar animate hole ar lagbe na
-        }
-      },
-      { threshold }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-
-  return { ref, inView };
-}
-
-/* ------------------------------ Sub parts ------------------------------ */
-
-interface RevealProps {
-  inView: boolean;
-  index: number;
-  className?: string;
-  children: React.ReactNode;
-}
-
-function Reveal({ inView, index, className = "", children }: RevealProps) {
-  const style: CSSProperties = {
-    transitionDelay: inView ? `${index * STAGGER_MS}ms` : "0ms",
-  };
-
-  return (
-    <div
-      style={style}
-      className={[
-        "transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-        inView ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
-        className,
-      ].join(" ")}
-    >
-      {children}
-    </div>
-  );
-}
-
-function FooterNavLink({ label, href }: FooterLink) {
-  return (
-    <Link
-      href={href}
-      className={[
-        "group/link relative inline-flex items-center gap-1.5 py-0.5",
-        "transition-all duration-300 hover:translate-x-1 hover:text-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 rounded-sm",
-      ].join(" ")}
-    >
-      <span
-        aria-hidden="true"
-        className="h-px w-0 bg-gradient-to-r from-indigo-500 to-cyan-400 transition-all duration-300 group-hover/link:w-3"
-      />
-      <span>{label}</span>
-    </Link>
-  );
-}
+// TODO: nijer social link boshan
+const SOCIAL_LINKS: SocialLink[] = [
+  {
+    label: "Twitter",
+    href: "#",
+    path: (
+      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+    ),
+  },
+  {
+    label: "LinkedIn",
+    href: "#",
+    path: (
+      <>
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+        <rect width="4" height="12" x="2" y="9" />
+        <circle cx="4" cy="4" r="2" />
+      </>
+    ),
+  },
+  {
+    label: "Facebook",
+    href: "#",
+    path: <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />,
+  },
+  {
+    label: "Instagram",
+    href: "#",
+    path: (
+      <>
+        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+      </>
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "#",
+    path: (
+      <>
+        <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+        <path d="m10 15 5-3-5-3z" />
+      </>
+    ),
+  },
+];
 
 /* ------------------------------ Component ------------------------------ */
 
 export function PublicFooter(): React.JSX.Element {
-  const { ref, inView } = useInView<HTMLElement>();
-
-  const scrollToTop = (): void => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer
-      ref={ref}
-      className="relative overflow-hidden border-t border-border bg-card/50 text-xs text-muted-foreground"
-    >
-      {/* Top gradient line */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/60 to-transparent"
-      />
-
-      {/* Background glow blobs */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-24 size-72 rounded-full bg-indigo-500/10 blur-3xl motion-safe:animate-pulse"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -right-24 size-72 rounded-full bg-cyan-400/10 blur-3xl motion-safe:animate-pulse"
-      />
-
-      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
+    <footer className="border-t border-border bg-card text-sm text-muted-foreground">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           {/* Brand column */}
-          <Reveal inView={inView} index={0} className="col-span-2 space-y-4">
-            <div className="group flex w-fit items-center gap-2.5">
-              <div
-                className={[
-                  "relative flex size-9 items-center justify-center overflow-hidden rounded-xl",
-                  "bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400",
-                  "text-base font-black text-white shadow-md shadow-indigo-500/25 ring-1 ring-white/20",
-                  "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                  "group-hover:-rotate-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-indigo-500/40",
-                ].join(" ")}
-              >
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-y-0 -left-full w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[250%]"
-                />
-                <span className="relative">X</span>
-              </div>
-              <span className="text-base font-extrabold text-foreground transition-colors duration-300 group-hover:text-indigo-500">
+          <div className="col-span-2 lg:col-span-1">
+            <Link
+              href="/"
+              aria-label="XYZ Business OS home"
+              className="flex w-fit items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60"
+            >
+              <span className="flex size-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <Store className="size-[18px]" strokeWidth={1.75} aria-hidden="true" />
+              </span>
+              <span className="text-[15px] font-bold tracking-tight text-foreground">
                 XYZ Business OS
               </span>
-            </div>
+            </Link>
 
-            <p className="max-w-sm text-xs leading-relaxed">
-              Unified business operating system engineered for modern retail stores, super shops, and multi-branch commercial enterprises.
+            <p className="mt-5 max-w-xs leading-relaxed">
+              Unified business operating system engineered for modern retail
+              stores, super shops, and multi-branch commercial enterprises.
             </p>
 
-            {/* Status pill */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-foreground backdrop-blur-sm transition-colors duration-300 hover:border-emerald-500/40">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
-                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-              </span>
-              100% Offline-First POS Engine Active
+            <div className="mt-5 flex items-center gap-2">
+              {SOCIAL_LINKS.map(({ label, href, path }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className={[
+                    "flex size-9 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground",
+                    "transition-colors duration-200 hover:bg-muted hover:text-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60",
+                  ].join(" ")}
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.75}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-4"
+                  >
+                    {path}
+                  </svg>
+                </Link>
+              ))}
             </div>
-          </Reveal>
+          </div>
 
           {/* Link columns */}
-          {FOOTER_COLUMNS.map((col, i) => (
-            <Reveal key={col.title} inView={inView} index={i + 1}>
-              <h4 className="mb-3 inline-block text-xs font-semibold uppercase tracking-wider text-foreground">
+          {FOOTER_COLUMNS.map((col) => (
+            <div key={col.title}>
+              <h4 className="mb-5 text-sm font-semibold text-foreground">
                 {col.title}
-                <span className="mt-1 block h-[2px] w-6 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-400" />
               </h4>
-              <ul className="space-y-1.5">
+              <ul className="space-y-3.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <FooterNavLink {...link} />
+                    <Link
+                      href={link.href}
+                      className="rounded-sm transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60"
+                    >
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
-            </Reveal>
+            </div>
           ))}
         </div>
 
         {/* Bottom bar */}
-        <Reveal
-          inView={inView}
-          index={FOOTER_COLUMNS.length + 1}
-          className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-[11px] sm:flex-row"
-        >
-          <div>
-            © {new Date().getFullYear()} XYZ Business OS Ltd. All rights reserved. Dhaka, Bangladesh.
-          </div>
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-xs sm:flex-row">
+          <p>
+            © {new Date().getFullYear()} XYZ Business OS Ltd. All rights
+            reserved.
+          </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex items-center gap-6">
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative transition-colors duration-300 after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-gradient-to-r after:from-indigo-500 after:to-cyan-400 after:transition-transform after:duration-300 hover:text-foreground hover:after:scale-x-100"
+                className="transition-colors duration-200 hover:text-foreground"
               >
                 {link.label}
               </Link>
             ))}
-
-            <span className="flex items-center gap-1">
-              Made with
-              <Heart className="h-3 w-3 fill-rose-500 text-rose-500 motion-safe:animate-pulse" />
-              for Bangladeshi Entrepreneurs
-            </span>
-
-            <button
-              type="button"
-              onClick={scrollToTop}
-              aria-label="Back to top"
-              className={[
-                "group/top flex size-8 items-center justify-center rounded-full border border-border bg-background/60",
-                "transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/50 hover:text-foreground hover:shadow-md hover:shadow-indigo-500/20",
-                "active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60",
-              ].join(" ")}
-            >
-              <ArrowUp className="size-3.5 transition-transform duration-300 group-hover/top:-translate-y-0.5" />
-            </button>
           </div>
-        </Reveal>
+        </div>
       </div>
     </footer>
   );
