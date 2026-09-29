@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { prisma } from "./prisma";
+import prisma from "./prisma";
+
 
 export interface TenantContext {
   organizationId: string;

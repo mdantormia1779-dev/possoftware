@@ -1,4 +1,5 @@
-import { prisma } from "./prisma";
+
+import prisma from "./prisma";
 
 export async function seedOrganizationAccounts(orgId: string): Promise<void> {
   const defaultAccounts = [

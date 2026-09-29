@@ -1,6 +1,7 @@
-import { prisma } from "./prisma";
+
 import { hashPassword } from "./crypto";
 import { seedOrganizationAccounts } from "./auth-seed";
+import prisma from "./prisma";
 
 export async function ensureDemoPersonas(targetEmail?: string) {
   const isDemo =

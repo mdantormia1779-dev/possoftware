@@ -1,9 +1,10 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { verifyPassword } from "@/lib/crypto";
 import { signAuthToken, AUTH_COOKIE_NAME } from "@/lib/auth-token";
 import { ensureDemoPersonas } from "@/lib/demo-auth";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
