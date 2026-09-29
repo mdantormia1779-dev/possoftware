@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Menu, X, Sparkles, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 interface PublicHeaderActionsProps {
@@ -13,46 +13,76 @@ interface PublicHeaderActionsProps {
 export function PublicHeaderActions({
   mobileOpen,
   onToggleMobile,
-}: PublicHeaderActionsProps) {
+}: PublicHeaderActionsProps): React.JSX.Element {
   const { theme, setTheme, resolvedTheme } = useTheme();
 
-  const toggleTheme = () => {
+  const toggleTheme = (): void => {
     const currentTheme = resolvedTheme || theme;
     setTheme(currentTheme === "dark" ? "light" : "dark");
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+    <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+      {/* Theme toggle */}
       <button
+        type="button"
         onClick={toggleTheme}
         aria-label="Toggle theme"
-        className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors relative shrink-0 cursor-pointer"
+        className={[
+          "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg",
+          "border border-border text-muted-foreground",
+          "transition-colors duration-200 hover:bg-muted hover:text-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60",
+        ].join(" ")}
       >
-        <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-        <Moon className="absolute top-2 left-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-amber-400" />
+        {/* Dark mode-e Sun, light mode-e Moon dekhabe */}
+        <Sun className="hidden size-[18px] dark:block" aria-hidden="true" />
+        <Moon className="block size-[18px] dark:hidden" aria-hidden="true" />
       </button>
 
+      {/* Sign In */}
       <Link
         href="/login"
-        className="hidden md:inline-flex px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted rounded-xl transition-colors shrink-0"
+        className={[
+          "hidden shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground md:inline-flex",
+          "transition-colors duration-200 hover:text-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60",
+        ].join(" ")}
       >
         Sign In
       </Link>
 
+      {/* CTA */}
       <Link
         href="/register"
-        className="hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/25 transition-transform active:scale-95 shrink-0"
+        className={[
+          "hidden shrink-0 items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white sm:inline-flex",
+          "transition-colors duration-200 hover:bg-blue-500",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        ].join(" ")}
       >
-        <Sparkles className="h-3.5 w-3.5 shrink-0" />
-        <span>Start Free Trial</span>
+        Start Free Trial
       </Link>
 
+      {/* Mobile menu button */}
       <button
+        type="button"
         onClick={onToggleMobile}
         aria-label="Toggle navigation menu"
-        className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted shrink-0 cursor-pointer"
+        aria-expanded={mobileOpen}
+        className={[
+          "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg lg:hidden",
+          "border border-border text-muted-foreground",
+          "transition-colors duration-200 hover:bg-muted hover:text-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60",
+          mobileOpen ? "bg-muted text-foreground" : "",
+        ].join(" ")}
       >
-        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        {mobileOpen ? (
+          <X className="size-5" aria-hidden="true" />
+        ) : (
+          <Menu className="size-5" aria-hidden="true" />
+        )}
       </button>
     </div>
   );

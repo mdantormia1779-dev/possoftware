@@ -1,23 +1,27 @@
-import React from "react";
+import type { Metadata } from "next";
+import { ContactHero } from "@/components/public/contact/ContactHero";
 import { ContactInfo } from "@/components/public/contact/ContactInfo";
 import { ContactForm } from "@/components/public/contact/ContactForm";
+import { ContactFaq } from "@/components/public/contact/ContactFaq";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Questions about pricing, features or getting set up? Talk to our team.",
+};
 
 export default function ContactPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-      <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight">
-          Let’s Talk About Growing Your Business
-        </h1>
-        <p className="text-base text-muted-foreground">
-          Need a personalized demo, custom hardware integration, or multi-branch migration support? Reach out to our Dhaka support team.
-        </p>
-      </div>
+    <>
+      <ContactHero />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <ContactInfo />
-        <ContactForm />
-      </div>
-    </div>
+      <section className="bg-background py-12 lg:py-16">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-8">
+          <ContactInfo />
+          <ContactForm />
+        </div>
+      </section>
+
+      <ContactFaq />
+    </>
   );
 }

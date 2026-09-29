@@ -1,22 +1,13 @@
-import React from "react";
-import { LucideIcon } from "lucide-react";
+import type { Feature } from "./features-content";
 
-interface FeatureCardProps {
-  icon: LucideIcon;
-  title: string;
-  desc: string;
-}
-
-export function FeatureCard({ icon: Icon, title, desc }: FeatureCardProps) {
+export function FeatureCard({ icon: Icon, title, desc }: Feature) {
   return (
-    <div className="p-6 rounded-2xl border border-border bg-card shadow-xs hover:shadow-md transition-all hover:border-indigo-300 dark:hover:border-indigo-700 flex flex-col justify-between">
-      <div>
-        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 w-fit mb-4">
-          <Icon className="h-6 w-6" />
-        </div>
-        <h3 className="text-base font-bold text-foreground mb-2">{title}</h3>
-        <p className="text-xs leading-relaxed text-muted-foreground">{desc}</p>
-      </div>
+    <div className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-blue-500/40">
+      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/10 text-blue-500 dark:bg-blue-500/15 dark:text-blue-300">
+        <Icon className="h-4 w-4" />
+      </span>
+      <h3 className="mt-5 text-sm font-bold text-foreground">{title}</h3>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{desc}</p>
     </div>
   );
 }

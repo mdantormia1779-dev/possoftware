@@ -1,54 +1,68 @@
 import React from "react";
 import Link from "next/link";
-import { Sparkles, Tag, Calendar, Clock, ArrowRight } from "lucide-react";
-import { Article } from "./blogData";
+import { ArrowRight } from "lucide-react";
+import type { Article } from "./blogData";
+import { BlogCover } from "./ArticleCard";
 
 interface FeaturedArticleProps {
   article: Article;
 }
 
-export function FeaturedArticle({ article }: FeaturedArticleProps) {
+export function FeaturedArticle({
+  article,
+}: FeaturedArticleProps): React.JSX.Element {
   return (
-    <div className="p-8 sm:p-12 rounded-3xl border border-indigo-200 dark:border-indigo-800 bg-gradient-to-br from-indigo-50/70 via-card to-cyan-50/30 dark:from-indigo-950/30 dark:via-card dark:to-cyan-950/20 shadow-lg space-y-6">
-      <div className="flex items-center gap-3">
-        <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white flex items-center gap-1.5 shadow-xs">
-          <Sparkles className="h-3.5 w-3.5" /> Featured Guide
-        </span>
-        <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-          <Tag className="h-3 w-3" /> {article.category}
-        </span>
+    <Link
+      href={`/blog/${article.id}`}
+      className={[
+        "group grid overflow-hidden rounded-2xl border border-slate-200 bg-white md:grid-cols-2",
+        "transition duration-300 hover:shadow-xl hover:shadow-slate-200/70",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+        "dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-none",
+      ].join(" ")}
+    >
+      <div className="overflow-hidden">
+        <BlogCover
+          src={article.image}
+          alt={article.title}
+          category={article.category}
+          className="h-64 min-h-[16rem] w-full transition-transform duration-500 group-hover:scale-105 md:h-full motion-reduce:transition-none"
+        />
       </div>
 
-      <div className="space-y-3 max-w-4xl">
-        <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">
-          {article.title}
-        </h2>
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-          {article.summary}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/80">
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">{article.author}</span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" /> {article.date}
+      <div className="flex flex-col justify-center p-8 md:p-10">
+        <div className="flex items-center gap-3">
+          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-500/20 dark:text-blue-300">
+            Featured
           </span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" /> {article.readTime}
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {article.category}
           </span>
         </div>
 
-        <Link
-          href="/register"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs"
-        >
-          <span>Read Case Study &amp; Try System</span>
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+        <h2 className="mt-5 text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+          {article.title}
+        </h2>
+
+        <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300">
+          {article.summary}
+        </p>
+
+        <p className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+          <span className="font-medium text-slate-800 dark:text-slate-200">
+            {article.author}
+          </span>
+          <span aria-hidden="true" className="size-1 rounded-full bg-slate-300" />
+          <span>{article.date}</span>
+          <span aria-hidden="true" className="size-1 rounded-full bg-slate-300" />
+          <span>{article.readTime}</span>
+        </p>
+
+        <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
+          Read More
+          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
