@@ -5,6 +5,9 @@ import { PricingHeader } from "@/components/public/pricing/PricingHeader";
 import { PricingCards } from "@/components/public/pricing/PricingCards";
 import { PricingAddons } from "@/components/public/pricing/PricingAddons";
 import { PricingComparisonTable } from "@/components/public/pricing/PricingComparisonTable";
+import { LandingFaqSection } from "@/components/public/landing/LandingFaqSection";
+import { PricingCtaSection } from "@/components/public/pricing/PricingCtaSection";
+
 
 export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
@@ -18,6 +21,8 @@ export default function PricingPage() {
       <PricingCards isYearly={isYearly} />
       <PricingAddons />
       <PricingComparisonTable />
+      <LandingFaqSection/>
+      <PricingCtaSection/>
     </div>
   );
 }
