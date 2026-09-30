@@ -1,112 +1,130 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { MotionConfig, motion, type Variants } from "motion/react";
+import { Check } from "lucide-react";
 
 interface PricingHeaderProps {
   isYearly: boolean;
   onToggleYearly: () => void;
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
+const OPTIONS = [
+  { label: "Monthly", yearly: false },
+  { label: "Annual", yearly: true },
+] as const;
+
+const HIGHLIGHTS = [
+  "Prices in Bangladeshi Taka (৳)",
+  "No hidden setup fees",
+  "Core POS, payments and reporting in every plan",
+];
+
+// One quiet page-load sequence for the whole header
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12 },
-  },
+const item: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
 };
 
 export function PricingHeader({ isYearly, onToggleYearly }: PricingHeaderProps) {
   return (
-    <div className="relative text-center max-w-3xl mx-auto py-8 sm:py-12">
-      {/* Subtle background glow */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="pointer-events-none absolute inset-x-0 -top-10 left-1/2 -translate-x-1/2 h-64 w-[36rem] max-w-full bg-indigo-500/[0.08] blur-3xl rounded-full -z-10"
-      />
-
-      <motion.div
+    // reducedMotion="user" turns off movement for people who ask for it
+    <MotionConfig reducedMotion="user">
+      <motion.header
+        variants={container}
         initial="hidden"
         animate="visible"
-        variants={staggerContainer}
+        className="mx-auto max-w-3xl px-4 py-14 text-center sm:py-20"
       >
-        <motion.h1
-          variants={fadeUp}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-balance bg-gradient-to-br from-indigo-600 via-foreground to-cyan-600 dark:from-indigo-400 dark:via-foreground dark:to-cyan-400 bg-clip-text text-transparent"
+        <motion.span
+          variants={item}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
         >
-          Flexible Plans Tailored For Every Stage of Business
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+          Pricing
+        </motion.span>
+
+        <motion.h1
+          variants={item}
+          className="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+        >
+          Simple pricing that scales with your business
         </motion.h1>
 
         <motion.p
-          variants={fadeUp}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mt-5 text-base sm:text-lg text-muted-foreground/90 leading-relaxed max-w-xl mx-auto"
+          variants={item}
+          className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
         >
-          Transparent pricing in Bangladeshi Taka (৳). No hidden setup fees or surprise surcharges.
+          Start free, then choose a plan that grows with you. Every plan
+          includes core POS, payments and reporting with no hidden fees.
         </motion.p>
 
-        <motion.div variants={fadeUp} transition={{ duration: 0.6, ease: "easeOut" }} className="mt-9 flex justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            className="inline-flex items-center gap-1 p-1.5 rounded-full border border-border bg-muted/50 backdrop-blur-sm shadow-sm"
+        {/* Billing toggle */}
+        <motion.div variants={item} className="mt-10 flex justify-center">
+          <div
+            role="radiogroup"
+            aria-label="Billing cycle"
+            className="inline-flex items-center rounded-full border border-border bg-muted/50 p-1"
           >
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.95 }}
-              onClick={() => isYearly && onToggleYearly()}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
-                !isYearly
-                  ? "bg-card text-foreground shadow-sm border border-border/60"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Monthly Billing
-            </motion.button>
+            {OPTIONS.map((option) => {
+              const active = isYearly === option.yearly;
 
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.92 }}
-              onClick={onToggleYearly}
-              aria-label="Toggle annual billing"
-              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-300 ${
-                isYearly ? "bg-indigo-600" : "bg-foreground/20"
-              }`}
-            >
-              <motion.span
-                layout
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="inline-block h-4 w-4 rounded-full bg-white shadow-sm"
-                style={{ marginLeft: isYearly ? "1.5rem" : "0.25rem" }}
-              />
-            </motion.button>
-
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.95 }}
-              onClick={() => !isYearly && onToggleYearly()}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
-                isYearly
-                  ? "bg-card text-foreground shadow-sm border border-border/60"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Annual Billing
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-sm">
-                Save 20%
-              </span>
-            </motion.button>
-          </motion.div>
+              return (
+                <button
+                  key={option.label}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => !active && onToggleYearly()}
+                  className="relative cursor-pointer rounded-full px-5 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="pricing-billing-pill"
+                      className="absolute inset-0 rounded-full border border-border/60 bg-card shadow-sm"
+                      transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                    />
+                  )}
+                  <span
+                    className={`relative z-10 flex items-center gap-2 transition-colors ${
+                      active ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {option.label}
+                    {option.yearly && (
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        Save 20%
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
-      </motion.div>
-    </div>
+
+        {/* What every plan includes */}
+        <motion.ul
+          variants={item}
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground"
+        >
+          {HIGHLIGHTS.map((text) => (
+            <li key={text} className="flex items-center gap-2">
+              <Check
+                className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              />
+              {text}
+            </li>
+          ))}
+        </motion.ul>
+      </motion.header>
+    </MotionConfig>
   );
 }

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { MotionConfig, motion } from "framer-motion";
+import { MotionConfig, motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 
 const TRIAL_INCLUDES = [
@@ -12,7 +12,30 @@ const TRIAL_INCLUDES = [
   "Staff attendance & payroll",
 ];
 
+// Two quick beats, then a pause: "lub-dub ... lub-dub"
+const heartbeat = {
+  animate: {
+    scale: [1, 1.07, 1, 1.07, 1, 1],
+    boxShadow: [
+      "0 0 0 0 rgba(255,255,255,0.5)",
+      "0 0 0 10px rgba(255,255,255,0)",
+      "0 0 0 0 rgba(255,255,255,0)",
+      "0 0 0 10px rgba(255,255,255,0)",
+      "0 0 0 0 rgba(255,255,255,0)",
+      "0 0 0 0 rgba(255,255,255,0)",
+    ],
+  },
+  transition: {
+    duration: 1.8,
+    times: [0, 0.12, 0.24, 0.36, 0.5, 1],
+    ease: "easeInOut" as const,
+    repeat: Infinity,
+  },
+};
+
 export function LandingCtaSection() {
+  const reduceMotion = useReducedMotion();
+
   return (
     // reducedMotion="user" turns off movement for people who ask for it
     <MotionConfig reducedMotion="user">
@@ -22,7 +45,7 @@ export function LandingCtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="grid items-center gap-10 rounded-3xl bg-indigo-600 p-8 text-white sm:p-12 lg:grid-cols-5 lg:gap-14 lg:p-16"
+          className="grid items-center gap-10 rounded-3xl border border-transparent bg-indigo-600 p-8 text-white dark:border-indigo-800/60 dark:bg-indigo-950 sm:p-12 lg:grid-cols-5 lg:gap-14 lg:p-16"
         >
           {/* Left: message + actions */}
           <div className="lg:col-span-3">
@@ -35,15 +58,32 @@ export function LandingCtaSection() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/register"
-                className="rounded-xl bg-white px-7 py-3.5 text-center text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
-              >
-                Start Free 14-Day Trial
-              </Link>
+              {(() => {
+                const primary = (
+                  <Link
+                    href="/register"
+                    className="block rounded-xl bg-white px-7 py-3.5 text-center text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-50 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600 dark:focus-visible:ring-offset-indigo-950"
+                  >
+                    Start Free 14-Day Trial
+                  </Link>
+                );
+
+                return reduceMotion ? (
+                  primary
+                ) : (
+                  <motion.div
+                    className="rounded-xl"
+                    animate={heartbeat.animate}
+                    transition={heartbeat.transition}
+                    whileHover={{ scale: 1.03, boxShadow: "0 0 0 0 rgba(255,255,255,0)" }}
+                  >
+                    {primary}
+                  </motion.div>
+                );
+              })()}
               <Link
                 href="/contact"
-                className="rounded-xl border border-white/40 px-7 py-3.5 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600"
+                className="rounded-xl border border-white/40 px-7 py-3.5 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-600 dark:focus-visible:ring-offset-indigo-950"
               >
                 Book a Live Demo
               </Link>
