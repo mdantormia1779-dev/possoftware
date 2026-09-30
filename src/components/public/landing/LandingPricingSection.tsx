@@ -1,50 +1,76 @@
+"use client";
+
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import { LandingPricingCards } from "./LandingPricingCards";
 
+type BillingCycle = "monthly" | "yearly";
+
+const OPTIONS: { value: BillingCycle; label: string }[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Annual" },
+];
+
 export function LandingPricingSection() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="text-center space-y-3 mb-10"
-      >
-        <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-          Simple, Transparent Pricing
-        </h2>
-        <p className="text-2xl sm:text-4xl font-black text-foreground tracking-tight">
-          Affordable Plans For Growing Bangladeshi Businesses
-        </p>
+    // reducedMotion="user" turns off movement for people who ask for it
+    <MotionConfig reducedMotion="user">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+            Simple, transparent pricing
+          </p>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+            Affordable plans for growing Bangladeshi businesses
+          </h2>
 
-        <div className="pt-3 flex items-center justify-center gap-3 text-xs font-bold">
-          <span className={billingCycle === "monthly" ? "text-foreground" : "text-muted-foreground"}>
-            Monthly Billing
-          </span>
-          <button
-            onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
-            className="w-12 h-6 rounded-full bg-indigo-600 p-1 flex items-center transition-colors cursor-pointer"
+          {/* Billing toggle */}
+          <div
+            role="radiogroup"
+            aria-label="Billing cycle"
+            className="mt-8 inline-flex items-center rounded-full border border-border/80 bg-muted/40 p-1"
           >
-            <div
-              className={`h-4 w-4 rounded-full bg-white transition-transform ${
-                billingCycle === "yearly" ? "translate-x-6" : "translate-x-0"
-              }`}
-            />
-          </button>
-          <span className={billingCycle === "yearly" ? "text-foreground flex items-center gap-1" : "text-muted-foreground flex items-center gap-1"}>
-            <span>Annual Billing</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-              Save 20%
-            </span>
-          </span>
-        </div>
-      </motion.div>
+            {OPTIONS.map((option) => {
+              const active = billingCycle === option.value;
 
-      <LandingPricingCards billingCycle={billingCycle} />
-    </section>
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setBillingCycle(option.value)}
+                  className="relative cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="billing-pill"
+                      className="absolute inset-0 rounded-full border border-border/60 bg-background shadow-sm"
+                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                    />
+                  )}
+                  <span
+                    className={`relative z-10 flex items-center gap-2 transition-colors ${
+                      active ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {option.label}
+                    {option.value === "yearly" && (
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        Save 20%
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <LandingPricingCards billingCycle={billingCycle} />
+      </section>
+    </MotionConfig>
   );
 }
