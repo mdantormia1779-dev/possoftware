@@ -1,54 +1,31 @@
-"use client";
-
-import React from "react";
-import { motion } from "motion/react";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12 },
-  },
-};
-
-export function SolutionsHeader() {
+export default function SolutionsHeader() {
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={staggerContainer}
-      className="relative text-center space-y-4 max-w-3xl mx-auto py-4"
-    >
-      {/* Subtle background glow */}
-      <div className="pointer-events-none absolute inset-x-0 -top-6 left-1/2 -translate-x-1/2 h-56 w-[32rem] max-w-full bg-indigo-500/[0.08] blur-3xl rounded-full -z-10" />
+    <section className="relative overflow-hidden bg-slate-50 dark:bg-transparent">
+      {/* Soft color glows, top-left (blue) and right (teal) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-blue-300/40 blur-3xl dark:bg-blue-500/20"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 top-10 h-96 w-96 rounded-full bg-teal-200/50 blur-3xl dark:bg-teal-500/15"
+      />
 
-      <motion.span
-        variants={fadeUp}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400"
-      >
-        Industry Tailored Solutions
-      </motion.span>
+      <div className="relative mx-auto w-full max-w-7xl px-4 py-20 text-center sm:px-6 sm:py-24 lg:px-8">
+        <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+          Industry Solutions
+        </span>
 
-      <motion.h1
-        variants={fadeUp}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] text-balance bg-gradient-to-br from-indigo-600 via-foreground to-cyan-600 dark:from-indigo-400 dark:via-foreground dark:to-cyan-400 bg-clip-text text-transparent"
-      >
-        Engineered For Your Specific Business Type
-      </motion.h1>
+        <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+          POS Solutions Built for Your Business
+        </h1>
 
-      <motion.p
-        variants={fadeUp}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="text-base sm:text-lg text-muted-foreground/90 leading-relaxed max-w-2xl mx-auto"
-      >
-        Whether you run a fast-paced supermarket, a multi-branch fashion boutique, or an electronics store, XYZ Business OS adapts to your exact workflow.
-      </motion.p>
-    </motion.div>
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+          No matter what you sell, POS Business OS adapts to your workflow, your
+          products and the way your customers shop.
+        </p>
+      </div>
+    </section>
   );
 }

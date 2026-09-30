@@ -3,8 +3,12 @@
 import React from "react";
 import { motion } from "motion/react";
 import { SOLUTIONS } from "@/components/public/solutions/solutionsData";
-import { SolutionsHeader } from "@/components/public/solutions/SolutionsHeader";
+
 import { SolutionCard } from "@/components/public/solutions/SolutionCard";
+import SolutionsHeader from "@/components/public/solutions/SolutionsHeader";
+import SolutionsShowcaseSection from "@/components/public/solutions/detail/SolutionsShowcaseSection";
+
+import { LandingCtaSection } from "@/components/public/landing/LandingCtaSection";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -44,9 +48,12 @@ export default function SolutionsPage() {
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
           >
             <SolutionCard solution={sol} />
+           
           </motion.div>
         ))}
       </motion.div>
+       <SolutionsShowcaseSection/>
+      <LandingCtaSection />
     </div>
   );
 }
